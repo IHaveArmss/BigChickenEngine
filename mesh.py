@@ -86,6 +86,9 @@ class Mesh:
 
         self._set_uniform('u_view_pos', camera.position)
 
+        # Default: no texture (subclasses like ModelMesh override this)
+        self._set_uniform('u_use_texture', False)
+
     def _set_uniform(self, name, value):
         """Safely set a uniform — silently skip if it doesn't exist in the program."""
         if name not in self.program:

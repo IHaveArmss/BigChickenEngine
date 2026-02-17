@@ -74,6 +74,37 @@ class Cube(Mesh):
         )
 
 
+
+class Triangle(Mesh):
+    """A simple triangle primitive for scene building."""
+
+    def __init__(self, ctx, color=None):
+        self.color = color if color is not None else glm.vec3(1.0, 0.4, 0.2)
+        super().__init__(ctx, program_name='phong')
+
+    def get_vbo(self):
+        # Equilateral triangle lying on XZ plane, pointing up along Y
+        vertices = np.array([
+            # pos(3)              normal(3)           uv(2)
+             0.0,  0.5,  0.0,    0.0,  0.0,  1.0,   0.5, 1.0,
+            -0.5, -0.5,  0.0,    0.0,  0.0,  1.0,   0.0, 0.0,
+             0.5, -0.5,  0.0,    0.0,  0.0,  1.0,   1.0, 0.0,
+            # Back face
+             0.0,  0.5,  0.0,    0.0,  0.0, -1.0,   0.5, 1.0,
+             0.5, -0.5,  0.0,    0.0,  0.0, -1.0,   1.0, 0.0,
+            -0.5, -0.5,  0.0,    0.0,  0.0, -1.0,   0.0, 0.0,
+        ], dtype='f4')
+        return self.ctx.buffer(vertices)
+
+    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
+        super().set_uniforms(
+            camera,
+            light_pos=light_pos,
+            light_color=light_color,
+            object_color=object_color or self.color,
+        )
+
+
 class GridFloor(Mesh):
     """A flat grid on the XZ plane to give spatial reference."""
 

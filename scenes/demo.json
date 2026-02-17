@@ -1,0 +1,28 @@
+{
+  "objects": [
+    {
+      "name": "cottage",
+      "model": "assets/cottage/cottage_obj.obj",
+      "format": "obj",
+      "position": [-15.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [0.1, 0.1, 0.1]
+    },
+    {
+      "name": "ironman",
+      "model": "assets/ironman/IronMan.obj",
+      "format": "obj",
+      "position": [0.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [0.05, 0.05, 0.05]
+    },
+    {
+      "name": "skibidi",
+      "model": "assets/glbTest/source/Untitled_glb12.glb",
+      "format": "glb",
+      "position": [15.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.0, 1.0, 1.0]
+    }
+  ]
+}
