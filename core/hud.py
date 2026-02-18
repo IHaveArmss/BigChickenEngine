@@ -39,6 +39,9 @@ class HUD:
         self.selected_scale = None
         self.stretch_axis = None
         self.editor_ui = None  # set by engine after creation
+        self.scene_hierarchy = None  # set by engine after creation
+        self.scene_objects_ref = []  # set each frame by update()
+        self._selected_index = -1
 
     def toggle_controls(self):
         self.show_controls = not self.show_controls
@@ -141,6 +144,12 @@ class HUD:
         # Editor panel (drawn last, on top)
         if self.editor_ui:
             self.editor_ui.draw(surface)
+
+        # Hierarchy panel (left side)
+        if self.scene_hierarchy:
+            self.scene_hierarchy.draw(
+                surface, self.scene_objects_ref, self._selected_index
+            )
 
         return surface
 

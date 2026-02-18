@@ -12,7 +12,8 @@ class SceneObject:
     """Wrapper that groups all meshes belonging to one named object."""
 
     def __init__(self, name, model_path, fmt, meshes, is_light=False,
-                 light_intensity=1.0, light_color=None):
+                 light_intensity=1.0, light_color=None, alpha=1.0,
+                 folder='Scene'):
         self.name = name
         self.model_path = model_path
         self.format = fmt
@@ -20,6 +21,11 @@ class SceneObject:
         self.is_light = is_light
         self.light_intensity = light_intensity
         self.light_color = light_color or glm.vec3(1.0, 1.0, 0.9)
+        self._alpha = alpha
+        self.folder = folder
+        # Apply initial alpha to all meshes
+        for m in self.meshes:
+            m.alpha = self._alpha
 
     @property
     def position(self):
@@ -49,6 +55,16 @@ class SceneObject:
                 glm.radians(pitch), glm.radians(yaw), glm.radians(roll)
             ))
 
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, value):
+        self._alpha = max(0.0, min(1.0, value))
+        for m in self.meshes:
+            m.alpha = self._alpha
+
 
 def load_scene(scene_path, ctx, texture_loader):
     """Load a scene JSON file. Returns (scene_objects, all_meshes)."""
@@ -75,7 +91,9 @@ def load_scene(scene_path, ctx, texture_loader):
             cube.transform.scale = glm.vec3(*scl)
             meshes = [cube]
             all_meshes.append(cube)
-            obj = SceneObject(name, '', 'cube', meshes)
+            obj = SceneObject(name, '', 'cube', meshes,
+                              alpha=entry.get('alpha', 1.0),
+                              folder=entry.get('folder', 'Scene'))
 
         elif fmt == 'triangle':
             print(f"[SceneLoader] Spawning triangle '{name}'")
@@ -85,7 +103,9 @@ def load_scene(scene_path, ctx, texture_loader):
             tri.transform.scale = glm.vec3(*scl)
             meshes = [tri]
             all_meshes.append(tri)
-            obj = SceneObject(name, '', 'triangle', meshes)
+            obj = SceneObject(name, '', 'triangle', meshes,
+                              alpha=entry.get('alpha', 1.0),
+                              folder=entry.get('folder', 'Scene'))
 
         elif fmt == 'light':
             print(f"[SceneLoader] Spawning light '{name}'")
@@ -98,7 +118,9 @@ def load_scene(scene_path, ctx, texture_loader):
             all_meshes.append(orb)
             obj = SceneObject(name, '', 'light', meshes,
                               is_light=True, light_intensity=intensity,
-                              light_color=glm.vec3(*lc))
+                              light_color=glm.vec3(*lc),
+                              alpha=entry.get('alpha', 1.0),
+                              folder=entry.get('folder', 'Scene'))
 
         else:
             # Model file
@@ -120,7 +142,9 @@ def load_scene(scene_path, ctx, texture_loader):
                 meshes.append(m)
                 all_meshes.append(m)
 
-            obj = SceneObject(name, model_path, fmt, meshes)
+            obj = SceneObject(name, model_path, fmt, meshes,
+                              alpha=entry.get('alpha', 1.0),
+                              folder=entry.get('folder', 'Scene'))
             print(f"[SceneLoader]   -> {len(meshes)} mesh(es) loaded")
 
         if any(r != 0 for r in rot):
@@ -153,6 +177,12 @@ def save_scene(scene_path, scene_objects):
             entry["intensity"] = obj.light_intensity
             lc = obj.light_color
             entry["color"] = [round(lc.x, 3), round(lc.y, 3), round(lc.z, 3)]
+
+        if obj.alpha < 1.0:
+            entry["alpha"] = round(obj.alpha, 3)
+        if obj.folder != 'Scene':
+            entry["folder"] = obj.folder
+
 
         data["objects"].append(entry)
 

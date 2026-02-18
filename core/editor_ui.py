@@ -194,6 +194,7 @@ class EditorUI:
             'scl_x': {'label': 'X', 'value': f'{scl.x:.3f}', 'field': None},
             'scl_y': {'label': 'Y', 'value': f'{scl.y:.3f}', 'field': None},
             'scl_z': {'label': 'Z', 'value': f'{scl.z:.3f}', 'field': None},
+            'alpha': {'label': 'Alpha', 'value': f'{getattr(obj, "alpha", 1.0):.2f}', 'field': None},
         }
 
         if color is not None:
@@ -202,6 +203,19 @@ class EditorUI:
             b = int(min(1, max(0, color.z)) * 255)
             hex_str = f'#{r:02X}{g:02X}{b:02X}'
             self.prop_inputs['color'] = {'label': 'Color', 'value': hex_str, 'field': None}
+
+        if obj.is_light:
+            self.prop_inputs['intensity'] = {
+                'label': 'Intensity',
+                'value': f'{obj.light_intensity:.2f}',
+                'field': None,
+            }
+
+        self.prop_inputs['folder'] = {
+            'label': 'Folder',
+            'value': getattr(obj, 'folder', 'Scene'),
+            'field': None,
+        }
 
     def handle_event(self, event, mouse_pos):
         """Handle events. Returns action dict or None."""
@@ -452,6 +466,51 @@ class EditorUI:
                 swatch_rect = pygame.Rect(bx + full_w + 6, y, 30, INPUT_HEIGHT)
                 pygame.draw.rect(surface, rgb, swatch_rect, border_radius=3)
                 pygame.draw.rect(surface, (200, 200, 200), swatch_rect, 1, border_radius=3)
+            y += INPUT_HEIGHT + 10
+
+        # Intensity (lights only)
+        if 'intensity' in self.prop_inputs:
+            info = self.prop_inputs['intensity']
+            label_surf = self.font_bold.render("Intensity", True, (255, 230, 100))
+            surface.blit(label_surf, (bx, y))
+            y += 18
+
+            full_w = PANEL_WIDTH - PANEL_PADDING * 2 - 10
+            if info['field'] is None:
+                info['field'] = TextInput(bx, y, full_w, INPUT_HEIGHT,
+                                          'Intensity', info['value'])
+            info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
+            info['field'].draw(surface, self.font)
+            y += INPUT_HEIGHT + 10
+
+        # Alpha (all objects)
+        if 'alpha' in self.prop_inputs:
+            info = self.prop_inputs['alpha']
+            label_surf = self.font_bold.render("Opacity (0-1)", True, LABEL_COLOR[:3])
+            surface.blit(label_surf, (bx, y))
+            y += 18
+
+            full_w = PANEL_WIDTH - PANEL_PADDING * 2 - 10
+            if info['field'] is None:
+                info['field'] = TextInput(bx, y, full_w, INPUT_HEIGHT,
+                                          'Alpha', info['value'])
+            info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
+            info['field'].draw(surface, self.font)
+            y += INPUT_HEIGHT + 10
+
+        # Folder
+        if 'folder' in self.prop_inputs:
+            info = self.prop_inputs['folder']
+            label_surf = self.font_bold.render("Folder", True, (255, 200, 80))
+            surface.blit(label_surf, (bx, y))
+            y += 18
+
+            full_w = PANEL_WIDTH - PANEL_PADDING * 2 - 10
+            if info['field'] is None:
+                info['field'] = TextInput(bx, y, full_w, INPUT_HEIGHT,
+                                          'Folder', info['value'])
+            info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
+            info['field'].draw(surface, self.font)
             y += INPUT_HEIGHT + 10
 
         return y

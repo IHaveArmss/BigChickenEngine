@@ -1,3 +1,4 @@
+import struct
 import numpy as np
 import glm
 from core.transform import Transform
@@ -10,6 +11,7 @@ class Mesh:
         self.ctx = ctx
         self.program = self._load_program(program_name)
         self.transform = Transform()
+        self.alpha = 1.0
         self.vbo = self.get_vbo()
         self.vao = self.get_vao()
 
@@ -65,8 +67,11 @@ class Mesh:
     # Rendering
     # ------------------------------------------------------------------
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
-        """Upload MVP and lighting uniforms to the shader."""
+    def set_uniforms(self, camera, lights=None, object_color=None):
+        """Upload MVP and lighting uniforms to the shader.
+
+        lights: list of (position, color) tuples — each a glm.vec3 pair.
+        """
         model = self.transform.model_matrix()
         view = camera.view_matrix()
         aspect = self.ctx.screen.width / self.ctx.screen.height
@@ -76,15 +81,29 @@ class Mesh:
         self._set_uniform('u_view', view)
         self._set_uniform('u_projection', proj)
 
-        # Lighting uniforms
-        if light_pos is not None:
-            self._set_uniform('u_light_pos', light_pos)
-        if light_color is not None:
-            self._set_uniform('u_light_color', light_color)
+        # Multi-light uniforms — moderngl requires setting ALL array
+        # elements at once, so we pad unused slots with zeros
+        MAX_LIGHTS = 8
+        if lights:
+            num = min(len(lights), MAX_LIGHTS)
+            self._set_uniform('u_num_lights', num)
+            pos_values = [(lp.x, lp.y, lp.z) for lp, lc in lights[:num]]
+            col_values = [(lc.x, lc.y, lc.z) for lp, lc in lights[:num]]
+            # Pad to full array length
+            pos_values += [(0.0, 0.0, 0.0)] * (MAX_LIGHTS - num)
+            col_values += [(0.0, 0.0, 0.0)] * (MAX_LIGHTS - num)
+            if 'u_light_pos' in self.program:
+                self.program['u_light_pos'].value = pos_values
+            if 'u_light_color' in self.program:
+                self.program['u_light_color'].value = col_values
+        else:
+            self._set_uniform('u_num_lights', 0)
+
         if object_color is not None:
             self._set_uniform('u_object_color', object_color)
 
         self._set_uniform('u_view_pos', camera.position)
+        self._set_uniform('u_alpha', self.alpha)
 
         # Default: no texture (subclasses like ModelMesh override this)
         self._set_uniform('u_use_texture', False)

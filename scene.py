@@ -65,11 +65,10 @@ class Cube(Mesh):
 
         return self.ctx.buffer(vertices)
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
+    def set_uniforms(self, camera, lights=None, object_color=None):
         super().set_uniforms(
             camera,
-            light_pos=light_pos,
-            light_color=light_color,
+            lights=lights,
             object_color=object_color or self.color,
         )
 
@@ -96,11 +95,10 @@ class Triangle(Mesh):
         ], dtype='f4')
         return self.ctx.buffer(vertices)
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
+    def set_uniforms(self, camera, lights=None, object_color=None):
         super().set_uniforms(
             camera,
-            light_pos=light_pos,
-            light_color=light_color,
+            lights=lights,
             object_color=object_color or self.color,
         )
 
@@ -129,11 +127,10 @@ class GridFloor(Mesh):
         ], dtype='f4')
         return self.ctx.buffer(vertices)
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
+    def set_uniforms(self, camera, lights=None, object_color=None):
         super().set_uniforms(
             camera,
-            light_pos=light_pos,
-            light_color=light_color,
+            lights=lights,
             object_color=object_color or self.color,
         )
 
@@ -182,8 +179,8 @@ class LightOrb(Mesh):
         self._vertex_count = len(verts) // 3
         return self.ctx.buffer(np.array(verts, dtype='f4'))
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
-        """Position the orb at the light location."""
+    def set_uniforms(self, camera, lights=None, object_color=None, **kwargs):
+        """Position the orb at the light location. Unlit — ignores lights."""
         model = self.transform.model_matrix()
         view = camera.view_matrix()
         aspect = camera_aspect(self.ctx)
@@ -192,7 +189,7 @@ class LightOrb(Mesh):
         self._set_uniform('u_model', model)
         self._set_uniform('u_view', view)
         self._set_uniform('u_projection', proj)
-        self._set_uniform('u_object_color', self.color)
+        self._set_uniform('u_object_color', object_color or self.color)
 
 
 def camera_aspect(ctx):

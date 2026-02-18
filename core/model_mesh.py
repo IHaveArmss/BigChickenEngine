@@ -76,11 +76,10 @@ class ModelMesh(Mesh):
             )
         return vao
 
-    def set_uniforms(self, camera, light_pos=None, light_color=None, object_color=None):
+    def set_uniforms(self, camera, lights=None, object_color=None):
         super().set_uniforms(
             camera,
-            light_pos=light_pos,
-            light_color=light_color,
+            lights=lights,
             object_color=object_color or self.color,
         )
 
