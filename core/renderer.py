@@ -1,6 +1,6 @@
 """Renderer — collects lights and draws the scene."""
 
-import glm
+from pyglm import glm
 import moderngl
 
 

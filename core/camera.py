@@ -1,4 +1,4 @@
-import glm
+from pyglm import glm
 import pygame
 
 

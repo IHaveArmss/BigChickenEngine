@@ -1,8 +1,7 @@
 """Raycasting utilities — screen-to-floor and object picking."""
 
 import math
-import glm
-
+from pyglm import glm
 
 def screen_to_floor(camera, win_size, screen_x, screen_y):
     """Raycast from screen pixel to Y=0 floor plane. Returns glm.vec3 or None."""

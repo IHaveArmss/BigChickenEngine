@@ -3,7 +3,7 @@
 import os
 import struct
 import numpy as np
-import glm
+from pyglm import glm
 
 
 def export_folder_to_obj(folder_name, scene_objects, output_dir='exports'):

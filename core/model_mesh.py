@@ -1,7 +1,7 @@
 """ModelMesh — renders geometry loaded from OBJ or glTF files."""
 
 import numpy as np
-import glm
+from pyglm import glm
 from mesh import Mesh
 from PIL import Image
 

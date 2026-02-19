@@ -2,7 +2,7 @@
 
 import json
 import os
-import glm
+from pyglm import glm
 from core.model_loader import load_obj, load_gltf
 from core.model_mesh import ModelMesh
 from scene import Cube, Triangle, LightOrb

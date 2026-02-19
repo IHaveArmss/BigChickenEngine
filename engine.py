@@ -2,7 +2,7 @@ import pygame
 import moderngl
 import sys
 import os
-import glm
+from pyglm import glm
 from core.camera import Camera
 from core.texture import TextureLoader
 from core.scene_loader import load_scene, save_scene

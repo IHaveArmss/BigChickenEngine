@@ -1,5 +1,4 @@
-import glm
-
+from pyglm import glm
 
 class Transform:
     """Represents position, rotation, and scale of an object in 3D space."""

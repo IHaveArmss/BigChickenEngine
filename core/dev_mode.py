@@ -1,7 +1,7 @@
 """Dev mode — spawning, deletion, object manipulation, and scene info."""
 
 import pygame
-import glm
+from pyglm import glm
 from scene import Cube, Triangle, LightOrb
 from core.scene_loader import SceneObject
 
