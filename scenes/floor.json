@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "gravity": -9.81
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        50.0,
+        0.1,
+        50.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [
+        0.341,
+        0.341,
+        0.4
+      ]
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+"""ScriptManager — Dynamically loads, unloads, and executes Python scripts attached to scene objects."""
+
+import importlib.util
+import traceback
+import sys
+import os
+
+
+def _normalize_script_names(raw_scripts):
+    """Normalize script list from object data to safe, unique script names."""
+    if raw_scripts is None:
+        return []
+
+    if isinstance(raw_scripts, str):
+        parts = raw_scripts.replace('\n', ',').replace(';', ',').split(',')
+    else:
+        parts = []
+        for item in raw_scripts:
+            if isinstance(item, str):
+                parts.extend(item.replace('\n', ',').replace(';', ',').split(','))
+
+    normalized = []
+    seen = set()
+    for s in parts:
+        name = s.strip().strip('"').strip("'").replace('\\', '/')
+        if not name:
+            continue
+        if name.startswith('scripts/'):
+            name = name[8:]
+        if name.endswith('.py'):
+            name = name[:-3]
+        if name and name not in seen:
+            seen.add(name)
+            normalized.append(name)
+    return normalized
+
+
+class ScriptManager:
+    def __init__(self):
+        self.active_scripts = []
+        self._loaded_module_names = []
+
+    def load_scripts(self, engine, scene_objects):
+        """Finds all scripts on objects, loads them, and runs their start() methods."""
+        self.stop_all()
+
+        print("[ScriptManager] Loading scripts...")
+        for obj in scene_objects:
+            if not hasattr(obj, 'scripts') or not obj.scripts:
+                continue
+
+            script_names = _normalize_script_names(obj.scripts)
+            obj.scripts = script_names
+            for script_name in script_names:
+                script_path = script_name
+                if not script_path.endswith('.py'):
+                    script_path += '.py'
+
+                normalized_path = script_path.replace('\\', '/')
+                if not normalized_path.startswith('scripts/'):
+                    script_path = os.path.join('scripts', script_path)
+
+                script_path = os.path.abspath(script_path)
+
+                if not os.path.exists(script_path):
+                    print(f"[ScriptManager] WARNING: Script not found: {script_path}")
+                    continue
+
+                module_name = os.path.splitext(os.path.basename(script_path))[0]
+
+                # Evict stale module so reimport picks up edits
+                sys.modules.pop(module_name, None)
+
+                try:
+                    spec = importlib.util.spec_from_file_location(module_name, script_path)
+                    if not spec or not spec.loader:
+                        print(f"[ScriptManager] WARNING: Could not create spec for {script_path}")
+                        continue
+
+                    module = importlib.util.module_from_spec(spec)
+                    sys.modules[module_name] = module
+                    spec.loader.exec_module(module)
+                    self._loaded_module_names.append(module_name)
+                except Exception:
+                    print(f"[ScriptManager] ERROR loading {script_path}:\n{traceback.format_exc()}")
+                    continue
+
+                class_name = ''.join(word.capitalize() for word in module_name.split('_'))
+
+                script_class = getattr(module, class_name, None)
+                if not script_class:
+                    script_class = getattr(module, 'Script', None)
+
+                if script_class:
+                    instance = script_class()
+                    instance.engine = engine
+                    instance.entity = obj
+
+                    self.active_scripts.append(instance)
+                    print(f"[ScriptManager] Loaded {class_name} on {obj.name}")
+
+                    if hasattr(instance, 'start'):
+                        try:
+                            instance.start()
+                        except Exception:
+                            print(f"[ScriptManager] ERROR in {class_name}.start():\n{traceback.format_exc()}")
+                else:
+                    print(f"[ScriptManager] WARNING: No valid class found in {script_path}. "
+                          f"Expected '{class_name}' or 'Script'.")
+
+    def update_all(self, dt):
+        """Calls the update method on all loaded scripts. Errors are logged, not propagated."""
+        for script in self.active_scripts:
+            if hasattr(script, 'update'):
+                try:
+                    script.update(dt)
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.update():\n{traceback.format_exc()}")
+
+    def fixed_update_all(self, fixed_dt):
+        """Calls fixed_update on all scripts that define it (once per physics substep)."""
+        for script in self.active_scripts:
+            if hasattr(script, 'fixed_update'):
+                try:
+                    script.fixed_update(fixed_dt)
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.fixed_update():\n{traceback.format_exc()}")
+
+    def dispatch_collisions(self, collisions):
+        """Notify scripts about collisions detected this frame.
+        collisions: list of (obj_a, obj_b, contact_point, normal, impulse)."""
+        from core.physics_system import CollisionInfo
+        entity_to_scripts = {}
+        for script in self.active_scripts:
+            if hasattr(script, 'on_collision'):
+                entity_to_scripts.setdefault(id(script.entity), []).append(script)
+
+        if not entity_to_scripts:
+            return
+
+        for obj_a, obj_b, point, normal, impulse in collisions:
+            for script in entity_to_scripts.get(id(obj_a), ()):
+                try:
+                    script.on_collision(CollisionInfo(obj_b, point, normal, impulse))
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.on_collision():\n{traceback.format_exc()}")
+            for script in entity_to_scripts.get(id(obj_b), ()):
+                try:
+                    script.on_collision(CollisionInfo(obj_a, point, -normal, impulse))
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.on_collision():\n{traceback.format_exc()}")
+
+    def stop_all(self):
+        """Calls stop() on each script, then clears and cleans up loaded modules."""
+        if self.active_scripts:
+            print("[ScriptManager] Stopping and unloading scripts.")
+        for script in self.active_scripts:
+            if hasattr(script, 'stop'):
+                try:
+                    script.stop()
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.stop():\n{traceback.format_exc()}")
+        self.active_scripts.clear()
+
+        for mod_name in self._loaded_module_names:
+            sys.modules.pop(mod_name, None)
+        self._loaded_module_names.clear()
