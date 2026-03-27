@@ -7,6 +7,7 @@ from scene import Cube, Triangle, LightOrb
 from core.scene_loader import SceneObject, spawn_from_entry
 from core.animation_state_controller import AnimationStateController
 from core.utils import normalize_script_names
+from core.sprite_mesh import SpriteMesh
 
 
 def _sync_anim_state_controller(obj):
@@ -48,6 +49,41 @@ class DevMode:
 
     def spawn_at(self, ctx, obj_type, position, scene_objects, rebuild_fn, editor_ui, shader_cache=None, texture_loader=None):
         """Spawn an object at a specific world position. Returns new selected index."""
+        
+        # Handle sprite spawning
+        if obj_type == 'sprite':
+            sprite_path = getattr(editor_ui, '_pending_sprite_path', None)
+            if not sprite_path:
+                print("[DevMode] No sprite path set for spawning")
+                return -1
+            
+            sprite_name = getattr(editor_ui, '_pending_sprite_name', 'sprite')
+            billboard = getattr(editor_ui, '_pending_sprite_billboard', True)
+            autocrop = getattr(editor_ui, '_pending_sprite_autocrop', True)
+            
+            if not os.path.exists(sprite_path):
+                print(f"[DevMode] Sprite file not found: {sprite_path}")
+                return -1
+            
+            try:
+                mesh = SpriteMesh(ctx, texture_loader, sprite_path, shader_cache=shader_cache,
+                                autocrop=autocrop, billboard=billboard)
+            except Exception as e:
+                print(f"[DevMode] Failed to create sprite: {e}")
+                return -1
+            
+            spawn_pos = glm.vec3(position.x, position.y + 1.0, position.z)
+            mesh.transform.position = glm.vec3(spawn_pos)
+            mesh.transform.scale = glm.vec3(1.0)
+            
+            obj = SceneObject(sprite_name, '', 'sprite', [mesh])
+            scene_objects.append(obj)
+            rebuild_fn()
+            
+            editor_ui._pending_sprite_path = None
+            editor_ui._pending_sprite_name = None
+            print(f"[DevMode] Placed sprite '{sprite_name}' at ({spawn_pos.x:.1f}, {spawn_pos.y:.1f}, {spawn_pos.z:.1f})")
+            return len(scene_objects) - 1
         
         # Handle model spawning
         if obj_type == 'model':

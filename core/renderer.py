@@ -337,6 +337,8 @@ class Renderer:
 
             if getattr(obj, 'alpha', 1.0) < 1.0:
                 transparent.append(obj)
+            elif hasattr(obj, 'meshes') and obj.meshes and getattr(obj.meshes[0], '_shader_name', None) == 'textured':
+                transparent.append(obj)
             else:
                 opaque.append(obj)
 

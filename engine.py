@@ -21,6 +21,7 @@ from core.script_manager import ScriptManager
 from core.interaction_manager import InteractionManager
 from core.dialogue_manager import DialogueManager
 from core.audio_manager import AudioManager
+from core.cutscene_manager import CutsceneManager
 from core.prefab_manager import save_prefab, load_prefab, list_prefabs
 from core.render_settings import RenderSettings
 from core.serialization import serialize_scene_object
@@ -266,6 +267,8 @@ class GraphicsEngine:
         self.dialogue = DialogueManager(self)
         self.hud.dialogue_manager = self.dialogue
         self.audio = AudioManager()
+        self.cutscenes = CutsceneManager(self)
+        self.editor_ui.available_cutscenes = self.cutscenes.list_cutscenes()
 
         # Keep Dev UI in sync with runtime settings (initial defaults)
         self.editor_ui.ps2_enabled = self.render_settings.ps2_enabled
@@ -357,14 +360,24 @@ class GraphicsEngine:
 
     @property
     def active_camera(self):
-        """Returns the Editor Camera in dev mode, or the Play Camera if one is set."""
+        """Returns the Editor Camera in dev mode, or the Play Camera if one is set.
+        Cutscene playback overrides the editor camera even in dev mode."""
+        if self.play_camera:
+            return self.play_camera
         if self.dev_mode:
             return self.editor_camera
-        return self.play_camera if self.play_camera else self.editor_camera
+        return self.editor_camera
 
     def set_play_camera(self, camera):
         """Allows a script (e.g. Player) to register a new perspective in Play Mode."""
         self.play_camera = camera
+
+    @property
+    def input_enabled(self):
+        """Returns False if cutscene is playing with can_player_move=False."""
+        if self.cutscenes.is_playing and not self.cutscenes.can_player_move:
+            return False
+        return True
 
     def _rebuild_renderables(self):
         self.all_renderables = list(self.static_objects)
@@ -579,6 +592,17 @@ class GraphicsEngine:
                 self.script_manager.dispatch_collisions(self.physics_system.collisions)
             self.script_manager.update_all(dt)
             self.dialogue.update(dt)
+
+        # Cutscene updates in all modes when playing
+        if self.cutscenes.is_playing:
+            self.cutscenes.update(dt)
+            try:
+                speed = float(self.editor_ui.cutscene_speed_input.text)
+                self.cutscenes.playback_speed = max(0.1, speed)
+            except ValueError:
+                pass
+            self.cutscenes.can_player_move = self.editor_ui.cutscene_can_player_move
+            self.cutscenes.is_looping = self.editor_ui.cutscene_is_looping
 
         # Update editor UI
         sel_obj = None

@@ -145,6 +145,8 @@ class SceneObject:
 def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     """Create a single SceneObject from a dict (used by load_scene, spawn, and prefabs).
     Returns the SceneObject or None if the model is missing."""
+    from core.sprite_mesh import SpriteMesh
+    
     name = entry.get('name', 'unnamed')
     model_path = entry.get('model', '')
     fmt = entry.get('format', 'obj')
@@ -188,6 +190,31 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                           alpha=entry.get('alpha', 1.0),
                           folder=entry.get('folder', 'Scene'),
                           tag=entry.get('tag', ''))
+    
+    elif fmt == 'sprite':
+        sprite_path = entry.get('sprite_path', '')
+        if not sprite_path or not os.path.exists(sprite_path):
+            print(f"[SceneLoader] WARNING: sprite not found: {sprite_path}")
+            return None
+        
+        billboard = entry.get('billboard', True)
+        autocrop = entry.get('autocrop', True)
+        
+        try:
+            sprite = SpriteMesh(ctx, texture_loader, sprite_path, shader_cache=shader_cache,
+                             autocrop=autocrop, billboard=billboard)
+        except Exception as e:
+            print(f"[SceneLoader] WARNING: failed to create sprite: {e}")
+            return None
+        
+        sprite.transform.position = glm.vec3(*pos)
+        sprite.transform.scale = glm.vec3(*scl)
+        meshes = [sprite]
+        obj = SceneObject(name, '', 'sprite', meshes,
+                          alpha=entry.get('alpha', 1.0),
+                          folder=entry.get('folder', 'Scene'),
+                          tag=entry.get('tag', ''))
+    
     else:
         if not os.path.exists(model_path):
             print(f"[SceneLoader] WARNING: model not found: {model_path}")

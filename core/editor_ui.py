@@ -367,6 +367,32 @@ class EditorUI:
         self.anim_smooth = True
         self.anim_interval = TextInput(bx, 0, 60, INPUT_HEIGHT, 'interval', '0.5')
 
+        self.section_cutscene = CollapsibleSection("── Cutscene Maker ──", default_expanded=False)
+        self.cutscene_name_input = TextInput(bx, 0, bw - 60, INPUT_HEIGHT, 'name', 'new_cutscene')
+        self.cutscene_speed_input = TextInput(bx, 0, 60, INPUT_HEIGHT, 'speed', '1.0')
+        self.cutscene_add_point_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Add Point")
+        self.cutscene_clear_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Clear")
+        self.cutscene_play_btn = Button(bx, 0, 50, INPUT_HEIGHT, "Play")
+        self.cutscene_stop_btn = Button(bx, 0, 50, INPUT_HEIGHT, "Stop")
+        self.cutscene_save_btn = Button(bx, 0, 50, INPUT_HEIGHT, "Save")
+        self.cutscene_load_btn = Button(bx, 0, 50, INPUT_HEIGHT, "Load")
+        self.cutscene_can_player_move = True
+        self.cutscene_can_player_move_rect = pygame.Rect(0, 0, 40, 22)
+        self.cutscene_is_looping = False
+        self.cutscene_loop_rect = pygame.Rect(0, 0, 40, 22)
+        self.cutscene_dropdown = DropdownSelect(bx, 0, bw, [])
+        self.cutscene_waypoint_count = 0
+        self.available_cutscenes = []
+
+        self.section_sprite = CollapsibleSection("── Sprite Spawner ──", default_expanded=False)
+        self.sprite_path_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'path', 'assets/')
+        self.sprite_name_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'name', 'sprite')
+        self.sprite_spawn_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Spawn")
+        self.sprite_billboard = True
+        self.sprite_billboard_rect = pygame.Rect(0, 0, 40, 22)
+        self.sprite_autocrop = True
+        self.sprite_autocrop_rect = pygame.Rect(0, 0, 40, 22)
+
     def update_gravity_ui(self, gravity):
         if not self.global_gravity_input.active:
             self.global_gravity_input.text = f"{gravity:.2f}"
@@ -531,6 +557,99 @@ class EditorUI:
         self.spot_shadow_resolution_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
         self.spot_shadow_resolution_input.draw(surface, self.font)
         y += INPUT_HEIGHT + 10
+        return y
+
+    def _draw_cutscene_section(self, surface, bx, bw, y):
+        label = self.font.render("Name", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.cutscene_name_input.rect = pygame.Rect(bx + 50, y, bw - 100, INPUT_HEIGHT)
+        self.cutscene_name_input.draw(surface, self.font)
+        self.cutscene_save_btn.rect = pygame.Rect(bx + bw - 45, y, 45, INPUT_HEIGHT)
+        self.cutscene_save_btn.draw(surface, self.font)
+        self.cutscene_load_btn.rect = pygame.Rect(bx + bw - 95, y, 45, INPUT_HEIGHT)
+        self.cutscene_load_btn.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        label = self.font.render("Speed", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.cutscene_speed_input.rect = pygame.Rect(bx + 50, y, 60, INPUT_HEIGHT)
+        self.cutscene_speed_input.draw(surface, self.font)
+        label = self.font.render("Can Move", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx + 120, y + 4))
+        self.cutscene_can_player_move_rect = pygame.Rect(bx + 185, y, 36, 18)
+        bg_c = TOGGLE_ON if self.cutscene_can_player_move else TOGGLE_OFF
+        pygame.draw.rect(surface, bg_c, self.cutscene_can_player_move_rect, border_radius=9)
+        knob_x = bx + 185 + 18 if self.cutscene_can_player_move else bx + 185 + 2
+        pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 9), 6)
+        label = self.font.render("Loop", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx + 230, y + 4))
+        self.cutscene_loop_rect = pygame.Rect(bx + 265, y, 36, 18)
+        bg_c = TOGGLE_ON if self.cutscene_is_looping else TOGGLE_OFF
+        pygame.draw.rect(surface, bg_c, self.cutscene_loop_rect, border_radius=9)
+        knob_x = bx + 265 + 18 if self.cutscene_is_looping else bx + 265 + 2
+        pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 9), 6)
+        y += INPUT_HEIGHT + 6
+
+        btn_w = 50
+        spacing = 6
+        self.cutscene_add_point_btn.rect = pygame.Rect(bx, y, btn_w, INPUT_HEIGHT)
+        self.cutscene_play_btn.rect = pygame.Rect(bx + btn_w + spacing, y, btn_w, INPUT_HEIGHT)
+        self.cutscene_stop_btn.rect = pygame.Rect(bx + (btn_w + spacing) * 2, y, btn_w, INPUT_HEIGHT)
+        self.cutscene_clear_btn.rect = pygame.Rect(bx + (btn_w + spacing) * 3, y, btn_w, INPUT_HEIGHT)
+        self.cutscene_add_point_btn.draw(surface, self.font)
+        self.cutscene_play_btn.draw(surface, self.font)
+        self.cutscene_stop_btn.draw(surface, self.font)
+        self.cutscene_clear_btn.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        cutscene_files = self.available_cutscenes if hasattr(self, 'available_cutscenes') else []
+        self.cutscene_dropdown.set_items(cutscene_files if cutscene_files else ["(no cutscenes)"])
+        self.cutscene_dropdown.rect = pygame.Rect(bx, y, bw, 26)
+        y = self.cutscene_dropdown.draw(surface, self.font, bx, y) - 4
+
+        count_text = f"Waypoints: {self.cutscene_waypoint_count}"
+        count_surf = self.font.render(count_text, True, (140, 140, 160))
+        surface.blit(count_surf, (bx, y))
+        y += 18
+        return y
+
+    def _draw_sprite_section(self, surface, bx, bw, y):
+        y = self.section_sprite.draw(surface, self.font_bold, bx, y)
+        if not self.section_sprite.expanded:
+            return y
+
+        label = self.font.render("Path:", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.sprite_path_input.rect = pygame.Rect(bx + 50, y, bw - 50, INPUT_HEIGHT)
+        self.sprite_path_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        label = self.font.render("Name:", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.sprite_name_input.rect = pygame.Rect(bx + 50, y, bw - 50, INPUT_HEIGHT)
+        self.sprite_name_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        self.sprite_spawn_btn.rect = pygame.Rect(bx, y, 70, INPUT_HEIGHT)
+        self.sprite_spawn_btn.draw(surface, self.font)
+        y += INPUT_HEIGHT + 10
+
+        label = self.font.render("Billboard", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 2))
+        self.sprite_billboard_rect = pygame.Rect(bx + 80, y, 36, 18)
+        bg_c = TOGGLE_ON if self.sprite_billboard else TOGGLE_OFF
+        pygame.draw.rect(surface, bg_c, self.sprite_billboard_rect, border_radius=9)
+        knob_x = bx + 80 + 18 if self.sprite_billboard else bx + 80 + 2
+        pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 9), 6)
+
+        label = self.font.render("Autocrop", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx + 130, y + 2))
+        self.sprite_autocrop_rect = pygame.Rect(bx + 200, y, 36, 18)
+        bg_c = TOGGLE_ON if self.sprite_autocrop else TOGGLE_OFF
+        pygame.draw.rect(surface, bg_c, self.sprite_autocrop_rect, border_radius=9)
+        knob_x = bx + 200 + 18 if self.sprite_autocrop else bx + 200 + 2
+        pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 9), 6)
+        y += 28
         return y
 
     def set_scene_context(self, current_scene_file, available_scenes):
@@ -831,6 +950,53 @@ class EditorUI:
                 self.anim_smooth = not self.anim_smooth
                 return None
 
+        # Cutscene section toggle
+        if self.section_cutscene.toggle(mouse_pos):
+            return None
+
+        # Cutscene controls (only when expanded)
+        if self.section_cutscene.expanded:
+            if self.cutscene_add_point_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_add_point'}
+            if self.cutscene_play_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_play'}
+            if self.cutscene_stop_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_stop'}
+            if self.cutscene_clear_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_clear'}
+            if self.cutscene_save_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_save', 'name': self.cutscene_name_input.text}
+            if self.cutscene_load_btn.check_click(mouse_pos):
+                return {'action': 'cutscene_load', 'name': self.cutscene_dropdown.selected}
+            if self.cutscene_can_player_move_rect.collidepoint(mouse_pos):
+                self.cutscene_can_player_move = not self.cutscene_can_player_move
+                return None
+            if self.cutscene_loop_rect.collidepoint(mouse_pos):
+                self.cutscene_is_looping = not self.cutscene_is_looping
+                return None
+            self.cutscene_dropdown.handle_event(event)
+
+        # Sprite section toggle
+        if self.section_sprite.toggle(mouse_pos):
+            return None
+
+        # Sprite controls (only when expanded)
+        if self.section_sprite.expanded:
+            if self.sprite_spawn_btn.check_click(mouse_pos):
+                return {
+                    'action': 'spawn_sprite',
+                    'path': self.sprite_path_input.text,
+                    'name': self.sprite_name_input.text,
+                    'billboard': self.sprite_billboard,
+                    'autocrop': self.sprite_autocrop,
+                }
+            if self.sprite_billboard_rect.collidepoint(mouse_pos):
+                self.sprite_billboard = not self.sprite_billboard
+                return None
+            if self.sprite_autocrop_rect.collidepoint(mouse_pos):
+                self.sprite_autocrop = not self.sprite_autocrop
+                return None
+
         # Forward to text inputs
         self.save_as_input.handle_event(event)
         self.global_gravity_input.handle_event(event)
@@ -852,6 +1018,10 @@ class EditorUI:
         self.sun_intensity_input.handle_event(event)
         self.recording_name_input.handle_event(event)
         self.anim_interval.handle_event(event)
+        self.cutscene_name_input.handle_event(event)
+        self.cutscene_speed_input.handle_event(event)
+        self.sprite_path_input.handle_event(event)
+        self.sprite_name_input.handle_event(event)
 
         # Prop inputs processing
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -888,6 +1058,15 @@ class EditorUI:
         self.clear_btn.check_hover(mouse_pos)
         self.save_anim_btn.check_hover(mouse_pos)
 
+        self.cutscene_add_point_btn.check_hover(mouse_pos)
+        self.cutscene_play_btn.check_hover(mouse_pos)
+        self.cutscene_stop_btn.check_hover(mouse_pos)
+        self.cutscene_clear_btn.check_hover(mouse_pos)
+        self.cutscene_save_btn.check_hover(mouse_pos)
+        self.cutscene_load_btn.check_hover(mouse_pos)
+
+        self.sprite_spawn_btn.check_hover(mouse_pos)
+
         self._build_property_inputs(selected_obj)
 
         self.save_as_input.update(dt)
@@ -910,6 +1089,10 @@ class EditorUI:
         self.sun_intensity_input.update(dt)
         self.recording_name_input.update(dt)
         self.anim_interval.update(dt)
+        self.cutscene_name_input.update(dt)
+        self.cutscene_speed_input.update(dt)
+        self.sprite_path_input.update(dt)
+        self.sprite_name_input.update(dt)
         for key, info in self.prop_inputs.items():
             if info['field'] and info['field'] != 'toggle':
                 info['field'].update(dt)
@@ -1214,7 +1397,17 @@ class EditorUI:
 
         self.save_as_button.rect = pygame.Rect(bx + bw - 50, y + INPUT_HEIGHT + 6, 50, INPUT_HEIGHT)
         self.save_as_button.draw(surface, self.font)
-        y += INPUT_HEIGHT + 36
+        y += INPUT_HEIGHT + 16
+
+        # ── Cutscene Maker ──
+        y = self.section_cutscene.draw(surface, self.font_bold, bx, y)
+        if self.section_cutscene.expanded:
+            y = self._draw_cutscene_section(surface, bx, bw, y)
+
+        # ── Sprite Spawner ──
+        y = self.section_sprite.draw(surface, self.font_bold, bx, y)
+        if self.section_sprite.expanded:
+            y = self._draw_sprite_section(surface, bx, bw, y)
 
         # ── Capabilities ──
         section_surf = self.font_bold.render("── Capabilities ──", True, (100, 200, 255))

@@ -62,7 +62,7 @@ class InputHandler:
                 self._handle_mouse_down(event)
 
             elif event.type == pygame.MOUSEMOTION:
-                if not eng.cursor_mode and not eng.dialogue.active:
+                if not eng.cursor_mode and not eng.dialogue.active and eng.input_enabled:
                     dx, dy = event.rel
                     eng.active_camera.process_mouse(dx, dy)
 
@@ -139,7 +139,7 @@ class InputHandler:
                 eng._rebuild_renderables, eng.editor_ui, eng.shader_cache,
             )
 
-        elif event.key == pygame.K_e and not eng.dev_mode:
+        elif event.key == pygame.K_e and not eng.dev_mode and eng.input_enabled:
             eng.interaction_manager.try_interact()
 
         elif event.key == pygame.K_DELETE and eng.dev_mode:
@@ -232,6 +232,47 @@ class InputHandler:
                             eng.dev_tools.remove_scripts(
                                 eng.scene_objects, eng.selected_index, action.get('scripts', []), eng.editor_ui
                             )
+                    elif action['action'] == 'cutscene_add_point':
+                        eng.cutscenes.add_waypoint()
+                        eng.editor_ui.cutscene_waypoint_count = len(eng.cutscenes.waypoints)
+                        print(f"[Cutscene] Added waypoint #{len(eng.cutscenes.waypoints)}")
+                    elif action['action'] == 'cutscene_play':
+                        eng.cutscenes.play()
+                    elif action['action'] == 'cutscene_stop':
+                        eng.cutscenes.stop()
+                    elif action['action'] == 'cutscene_clear':
+                        eng.cutscenes.clear()
+                        eng.editor_ui.cutscene_waypoint_count = 0
+                        print("[Cutscene] Cleared all waypoints")
+                    elif action['action'] == 'cutscene_save':
+                        name = (action.get('name') or '').strip()
+                        if not name:
+                            print("[Cutscene] Save canceled: empty name")
+                        else:
+                            eng.cutscenes.save(name)
+                            eng.editor_ui.available_cutscenes = eng.cutscenes.list_cutscenes()
+                    elif action['action'] == 'cutscene_load':
+                        name = (action.get('name') or '').strip()
+                        if name and name != "(no cutscenes)":
+                            if eng.cutscenes.load(name):
+                                eng.editor_ui.cutscene_waypoint_count = len(eng.cutscenes.waypoints)
+                                eng.editor_ui.cutscene_can_player_move = eng.cutscenes.can_player_move
+                                eng.editor_ui.cutscene_is_looping = eng.cutscenes.is_looping
+                                eng.editor_ui.cutscene_speed_input.text = str(eng.cutscenes.playback_speed)
+                    elif action['action'] == 'spawn_sprite':
+                        sprite_path = (action.get('path') or '').strip()
+                        sprite_name = (action.get('name') or 'sprite').strip()
+                        billboard = action.get('billboard', True)
+                        autocrop = action.get('autocrop', True)
+                        if not sprite_path:
+                            print("[DevMode] Sprite spawn canceled: empty path")
+                        else:
+                            eng.editor_ui.placement_mode = 'sprite'
+                            eng.editor_ui._pending_sprite_path = sprite_path.replace('\\', '/')
+                            eng.editor_ui._pending_sprite_name = sprite_name
+                            eng.editor_ui._pending_sprite_billboard = billboard
+                            eng.editor_ui._pending_sprite_autocrop = autocrop
+                            print(f"[DevMode] Click to place sprite: {sprite_path}")
 
             elif eng.scene_hierarchy.is_point_on_panel(mouse_pos):
                 new_idx = eng.scene_hierarchy.handle_event(
