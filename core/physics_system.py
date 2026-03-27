@@ -2,6 +2,7 @@ import pybullet as p
 import pybullet_data
 import glm
 import os
+import struct
 
 FIXED_TIMESTEP = 1.0 / 240.0
 MAX_SUBSTEPS = 10
@@ -86,9 +87,20 @@ class PhysicsSystem:
                 p.GEOM_SPHERE, radius=max(sx, sy, sz) * 0.5,
                 physicsClientId=self.client_id)
         elif col_type == 'mesh' and getattr(obj, 'model_path', '') and os.path.exists(obj.model_path):
-            shape_id = p.createCollisionShape(
-                p.GEOM_MESH, fileName=obj.model_path, meshScale=[sx, sy, sz],
-                physicsClientId=self.client_id)
+            ext = os.path.splitext(obj.model_path)[1].lower()
+            if ext in ('.glb', '.gltf'):
+                # PyBullet doesn't support .glb files for GEOM_MESH via fileName.
+                # Use our memory-based triangle mesh/convex hull generator instead.
+                shape_id = self._create_mesh_collision(obj, sx, sy, sz)
+            elif ext == '.obj':
+                shape_id = p.createCollisionShape(
+                    p.GEOM_MESH, fileName=obj.model_path, meshScale=[sx, sy, sz],
+                    physicsClientId=self.client_id)
+            else:
+                # Fallback for other formats (stl, etc.)
+                shape_id = self._create_mesh_collision(obj, sx, sy, sz)
+        elif col_type == 'convex_hull':
+            shape_id = self._create_mesh_collision(obj, sx, sy, sz)
         else:
             shape_id = p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
@@ -117,6 +129,66 @@ class PhysicsSystem:
         self._body_to_obj[body_id] = obj
         self.body_scales[obj] = glm.vec3(sx, sy, sz)
         self._cached_dynamics[obj] = self._dynamics_key(obj)
+
+    def _create_mesh_collision(self, obj, sx, sy, sz):
+        """Create a triangle mesh (concave, for static) or convex hull collision shape."""
+        vertices = []
+        indices = []
+        vertex_offset = 0
+        
+        for mesh in obj.meshes:
+            vbo = mesh.vbo
+            if vbo is None:
+                continue
+            
+            try:
+                data = vbo.read()
+                fmt = mesh.get_vertex_data_format()
+                floats_per_vert = sum(int(f[0].replace('f', '')) for f in fmt)
+                pos_stride = floats_per_vert * 4
+                
+                num_verts = len(data) // pos_stride
+                for i in range(num_verts):
+                    offset = i * pos_stride
+                    x = struct.unpack_from('f', data, offset)[0]
+                    y = struct.unpack_from('f', data, offset + 4)[0]
+                    z = struct.unpack_from('f', data, offset + 8)[0]
+                    vertices.append([x * sx, y * sy, z * sz])
+                
+                # Extract indices if available
+                mesh_indices = mesh._mesh_data.get('indices')
+                if mesh_indices is not None:
+                    # Offset indices by the current number of global vertices
+                    indices.extend((mesh_indices + vertex_offset).tolist())
+                else:
+                    # If no indices, we can't easily make a triangle mesh for this sub-mesh
+                    # but we can at least add fake indices if we want true mesh collision
+                    for i in range(0, num_verts, 3):
+                        if i + 2 < num_verts:
+                            indices.extend([vertex_offset + i, vertex_offset + i + 1, vertex_offset + i + 2])
+                
+                vertex_offset += num_verts
+            except Exception as e:
+                print(f"[Physics] Warning: Could not extract mesh data: {e}")
+                continue
+        
+        if not vertices:
+            print(f"[Physics] Warning: No vertices found for {obj.name}, using box fallback")
+            return p.createCollisionShape(
+                p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
+                physicsClientId=self.client_id)
+        
+        mass = getattr(obj, 'mass', 1.0)
+        # Use GEOM_MESH with indices for concave collision if static (mass=0)
+        # Dynamic objects in PyBullet MUST be convex hulls for stable collision.
+        if mass == 0.0 and indices:
+            return p.createCollisionShape(
+                p.GEOM_MESH, vertices=vertices, indices=indices,
+                physicsClientId=self.client_id)
+        else:
+            return p.createCollisionShape(
+                p.GEOM_MESH, vertices=vertices,
+                physicsClientId=self.client_id)
 
     def remove_object(self, obj):
         """Remove an object from PyBullet world."""
