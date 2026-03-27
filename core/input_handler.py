@@ -267,12 +267,22 @@ class InputHandler:
                         if not sprite_path:
                             print("[DevMode] Sprite spawn canceled: empty path")
                         else:
-                            eng.editor_ui.placement_mode = 'sprite'
+                            # Store pending data for DevMode to read (kept for compatibility)
                             eng.editor_ui._pending_sprite_path = sprite_path.replace('\\', '/')
                             eng.editor_ui._pending_sprite_name = sprite_name
                             eng.editor_ui._pending_sprite_billboard = billboard
                             eng.editor_ui._pending_sprite_autocrop = autocrop
-                            print(f"[DevMode] Click to place sprite: {sprite_path}")
+                            
+                            # Spawn immediately in front!
+                            new_idx = eng.dev_tools.spawn_in_front(
+                                eng.ctx, 'sprite', eng.active_camera, 
+                                eng.scene_objects, eng._rebuild_renderables, 
+                                eng.editor_ui, shader_cache=eng.shader_cache, 
+                                texture_loader=eng.texture_loader
+                            )
+                            if new_idx >= 0:
+                                eng.selected_index = new_idx
+                                print(f"[DevMode] Spawned sprite: {sprite_name}")
 
             elif eng.scene_hierarchy.is_point_on_panel(mouse_pos):
                 new_idx = eng.scene_hierarchy.handle_event(

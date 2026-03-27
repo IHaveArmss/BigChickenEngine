@@ -101,6 +101,7 @@ class GraphicsEngine:
         self.editor_ui._current_obj_name = None
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
+        self.editor_ui.available_cutscenes = self.cutscenes.list_cutscenes()
 
     def _record_history_snapshot(self, force=False):
         if self._history_suspend:

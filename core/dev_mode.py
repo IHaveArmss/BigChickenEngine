@@ -143,10 +143,11 @@ class DevMode:
         print(f"[DevMode] Placed {obj_type} '{name}' at ({spawn_pos.x:.1f}, {spawn_pos.y:.1f}, {spawn_pos.z:.1f})")
         return len(scene_objects) - 1
 
-    def spawn_in_front(self, ctx, obj_type, camera, scene_objects, rebuild_fn, editor_ui, shader_cache=None):
+    def spawn_in_front(self, ctx, obj_type, camera, scene_objects, rebuild_fn, editor_ui, shader_cache=None, texture_loader=None):
         """Spawn 5 units in front of camera."""
         pos = camera.position + camera.front * 5.0
-        return self.spawn_at(ctx, obj_type, pos, scene_objects, rebuild_fn, editor_ui, shader_cache)
+        return self.spawn_at(ctx, obj_type, pos, scene_objects, rebuild_fn, editor_ui, 
+                            shader_cache=shader_cache, texture_loader=texture_loader)
 
     def delete_selected(self, scene_objects, selected_index, rebuild_fn, editor_ui):
         """Delete the selected object. Returns new selected index (-1)."""

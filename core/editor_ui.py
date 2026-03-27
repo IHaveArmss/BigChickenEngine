@@ -135,6 +135,8 @@ class DropdownSelect:
                 opt_text = font.render(item[:30], True, (220, 220, 220))
                 surface.blit(opt_text, (opt_rect.x + 8, opt_rect.y + 4))
         
+        if self.open and self.items:
+            return y + 32 + (len(self.items) * 24)
         return y + 32
 PANEL_PADDING = 12
 ROW_HEIGHT = 28
@@ -385,7 +387,7 @@ class EditorUI:
         self.available_cutscenes = []
 
         self.section_sprite = CollapsibleSection("── Sprite Spawner ──", default_expanded=False)
-        self.sprite_path_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'path', 'assets/')
+        self.sprite_path_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'path', 'assets/sprites/')
         self.sprite_name_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'name', 'sprite')
         self.sprite_spawn_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Spawn")
         self.sprite_billboard = True
@@ -614,9 +616,6 @@ class EditorUI:
         return y
 
     def _draw_sprite_section(self, surface, bx, bw, y):
-        y = self.section_sprite.draw(surface, self.font_bold, bx, y)
-        if not self.section_sprite.expanded:
-            return y
 
         label = self.font.render("Path:", True, LABEL_COLOR[:3])
         surface.blit(label, (bx, y + 4))
@@ -876,7 +875,7 @@ class EditorUI:
                 self.section_shadows.toggle(mouse_pos)
 
             # Model dropdown and buttons
-            self.model_dropdown.handle_event(event)
+            if self.model_dropdown.handle_event(event): return None
             if self.model_refresh_btn.check_click(mouse_pos):
                 base_path = self.model_path_input.text or "models"
                 self.refresh_models(base_path)
@@ -974,7 +973,7 @@ class EditorUI:
             if self.cutscene_loop_rect.collidepoint(mouse_pos):
                 self.cutscene_is_looping = not self.cutscene_is_looping
                 return None
-            self.cutscene_dropdown.handle_event(event)
+            if self.cutscene_dropdown.handle_event(event): return None
 
         # Sprite section toggle
         if self.section_sprite.toggle(mouse_pos):
@@ -1182,6 +1181,11 @@ class EditorUI:
             or self.sun_intensity_input.active
             or self.recording_name_input.active
             or self.anim_interval.active
+            or self.cutscene_name_input.active
+            or self.cutscene_speed_input.active
+            or self.sprite_path_input.active
+            or self.sprite_name_input.active
+            or self.model_path_input.active
         ):
             return True
         for key, info in self.prop_inputs.items():
