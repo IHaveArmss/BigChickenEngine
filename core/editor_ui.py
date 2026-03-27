@@ -21,8 +21,121 @@ INPUT_ACTIVE_BORDER = (0, 200, 120, 255)
 INPUT_TEXT = (255, 255, 255, 255)
 TOGGLE_ON = (0, 200, 120)
 TOGGLE_OFF = (80, 80, 100)
+DROPDOWN_BG = (35, 35, 50)
+DROPDOWN_HOVER = (55, 55, 80)
+DROPDOWN_BORDER = (90, 90, 130)
 
 PANEL_WIDTH = 340
+
+
+class CollapsibleSection:
+    """A collapsible section header that can be clicked to expand/collapse."""
+    
+    def __init__(self, title, default_expanded=True):
+        self.title = title
+        self.expanded = default_expanded
+        self.rect = pygame.Rect(0, 0, 0, 0)
+        self._collapsed_height = 24
+        self._expanded_height = 24
+    
+    @property
+    def height(self):
+        return self._collapsed_height if not self.expanded else 0
+    
+    def get_content_height(self):
+        return 0
+    
+    def toggle(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            self.expanded = not self.expanded
+            return True
+        return False
+    
+    def draw(self, surface, font, bx, y):
+        self.rect = pygame.Rect(bx, y, PANEL_WIDTH - PANEL_PADDING * 2, self._collapsed_height)
+        
+        bg = pygame.Surface((self.rect.width, self._collapsed_height), pygame.SRCALPHA)
+        bg.fill((30, 30, 45, 200))
+        surface.blit(bg, (bx, y))
+        
+        arrow = "▼" if self.expanded else "▶"
+        arrow_surf = font.render(arrow, True, SECTION_COLOR[:3])
+        surface.blit(arrow_surf, (bx + 4, y + 4))
+        
+        title_surf = font.render(self.title, True, SECTION_COLOR[:3])
+        surface.blit(title_surf, (bx + 22, y + 4))
+        
+        pygame.draw.rect(surface, SECTION_COLOR[:3], self.rect, 1, border_radius=3)
+        
+        return y + self._collapsed_height
+
+
+class DropdownSelect:
+    """A simple dropdown selector for model/file selection."""
+    
+    def __init__(self, x, y, width, items, default_index=0):
+        self.rect = pygame.Rect(x, y, width, 26)
+        self.items = list(items)
+        self.selected_index = default_index if default_index < len(items) else 0
+        self.open = False
+        self.option_rects = []
+    
+    @property
+    def selected(self):
+        if 0 <= self.selected_index < len(self.items):
+            return self.items[self.selected_index]
+        return ""
+    
+    def set_items(self, items):
+        self.items = list(items)
+        if self.selected_index >= len(items):
+            self.selected_index = 0
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.open = not self.open
+                return True
+            elif self.open:
+                for i, opt_rect in enumerate(self.option_rects):
+                    if opt_rect.collidepoint(event.pos):
+                        self.selected_index = i
+                        self.open = False
+                        return True
+                self.open = False
+        return False
+    
+    def draw(self, surface, font, bx, y):
+        self.rect.y = y
+        
+        bg_color = DROPDOWN_BG
+        border_color = DROPDOWN_BORDER
+        pygame.draw.rect(surface, bg_color, self.rect, border_radius=4)
+        pygame.draw.rect(surface, border_color, self.rect, 1, border_radius=4)
+        
+        selected_text = self.items[self.selected_index] if self.items else "(none)"
+        text_surf = font.render(selected_text[:30], True, (220, 220, 220))
+        surface.blit(text_surf, (self.rect.x + 8, self.rect.y + 5))
+        
+        arrow = "▼" if self.open else "▲"
+        arrow_surf = font.render(arrow, True, (150, 150, 180))
+        surface.blit(arrow_surf, (self.rect.right - 18, self.rect.y + 5))
+        
+        self.option_rects = []
+        if self.open and self.items:
+            for i, item in enumerate(self.items):
+                opt_rect = pygame.Rect(self.rect.x, self.rect.y + 26 + i * 24, self.rect.width, 24)
+                self.option_rects.append(opt_rect)
+                
+                hover = opt_rect.collidepoint(pygame.mouse.get_pos())
+                opt_bg = DROPDOWN_HOVER if hover else DROPDOWN_BG
+                pygame.draw.rect(surface, opt_bg, opt_rect)
+                pygame.draw.rect(surface, DROPDOWN_BORDER, opt_rect, 1)
+                
+                opt_text = font.render(item[:30], True, (220, 220, 220))
+                surface.blit(opt_text, (opt_rect.x + 8, opt_rect.y + 4))
+        
+        return y + 32
 PANEL_PADDING = 12
 ROW_HEIGHT = 28
 BUTTON_HEIGHT = 32
@@ -157,9 +270,17 @@ class EditorUI:
             'light': Button(bx, 0, bw, BUTTON_HEIGHT, "  Point Light", (255, 230, 100)),
         }
 
+        # Model selection for spawning imported models
+        self.available_models = []
+        self.model_dropdown = DropdownSelect(bx, 0, bw, ["(select model)"])
+        self.model_path_input = TextInput(bx, 0, bw - 70, INPUT_HEIGHT, 'path', 'models/')
+        self.model_spawn_btn = Button(bx + bw - 64, 0, 64, INPUT_HEIGHT, "Spawn")
+        self.model_refresh_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Refresh")
+
         # Placement mode: when user clicks a spawn button, the next viewport
         # click will place the object where the ray hits the floor
-        self.placement_mode = None  # None or 'cube'/'triangle'/'light'
+        self.placement_mode = None  # None or 'cube'/'triangle'/'light'/'model'
+        self._pending_model_path = None  # Stores model path when spawning models
 
         # Property inputs (built dynamically)
         self.prop_inputs = {}
@@ -227,6 +348,12 @@ class EditorUI:
         self.available_prefabs = []
         self.prefab_quick_rects = []
 
+        # Collapsible settings sections
+        self.section_settings = CollapsibleSection("── Settings ──", default_expanded=True)
+        self.section_ps2 = CollapsibleSection("── PS2 Graphics ──", default_expanded=False)
+        self.section_sun = CollapsibleSection("── Sun & Ambient ──", default_expanded=False)
+        self.section_shadows = CollapsibleSection("── Shadows ──", default_expanded=False)
+
         # Animation Recording
         self.recording_name_input = TextInput(bx, 0, bw - 60, INPUT_HEIGHT, 'anim_name', 'new_clip')
         self.record_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Rec")
@@ -244,6 +371,19 @@ class EditorUI:
         if not self.global_gravity_input.active:
             self.global_gravity_input.text = f"{gravity:.2f}"
 
+    def refresh_models(self, base_path="models"):
+        """Scan for available model files (.obj, .glb, .gltf)."""
+        self.available_models = []
+        if os.path.isdir(base_path):
+            for f in os.listdir(base_path):
+                if f.lower().endswith(('.obj', '.glb', '.gltf')):
+                    self.available_models.append(f)
+        self.available_models.sort()
+        if self.available_models:
+            self.model_dropdown.set_items(self.available_models)
+        else:
+            self.model_dropdown.set_items(["(no models found)"])
+
     def _draw_labeled_input(self, surface, label, input_field, y):
         bx = self.panel_x + PANEL_PADDING
         bw = PANEL_WIDTH - PANEL_PADDING * 2
@@ -252,6 +392,146 @@ class EditorUI:
         input_field.rect = pygame.Rect(bx + 90, y, bw - 90, INPUT_HEIGHT)
         input_field.draw(surface, self.font)
         return y + INPUT_HEIGHT + 4
+
+    def _draw_ps2_section(self, surface, bx, bw, y):
+        y = self.section_ps2.draw(surface, self.font_bold, bx, y)
+        if not self.section_ps2.expanded:
+            return y
+        
+        def draw_toggle_row(label_text, enabled, rect_attr):
+            nonlocal y
+            label_s = self.font.render(label_text, True, LABEL_COLOR[:3])
+            surface.blit(label_s, (bx, y + 2))
+            toggle_x = bx + bw - 44
+            rect = pygame.Rect(toggle_x, y, 40, 22)
+            setattr(self, rect_attr, rect)
+            bg_c = TOGGLE_ON if enabled else TOGGLE_OFF
+            pygame.draw.rect(surface, bg_c, rect, border_radius=11)
+            knob_x = toggle_x + 20 if enabled else toggle_x + 2
+            pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
+            y += 28
+
+        draw_toggle_row("PS2 Style", self.ps2_enabled, "ps2_toggle_rect")
+        draw_toggle_row("Postprocess", self.postprocess_enabled, "postprocess_toggle_rect")
+
+        label = self.font.render("Pixel Size", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.pixel_size_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.pixel_size_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        draw_toggle_row("Quantize", self.quantize_enabled, "quantize_toggle_rect")
+        label = self.font.render("Quant Steps", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.quantize_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.quantize_steps_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        draw_toggle_row("Dither", self.dither_enabled, "dither_toggle_rect")
+        draw_toggle_row("Light Ramp", self.lighting_ramp_enabled, "lighting_ramp_toggle_rect")
+        
+        label = self.font.render("Ramp Steps", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.lighting_ramp_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.lighting_ramp_steps_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        draw_toggle_row("Spec Band", self.specular_banding_enabled, "specular_toggle_rect")
+        label = self.font.render("Spec Steps", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.specular_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.specular_steps_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+
+        draw_toggle_row("PS1 Wobble", self.wobble_enabled, "wobble_toggle_rect")
+        label = self.font.render("Wobble Px", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.wobble_pixel_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.wobble_pixel_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 10
+        return y
+
+    def _draw_sun_section(self, surface, bx, bw, y):
+        y = self.section_sun.draw(surface, self.font_bold, bx, y)
+        if not self.section_sun.expanded:
+            return y
+        
+        label = self.font.render("Ambient Intensity", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        amb_w = 60
+        color_w = 96
+        self.ambient_strength_input.rect = pygame.Rect(bx + bw - (amb_w + color_w + 10), y, amb_w, INPUT_HEIGHT)
+        self.ambient_strength_input.draw(surface, self.font)
+        self.ambient_color_input.rect = pygame.Rect(bx + bw - color_w, y, color_w, INPUT_HEIGHT)
+        self.ambient_color_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+        
+        label = self.font.render("Sun Azimuth / Elev.", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        sun_w = 60
+        self.sun_azimuth_input.rect = pygame.Rect(bx + bw - (sun_w * 2 + 6), y, sun_w, INPUT_HEIGHT)
+        self.sun_azimuth_input.draw(surface, self.font)
+        self.sun_elevation_input.rect = pygame.Rect(bx + bw - sun_w, y, sun_w, INPUT_HEIGHT)
+        self.sun_elevation_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+        
+        label = self.font.render("Sun Intensity", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.sun_intensity_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.sun_intensity_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 4
+        
+        hint = self.font.render("Az: around Y (0=+X, 90=+Z)  El: up/down", True, (140, 140, 150))
+        surface.blit(hint, (bx, y))
+        y += 18
+        return y
+
+    def _draw_shadows_section(self, surface, bx, bw, y):
+        y = self.section_shadows.draw(surface, self.font_bold, bx, y)
+        if not self.section_shadows.expanded:
+            return y
+        
+        def draw_toggle_row(label_text, enabled, rect_attr):
+            nonlocal y
+            label_s = self.font.render(label_text, True, LABEL_COLOR[:3])
+            surface.blit(label_s, (bx, y + 2))
+            toggle_x = bx + bw - 44
+            rect = pygame.Rect(toggle_x, y, 40, 22)
+            setattr(self, rect_attr, rect)
+            bg_c = TOGGLE_ON if enabled else TOGGLE_OFF
+            pygame.draw.rect(surface, bg_c, rect, border_radius=11)
+            knob_x = toggle_x + 20 if enabled else toggle_x + 2
+            pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
+            y += 28
+
+        draw_toggle_row("Directional Shadows", self.directional_shadows_enabled, "directional_shadows_toggle_rect")
+        
+        label = self.font.render("Dir Map Size", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.directional_shadow_resolution_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.directional_shadow_resolution_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+        
+        label = self.font.render("Dir Distance", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.directional_shadow_distance_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.directional_shadow_distance_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 6
+        
+        label = self.font.render("Shadow Bias", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.shadow_bias_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.shadow_bias_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 8
+
+        draw_toggle_row("Point Light Shadows", self.spot_shadows_enabled, "spot_shadows_toggle_rect")
+        
+        label = self.font.render("Spot Map Size", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.spot_shadow_resolution_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
+        self.spot_shadow_resolution_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 10
+        return y
 
     def set_scene_context(self, current_scene_file, available_scenes):
         self.current_scene_file = current_scene_file or ''
@@ -468,6 +748,24 @@ class EditorUI:
                     else:
                         self.placement_mode = spawn_type
                     return None  # consumed
+
+            # Collapsible section toggles
+            self.section_settings.toggle(mouse_pos)
+            if self.section_settings.expanded:
+                self.section_ps2.toggle(mouse_pos)
+                self.section_sun.toggle(mouse_pos)
+                self.section_shadows.toggle(mouse_pos)
+
+            # Model dropdown and buttons
+            self.model_dropdown.handle_event(event)
+            if self.model_refresh_btn.check_click(mouse_pos):
+                base_path = self.model_path_input.text or "models"
+                self.refresh_models(base_path)
+            if self.model_spawn_btn.check_click(mouse_pos):
+                selected = self.model_dropdown.selected
+                if selected and selected != "(no models found)" and selected != "(select model)":
+                    model_path = self.model_path_input.text + selected
+                    return {'action': 'spawn_model', 'model': model_path}
 
             # Save As button
             if self.save_as_button.check_click(mouse_pos):
@@ -823,7 +1121,7 @@ class EditorUI:
         y += 6
 
         # ── Spawn (click to place) ──
-        section_surf = self.font_bold.render("── Spawn (click to place) ──", True, (100, 200, 255))
+        section_surf = self.font_bold.render("── Spawn ──", True, (100, 200, 255))
         surface.blit(section_surf, (bx, y))
         y += 22
 
@@ -832,6 +1130,30 @@ class EditorUI:
             is_active = (self.placement_mode == spawn_type)
             btn.draw(surface, self.font, active=is_active)
             y += BUTTON_HEIGHT + 6
+
+        # ── Model Spawn ──
+        model_label = self.font.render("Import Model:", True, (130, 180, 255))
+        surface.blit(model_label, (bx, y))
+        y += 20
+
+        self.model_path_input.rect = pygame.Rect(bx, y, bw, INPUT_HEIGHT)
+        self.model_path_input.draw(surface, self.font)
+        y += INPUT_HEIGHT + 4
+
+        self.model_refresh_btn.rect = pygame.Rect(bx, y, 70, INPUT_HEIGHT)
+        self.model_refresh_btn.draw(surface, self.font)
+        
+        self.model_dropdown.rect.x = bx + 76
+        self.model_dropdown.rect.width = bw - 76
+        y = self.model_dropdown.draw(surface, self.font, bx + 76, y) - 4
+
+        self.model_spawn_btn.rect = pygame.Rect(bx, y, bw, INPUT_HEIGHT)
+        self.model_spawn_btn.draw(surface, self.font)
+        y += INPUT_HEIGHT + 4
+        
+        model_hint = self.font.render("Select or type model path", True, (120, 120, 140))
+        surface.blit(model_hint, (bx, y))
+        y += 18
 
         # Placement hint
         if self.placement_mode:
@@ -845,148 +1167,32 @@ class EditorUI:
 
         # ── Settings ──
         y += 4
-        section_surf = self.font_bold.render("── Settings ──", True, (100, 200, 255))
-        surface.blit(section_surf, (bx, y))
-        y += 24
+        y = self.section_settings.draw(surface, self.font_bold, bx, y)
+        
+        if self.section_settings.expanded:
+            # Autosave toggle
+            label = self.font.render("Autosave (30s)", True, LABEL_COLOR[:3])
+            surface.blit(label, (bx, y + 2))
 
-        # Autosave toggle
-        label = self.font.render("Autosave (30s)", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 2))
-
-        toggle_x = bx + bw - 44
-        self.autosave_toggle_rect = pygame.Rect(toggle_x, y, 40, 22)
-        # Draw toggle switch
-        bg_c = TOGGLE_ON if self.autosave_enabled else TOGGLE_OFF
-        pygame.draw.rect(surface, bg_c, self.autosave_toggle_rect, border_radius=11)
-        knob_x = toggle_x + 20 if self.autosave_enabled else toggle_x + 2
-        pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
-        y += 30
-
-        # Global gravity input
-        label = self.font.render("Gravity", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.global_gravity_input.rect = pygame.Rect(bx + 80, y, bw - 80, INPUT_HEIGHT)
-        self.global_gravity_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 10
-
-        # Retro / PS2 rendering
-        section_surf = self.font_bold.render("── Retro/PS2 Style ──", True, (100, 200, 255))
-        surface.blit(section_surf, (bx, y))
-        y += 22
-
-        def draw_toggle_row(label_text, enabled, rect_attr):
-            nonlocal y
-            label_s = self.font.render(label_text, True, LABEL_COLOR[:3])
-            surface.blit(label_s, (bx, y + 2))
             toggle_x = bx + bw - 44
-            rect = pygame.Rect(toggle_x, y, 40, 22)
-            setattr(self, rect_attr, rect)
-            bg_c = TOGGLE_ON if enabled else TOGGLE_OFF
-            pygame.draw.rect(surface, bg_c, rect, border_radius=11)
-            knob_x = toggle_x + 20 if enabled else toggle_x + 2
+            self.autosave_toggle_rect = pygame.Rect(toggle_x, y, 40, 22)
+            bg_c = TOGGLE_ON if self.autosave_enabled else TOGGLE_OFF
+            pygame.draw.rect(surface, bg_c, self.autosave_toggle_rect, border_radius=11)
+            knob_x = toggle_x + 20 if self.autosave_enabled else toggle_x + 2
             pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
-            y += 28
+            y += 30
 
-        draw_toggle_row("PS2 Style", self.ps2_enabled, "ps2_toggle_rect")
-        draw_toggle_row("Postprocess", self.postprocess_enabled, "postprocess_toggle_rect")
-
-        # Pixel size + quantize/dither
-        label = self.font.render("Pixel Size", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.pixel_size_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.pixel_size_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-
-        draw_toggle_row("Quantize", self.quantize_enabled, "quantize_toggle_rect")
-        label = self.font.render("Quant Steps", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.quantize_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.quantize_steps_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-
-        draw_toggle_row("Dither", self.dither_enabled, "dither_toggle_rect")
-
-        # Lighting style
-        draw_toggle_row("Light Ramp", self.lighting_ramp_enabled, "lighting_ramp_toggle_rect")
-        label = self.font.render("Ramp Steps", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.lighting_ramp_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.lighting_ramp_steps_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-
-        draw_toggle_row("Spec Band", self.specular_banding_enabled, "specular_toggle_rect")
-        label = self.font.render("Spec Steps", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.specular_steps_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.specular_steps_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-
-        # Optional wobble
-        draw_toggle_row("PS1 Wobble", self.wobble_enabled, "wobble_toggle_rect")
-        label = self.font.render("Wobble Px", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.wobble_pixel_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.wobble_pixel_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 10
-
-        # Sun & Ambient
-        section_surf = self.font_bold.render("── Sun & Ambient ──", True, (100, 200, 255))
-        surface.blit(section_surf, (bx, y))
-        y += 22
-        label = self.font.render("Ambient Intensity", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        # Right-align the numeric field and color field
-        amb_w = 60
-        color_w = 96
-        self.ambient_strength_input.rect = pygame.Rect(bx + bw - (amb_w + color_w + 10), y, amb_w, INPUT_HEIGHT)
-        self.ambient_strength_input.draw(surface, self.font)
-        self.ambient_color_input.rect = pygame.Rect(bx + bw - color_w, y, color_w, INPUT_HEIGHT)
-        self.ambient_color_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-        label = self.font.render("Sun Azimuth / Elev.", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        sun_w = 60
-        self.sun_azimuth_input.rect = pygame.Rect(bx + bw - (sun_w * 2 + 6), y, sun_w, INPUT_HEIGHT)
-        self.sun_azimuth_input.draw(surface, self.font)
-        self.sun_elevation_input.rect = pygame.Rect(bx + bw - sun_w, y, sun_w, INPUT_HEIGHT)
-        self.sun_elevation_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-        label = self.font.render("Sun Intensity", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.sun_intensity_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.sun_intensity_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 4
-        hint = self.font.render("Az: around Y (0=+X, 90=+Z)  El: up/down", True, (140, 140, 150))
-        surface.blit(hint, (bx, y))
-        y += 18
-
-        # Shadows
-        section_surf = self.font_bold.render("── Shadows ──", True, (100, 200, 255))
-        surface.blit(section_surf, (bx, y))
-        y += 22
-        draw_toggle_row("Directional Shadows", self.directional_shadows_enabled, "directional_shadows_toggle_rect")
-        label = self.font.render("Dir Map Size", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.directional_shadow_resolution_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.directional_shadow_resolution_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-        label = self.font.render("Dir Distance", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.directional_shadow_distance_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.directional_shadow_distance_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 6
-        label = self.font.render("Shadow Bias", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.shadow_bias_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.shadow_bias_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 8
-
-        draw_toggle_row("Point Light Shadows", self.spot_shadows_enabled, "spot_shadows_toggle_rect")
-        label = self.font.render("Spot Map Size", True, LABEL_COLOR[:3])
-        surface.blit(label, (bx, y + 4))
-        self.spot_shadow_resolution_input.rect = pygame.Rect(bx + bw - 80, y, 80, INPUT_HEIGHT)
-        self.spot_shadow_resolution_input.draw(surface, self.font)
-        y += INPUT_HEIGHT + 10
+            # Global gravity input
+            label = self.font.render("Gravity", True, LABEL_COLOR[:3])
+            surface.blit(label, (bx, y + 4))
+            self.global_gravity_input.rect = pygame.Rect(bx + 80, y, bw - 80, INPUT_HEIGHT)
+            self.global_gravity_input.draw(surface, self.font)
+            y += INPUT_HEIGHT + 10
+            
+            # Collapsible subsections
+            y = self._draw_ps2_section(surface, bx, bw, y)
+            y = self._draw_sun_section(surface, bx, bw, y)
+            y = self._draw_shadows_section(surface, bx, bw, y)
 
         # Particles section moved to separate panel (F4 to toggle)
 

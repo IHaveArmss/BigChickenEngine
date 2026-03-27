@@ -3,7 +3,7 @@
 import os
 import pygame
 from core.raycaster import screen_to_floor, pick_object, pick_object_from_screen
-from core.scene_loader import save_scene
+from core.scene_loader import save_scene, spawn_from_entry
 
 
 class InputHandler:
@@ -211,6 +211,14 @@ class InputHandler:
                         eng.autosave_timer = 0.0
                         status = "ON" if eng.autosave_enabled else "OFF"
                         print(f"[DevMode] Autosave: {status}")
+                    elif action['action'] == 'spawn_model':
+                        model_path = action.get('model', '').strip()
+                        if not model_path:
+                            print("[DevMode] Model spawn canceled: empty path")
+                        else:
+                            eng.editor_ui.placement_mode = 'model'
+                            eng.editor_ui._pending_model_path = model_path.replace('\\', '/')
+                            print(f"[DevMode] Click to place model: {model_path}")
                     elif action['action'].startswith('anim_'):
                         eng.dev_tools.handle_anim_action(
                             action, eng.scene_objects, eng.selected_index, eng.editor_ui
@@ -244,7 +252,7 @@ class InputHandler:
                         eng.selected_index = eng.dev_tools.spawn_at(
                             eng.ctx, eng.editor_ui.placement_mode, floor_hit,
                             eng.scene_objects, eng._rebuild_renderables, eng.editor_ui,
-                            eng.shader_cache,
+                            eng.shader_cache, eng.texture_loader,
                         )
                     else:
                         eng.selected_index = eng.dev_tools.spawn_in_front(
@@ -252,7 +260,8 @@ class InputHandler:
                             eng.scene_objects, eng._rebuild_renderables, eng.editor_ui,
                             eng.shader_cache,
                         )
-                    eng.editor_ui.placement_mode = None
+                    if eng.editor_ui.placement_mode != 'model':
+                        eng.editor_ui.placement_mode = None
                 elif eng.dev_mode:
                     idx = pick_object_from_screen(
                         eng.active_camera, eng.win_size, eng.scene_objects, *mouse_pos,

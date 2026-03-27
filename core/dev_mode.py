@@ -1,9 +1,10 @@
 """Dev mode — spawning, deletion, object manipulation, and scene info."""
 
+import os
 import pygame
 import glm
 from scene import Cube, Triangle, LightOrb
-from core.scene_loader import SceneObject
+from core.scene_loader import SceneObject, spawn_from_entry
 from core.animation_state_controller import AnimationStateController
 from core.utils import normalize_script_names
 
@@ -45,8 +46,35 @@ class DevMode:
     # Spawning
     # ------------------------------------------------------------------
 
-    def spawn_at(self, ctx, obj_type, position, scene_objects, rebuild_fn, editor_ui, shader_cache=None):
+    def spawn_at(self, ctx, obj_type, position, scene_objects, rebuild_fn, editor_ui, shader_cache=None, texture_loader=None):
         """Spawn an object at a specific world position. Returns new selected index."""
+        
+        # Handle model spawning
+        if obj_type == 'model':
+            model_path = getattr(editor_ui, '_pending_model_path', None)
+            if not model_path:
+                print("[DevMode] No model path set for spawning")
+                return -1
+            
+            fmt = 'glb' if model_path.endswith(('.glb', '.gltf')) else 'obj'
+            entry = {
+                'name': os.path.basename(model_path).rsplit('.', 1)[0],
+                'model': model_path,
+                'format': fmt,
+                'position': [position.x, position.y + 0.5, position.z],
+                'scale': [1, 1, 1],
+            }
+            obj = spawn_from_entry(entry, ctx, texture_loader, shader_cache)
+            if obj is None:
+                print(f"[DevMode] Failed to load model: {model_path}")
+                return -1
+            scene_objects.append(obj)
+            rebuild_fn()
+            editor_ui._current_obj_name = None
+            editor_ui._pending_model_path = None
+            print(f"[DevMode] Placed model '{obj.name}' at ({position.x:.1f}, {position.y + 0.5:.1f}, {position.z:.1f})")
+            return len(scene_objects) - 1
+        
         if obj_type == 'cube':
             self.cube_counter += 1
             name = f"cube_{self.cube_counter}"
