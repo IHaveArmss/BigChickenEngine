@@ -123,6 +123,10 @@ class PhysicsSystem:
                          linearDamping=drag,
                          angularDamping=0.05,
                          physicsClientId=self.client_id)
+        
+        # --- Trigger Support (Ghost Mode) ---
+        if getattr(obj, 'is_trigger', False):
+            p.setCollisionFilterGroupMask(body_id, -1, 0, 0, physicsClientId=self.client_id)
 
         obj.pybullet_body_id = body_id
         self.body_map[obj] = body_id
@@ -326,6 +330,23 @@ class PhysicsSystem:
         Returns:
             The SceneObject hit, or None if no hit.
         """
+        hit = self.raycast_detailed(ray_from, ray_to)
+        return hit[0] if hit else None
+
+    def raycast_detailed(self, ray_from, ray_to):
+        """Detailed raycast using PyBullet's physics engine.
+
+        Args:
+            ray_from: glm.vec3 or list [x,y,z] - start point
+            ray_to: glm.vec3 or list [x,y,z] - end point
+
+        Returns:
+            Tuple (hit_object, hit_position, hit_fraction, hit_normal) or None if no hit.
+            - hit_object: The SceneObject hit, or None
+            - hit_position: glm.vec3 world position of hit point
+            - hit_fraction: 0.0-1.0 along the ray where hit occurred
+            - hit_normal: glm.vec3 surface normal at hit point
+        """
         if isinstance(ray_from, glm.vec3):
             ray_from = [ray_from.x, ray_from.y, ray_from.z]
         if isinstance(ray_to, glm.vec3):
@@ -342,4 +363,28 @@ class PhysicsSystem:
         if body_id == -1:
             return None
 
-        return self._body_to_obj.get(body_id)
+        hit_obj = self._body_to_obj.get(body_id)
+        if hit_obj is None:
+            return None
+
+        hit_fraction = closest_hit[2]
+        hit_position_world = closest_hit[3]
+        
+        ray_dir = glm.vec3(
+            ray_to[0] - ray_from[0],
+            ray_to[1] - ray_from[1],
+            ray_to[2] - ray_from[2],
+        )
+        ray_length = glm.length(ray_dir)
+        if ray_length > 0.001:
+            ray_dir = glm.normalize(ray_dir)
+        
+        hit_pos = glm.vec3(
+            ray_from[0] + ray_dir.x * ray_length * hit_fraction,
+            ray_from[1] + ray_dir.y * ray_length * hit_fraction,
+            ray_from[2] + ray_dir.z * ray_length * hit_fraction,
+        )
+        
+        hit_normal = glm.vec3(0.0, 1.0, 0.0)
+        
+        return (hit_obj, hit_pos, hit_fraction, hit_normal)

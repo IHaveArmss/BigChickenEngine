@@ -77,6 +77,10 @@ class DevMode:
             mesh.transform.scale = glm.vec3(1.0)
             
             obj = SceneObject(sprite_name, '', 'sprite', [mesh])
+            obj.collider_type = 'box'
+            obj.is_kinematic = True
+            obj.use_gravity = False
+            obj.mass = 0.0
             scene_objects.append(obj)
             rebuild_fn()
             
@@ -281,6 +285,8 @@ class DevMode:
             obj.light_casts_shadows = (values['light_casts_shadows'] is True)
         if 'interactable' in values:
             obj.interactable = (values['interactable'] is True)
+        if 'is_trigger' in values:
+            obj.is_trigger = (values['is_trigger'] is True)
         try:
             if 'interaction_distance' in values and values['interaction_distance']:
                 obj.interaction_distance = max(0.1, float(values['interaction_distance']))

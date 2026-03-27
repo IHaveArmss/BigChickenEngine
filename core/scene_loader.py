@@ -39,6 +39,8 @@ class SceneObject:
         self.casts_shadows = True
         self.receives_shadows = True
 
+        self.is_trigger = False
+        
         # Physics Properties
         self.pybullet_body_id = None
         self.mass = 1.0
@@ -214,6 +216,10 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                           alpha=entry.get('alpha', 1.0),
                           folder=entry.get('folder', 'Scene'),
                           tag=entry.get('tag', ''))
+        obj.collider_type = 'box'
+        obj.is_kinematic = True
+        obj.use_gravity = False
+        obj.mass = 0.0
     
     else:
         if not os.path.exists(model_path):
@@ -304,6 +310,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     obj.casts_shadows = bool(entry.get('casts_shadows', True))
     obj.receives_shadows = bool(entry.get('receives_shadows', True))
     obj.light_casts_shadows = bool(entry.get('light_casts_shadows', obj.is_light))
+    obj.is_trigger = bool(entry.get('is_trigger', False))
 
     if any(r != 0 for r in rot):
         obj.set_rotation_euler(*rot)

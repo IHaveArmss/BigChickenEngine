@@ -745,6 +745,9 @@ class EditorUI:
         self.prop_inputs['interaction_distance'] = {
             'label': 'Interact Dist', 'value': f'{getattr(obj, "interaction_distance", 3.0):.2f}', 'field': None,
         }
+        self.prop_inputs['is_trigger'] = {
+            'label': 'Is Trigger', 'value': getattr(obj, 'is_trigger', False), 'field': 'toggle',
+        }
 
         self.prop_inputs['folder'] = {
             'label': 'Folder',
@@ -1025,7 +1028,7 @@ class EditorUI:
         # Prop inputs processing
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Handle toggles
-            for key in ['use_gravity', 'is_kinematic', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
+            for key in ['use_gravity', 'is_kinematic', 'is_trigger', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
                 if key in self.prop_inputs and 'toggle_rect' in self.prop_inputs[key]:
                     if self.prop_inputs[key]['toggle_rect'].collidepoint(mouse_pos):
                         self.prop_inputs[key]['value'] = not self.prop_inputs[key]['value']
@@ -1135,6 +1138,10 @@ class EditorUI:
         if 'use_anim_state_controller' in self.prop_inputs:
             self.prop_inputs['use_anim_state_controller']['value'] = bool(
                 getattr(obj, 'use_anim_state_controller', False)
+            )
+        if 'is_trigger' in self.prop_inputs:
+            self.prop_inputs['is_trigger']['value'] = bool(
+                getattr(obj, 'is_trigger', False)
             )
         cfg = getattr(obj, 'anim_state_config', None)
         if isinstance(cfg, dict):
@@ -1600,7 +1607,7 @@ class EditorUI:
             y += INPUT_HEIGHT + 10
 
         # Toggle Physics fields side by side
-        tog_keys = ['is_kinematic', 'use_gravity', 'casts_shadows', 'receives_shadows']
+        tog_keys = ['is_kinematic', 'use_gravity', 'is_trigger', 'casts_shadows', 'receives_shadows']
         if all(k in self.prop_inputs for k in tog_keys):
             x = bx
             for key in tog_keys:

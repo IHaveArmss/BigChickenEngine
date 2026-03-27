@@ -32,6 +32,7 @@ def serialize_scene_object(obj):
         "scripts": obj.scripts.copy() if hasattr(obj, 'scripts') else [],
         "casts_shadows": bool(getattr(obj, 'casts_shadows', True)),
         "receives_shadows": bool(getattr(obj, 'receives_shadows', True)),
+        "is_trigger": bool(getattr(obj, 'is_trigger', False)),
     }
 
     if obj.format not in ('cube', 'triangle', 'light'):

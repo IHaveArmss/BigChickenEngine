@@ -33,9 +33,11 @@ class ThirdPerson:
 
         # Camera tuning
         self.cam_distance   = 6.0        # orbit radius
+        self.current_distance = 6.0      # actual distance (may be reduced by collision)
         self.cam_height     = 2.0        # look-at height above player pivot
         self.cam_smoothness = 8.0        # position lerp speed (higher = snappier)
         self.sensitivity    = 0.2        # mouse degrees-per-pixel
+        self.cam_collision_smoothness = 10.0  # speed for camera distance smoothing
 
         # Camera angles (degrees)
         self.cam_yaw   = 0.0             # 0 = behind the player (-Z in world)
@@ -154,6 +156,29 @@ class ThirdPerson:
 
         focus  = self.entity.position + glm.vec3(0.0, self.cam_height, 0.0)
         ideal  = focus + offset
+
+        # -------- camera collision detection --------
+        target_distance = self.cam_distance
+        
+        ray_from = glm.vec3(focus)
+        ray_to = glm.vec3(ideal)
+        
+        hit_data = self.phys.raycast_detailed(ray_from, ray_to)
+        
+        if hit_data:
+            hit_obj, hit_pos, hit_fraction, hit_normal = hit_data
+            if hit_fraction < 1.0:
+                target_distance = self.cam_distance * hit_fraction * 0.9
+        
+        t_dist = min(1.0, dt * self.cam_collision_smoothness)
+        self.current_distance = glm.mix(self.current_distance, target_distance, t_dist)
+        
+        current_offset = glm.vec3(
+            self.current_distance * glm.cos(rad_pitch) *  glm.sin(rad_yaw),
+            self.current_distance * glm.sin(rad_pitch),
+            self.current_distance * glm.cos(rad_pitch) *  glm.cos(rad_yaw),
+        )
+        ideal = focus + current_offset
 
         # -------- smooth follow (lerp) --------
         t = min(1.0, dt * self.cam_smoothness)

@@ -32,9 +32,10 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
+      "is_trigger": false,
       "color": [
-        0.337,
-        0.337,
+        0.333,
+        0.333,
         0.4
       ]
     },
@@ -45,45 +46,6 @@
         -1.34,
         0.5,
         6.9
-      ],
-      "rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "mass": 1.0,
-      "use_gravity": true,
-      "is_kinematic": false,
-      "collider_type": "box",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.02,
-      "tag": "",
-      "scripts": [
-        "example_npc"
-      ],
-      "casts_shadows": true,
-      "receives_shadows": true,
-      "color": [
-        0.475,
-        0.475,
-        1.0
-      ],
-      "interactable": true,
-      "interaction_distance": 3.0
-    },
-    {
-      "name": "cube_1",
-      "format": "cube",
-      "position": [
-        2.53,
-        0.5,
-        10.76
       ],
       "rotation": [
         -0.0,
@@ -104,15 +66,96 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [
+        "example_npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "color": [
+        0.475,
+        0.475,
+        1.0
+      ],
+      "interactable": true,
+      "interaction_distance": 3.0
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        2.53,
+        0.5,
+        10.76
+      ],
+      "rotation": [
+        -0.0,
+        0.002,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [
         "third_person"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
+      "is_trigger": false,
       "color": [
         0.478,
         0.475,
         1.0
       ]
+    },
+    {
+      "name": "Interactable_Button",
+      "format": "cube",
+      "position": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        0.4,
+        0.4
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "interactable",
+      "scripts": [
+        "interactable_button"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "color": [
+        0.2,
+        0.8,
+        0.698
+      ],
+      "interactable": true,
+      "interaction_distance": 3.0
     }
   ]
 }
