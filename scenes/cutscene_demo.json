@@ -1,0 +1,80 @@
+{
+  "settings": {
+    "gravity": -9.81
+  },
+  "objects": [
+    {
+      "name": "player",
+      "format": "cube",
+      "position": [0.0, 1.5, 5.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.0, 1.0, 1.0],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.0,
+      "tag": "player",
+      "scripts": ["third_person"],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [0.2, 0.8, 0.3]
+    },
+    {
+      "name": "platform",
+      "format": "cube",
+      "position": [0.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [10.0, 0.5, 10.0],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.0,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [0.4, 0.5, 0.6]
+    },
+    {
+      "name": "world",
+      "model": "assets/models/world.glb",
+      "format": "glb",
+      "position": [-15.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1, 1, 1],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "convex_hull",
+      "bounciness": 0.0,
+      "friction": 0.5
+    },
+    {
+      "name": "cutscene_trigger",
+      "format": "cube",
+      "position": [0.0, 2.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.0, 1.0, 1.0],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.0,
+      "tag": "",
+      "scripts": ["cutscene_camera"],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [1.0, 0.0, 0.0],
+      "interactable": true,
+      "interaction_distance": 5.0
+    }
+  ]
+}
