@@ -1,0 +1,139 @@
+{
+  "settings": {
+    "gravity": -9.81
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        50.0,
+        0.1,
+        50.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "color": [
+        0.349,
+        0.349,
+        0.4
+      ]
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        0.63,
+        6.127,
+        10.08
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "color": [
+        0.49,
+        0.48,
+        1.0
+      ]
+    },
+    {
+      "name": "cube_2",
+      "format": "cube",
+      "position": [
+        -1.154,
+        5.953,
+        10.156
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "color": [
+        0.49,
+        0.48,
+        1.0
+      ]
+    },
+    {
+      "name": "cube_3",
+      "format": "cube",
+      "position": [
+        1.03,
+        4.56,
+        10.2
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ]
+    }
+  ]
+}

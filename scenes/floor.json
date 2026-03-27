@@ -1,0 +1,118 @@
+{
+  "settings": {
+    "gravity": -9.81
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        50.0,
+        0.1,
+        50.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [
+        0.337,
+        0.337,
+        0.4
+      ]
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        -1.34,
+        0.5,
+        6.9
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [
+        "example_npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [
+        0.475,
+        0.475,
+        1.0
+      ],
+      "interactable": true,
+      "interaction_distance": 3.0
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        2.53,
+        0.5,
+        10.76
+      ],
+      "rotation": [
+        -0.0,
+        0.001,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [
+        "third_person"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "color": [
+        0.478,
+        0.475,
+        1.0
+      ]
+    }
+  ]
+}

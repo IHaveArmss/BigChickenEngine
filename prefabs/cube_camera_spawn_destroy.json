@@ -1,0 +1,36 @@
+{
+  "name": "cube_1",
+  "format": "cube",
+  "position": [
+    0.68,
+    1.02,
+    10.05
+  ],
+  "rotation": [
+    0.0,
+    -0.0,
+    0.0
+  ],
+  "scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "mass": 1.0,
+  "use_gravity": false,
+  "is_kinematic": true,
+  "collider_type": "box",
+  "bounciness": 0.0,
+  "friction": 0.5,
+  "drag_linear": 0.02,
+  "tag": "",
+  "scripts": [
+    "camera_follow",
+    "spawn_destroy_test"
+  ],
+  "color": [
+    0.486,
+    0.478,
+    1.0
+  ]
+}
