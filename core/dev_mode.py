@@ -56,6 +56,10 @@ class DevMode:
                 print("[DevMode] No model path set for spawning")
                 return -1
             
+            if not model_path.lower().endswith(('.obj', '.glb', '.gltf')):
+                print(f"[DevMode] Invalid model path (no file extension): {model_path}")
+                return -1
+            
             fmt = 'glb' if model_path.endswith(('.glb', '.gltf')) else 'obj'
             entry = {
                 'name': os.path.basename(model_path).rsplit('.', 1)[0],
@@ -236,6 +240,8 @@ class DevMode:
             obj.use_gravity = (values['use_gravity'] == True)
         if 'is_kinematic' in values:
             obj.is_kinematic = (values['is_kinematic'] == True)
+        if 'is_collideable' in values:
+            obj.is_collideable = (values['is_collideable'] == True)
         if 'casts_shadows' in values:
             obj.casts_shadows = (values['casts_shadows'] is True)
         if 'receives_shadows' in values:

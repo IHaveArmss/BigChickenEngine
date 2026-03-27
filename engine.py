@@ -100,6 +100,8 @@ class GraphicsEngine:
         self.editor_ui._current_obj_name = None
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
+        self.editor_ui.refresh_models("assets/models")
+        print(f"[Engine] Editor initialized with {len(self.editor_ui.available_models)} models")
 
     def _record_history_snapshot(self, force=False):
         if self._history_suspend:
@@ -305,6 +307,7 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
         self._record_history_snapshot(force=True)
+        self.editor_ui.refresh_models("assets/models")
 
         self.clock = pygame.time.Clock()
         self.time = 0.0

@@ -272,10 +272,9 @@ class EditorUI:
 
         # Model selection for spawning imported models
         self.available_models = []
-        self.model_dropdown = DropdownSelect(bx, 0, bw, ["(select model)"])
-        self.model_path_input = TextInput(bx, 0, bw - 70, INPUT_HEIGHT, 'path', 'models/')
+        self.model_quick_rects = []
+        self.model_path_input = TextInput(bx, 0, bw - 70, INPUT_HEIGHT, 'path', 'assets/models')
         self.model_spawn_btn = Button(bx + bw - 64, 0, 64, INPUT_HEIGHT, "Spawn")
-        self.model_refresh_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Refresh")
 
         # Placement mode: when user clicks a spawn button, the next viewport
         # click will place the object where the ray hits the floor
@@ -284,6 +283,7 @@ class EditorUI:
 
         # Property inputs (built dynamically)
         self.prop_inputs = {}
+        self.delete_selected_button = Button(bx, 0, bw, BUTTON_HEIGHT, "Delete Selected")
         self._current_obj_name = None
         self._script_confirmation = None
         self.scroll_y = 0
@@ -371,18 +371,20 @@ class EditorUI:
         if not self.global_gravity_input.active:
             self.global_gravity_input.text = f"{gravity:.2f}"
 
-    def refresh_models(self, base_path="models"):
+    def refresh_models(self, base_path="assets/models"):
         """Scan for available model files (.obj, .glb, .gltf)."""
         self.available_models = []
-        if os.path.isdir(base_path):
-            for f in os.listdir(base_path):
+        import os as _os
+        cwd = _os.getcwd()
+        full_path = _os.path.join(cwd, base_path)
+        print(f"[EditorUI] Scanning for models in: {full_path}")
+        if _os.path.isdir(full_path):
+            for f in _os.listdir(full_path):
                 if f.lower().endswith(('.obj', '.glb', '.gltf')):
                     self.available_models.append(f)
+                    print(f"[EditorUI] Found model: {f}")
         self.available_models.sort()
-        if self.available_models:
-            self.model_dropdown.set_items(self.available_models)
-        else:
-            self.model_dropdown.set_items(["(no models found)"])
+        print(f"[EditorUI] Total models: {len(self.available_models)}")
 
     def _draw_labeled_input(self, surface, label, input_field, y):
         bx = self.panel_x + PANEL_PADDING
@@ -615,6 +617,9 @@ class EditorUI:
         self.prop_inputs['is_kinematic'] = {
             'label': 'Anchored', 'value': getattr(obj, 'is_kinematic', True), 'field': 'toggle',
         }
+        self.prop_inputs['is_collideable'] = {
+            'label': 'Collideable', 'value': getattr(obj, 'is_collideable', True), 'field': 'toggle',
+        }
         self.prop_inputs['casts_shadows'] = {
             'label': 'Cast Shdw', 'value': getattr(obj, 'casts_shadows', True), 'field': 'toggle',
         }
@@ -700,6 +705,8 @@ class EditorUI:
                 return {'action': 'save_prefab_selected', 'prefab': self.prefab_name_input.text}
             if self.prefab_spawn_button.check_click(mouse_pos):
                 return {'action': 'spawn_prefab', 'prefab': self.prefab_name_input.text}
+            if self.delete_selected_button.check_click(mouse_pos) and self._current_obj_name:
+                return {'action': 'delete_selected'}
             for rect, scene_path in self.scene_quick_rects:
                 if rect.collidepoint(mouse_pos):
                     return {'action': 'load_scene', 'scene': scene_path}
@@ -756,15 +763,15 @@ class EditorUI:
                 self.section_sun.toggle(mouse_pos)
                 self.section_shadows.toggle(mouse_pos)
 
-            # Model dropdown and buttons
-            self.model_dropdown.handle_event(event)
-            if self.model_refresh_btn.check_click(mouse_pos):
-                base_path = self.model_path_input.text or "models"
-                self.refresh_models(base_path)
+            # Model quick select buttons
+            for rect, model_name in self.model_quick_rects:
+                if rect.collidepoint(mouse_pos):
+                    self.model_path_input.text = "assets/models/" + model_name
+                    return None
+            
             if self.model_spawn_btn.check_click(mouse_pos):
-                selected = self.model_dropdown.selected
-                if selected and selected != "(no models found)" and selected != "(select model)":
-                    model_path = self.model_path_input.text + selected
+                model_path = self.model_path_input.text.strip()
+                if model_path:
                     return {'action': 'spawn_model', 'model': model_path}
 
             # Save As button
@@ -856,7 +863,7 @@ class EditorUI:
         # Prop inputs processing
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Handle toggles
-            for key in ['use_gravity', 'is_kinematic', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
+            for key in ['use_gravity', 'is_kinematic', 'is_collideable', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
                 if key in self.prop_inputs and 'toggle_rect' in self.prop_inputs[key]:
                     if self.prop_inputs[key]['toggle_rect'].collidepoint(mouse_pos):
                         self.prop_inputs[key]['value'] = not self.prop_inputs[key]['value']
@@ -1140,18 +1147,33 @@ class EditorUI:
         self.model_path_input.draw(surface, self.font)
         y += INPUT_HEIGHT + 4
 
-        self.model_refresh_btn.rect = pygame.Rect(bx, y, 70, INPUT_HEIGHT)
-        self.model_refresh_btn.draw(surface, self.font)
-        
-        self.model_dropdown.rect.x = bx + 76
-        self.model_dropdown.rect.width = bw - 76
-        y = self.model_dropdown.draw(surface, self.font, bx + 76, y) - 4
+        # Quick select buttons for models
+        self.model_quick_rects = []
+        if not self.available_models:
+            no_models = self.font.render("No models - create models/ folder", True, (160, 80, 80))
+            surface.blit(no_models, (bx, y))
+            y += 20
+        else:
+            quick_model = self.font.render("Quick Select:", True, (130, 130, 160))
+            surface.blit(quick_model, (bx, y))
+            y += 16
+            for model_name in self.available_models[:6]:
+                m_rect = pygame.Rect(bx, y, bw, 22)
+                hover = m_rect.collidepoint(pygame.mouse.get_pos())
+                bg_c = BUTTON_HOVER if hover else BUTTON_BG
+                pygame.draw.rect(surface, bg_c, m_rect, border_radius=3)
+                pygame.draw.rect(surface, INPUT_BORDER, m_rect, 1, border_radius=3)
+                txt = self.font.render(model_name[:28], True, BUTTON_TEXT[:3])
+                surface.blit(txt, (bx + 6, y + 3))
+                self.model_quick_rects.append((m_rect, model_name))
+                y += 26
+        y += 4
 
         self.model_spawn_btn.rect = pygame.Rect(bx, y, bw, INPUT_HEIGHT)
         self.model_spawn_btn.draw(surface, self.font)
         y += INPUT_HEIGHT + 4
         
-        model_hint = self.font.render("Select or type model path", True, (120, 120, 140))
+        model_hint = self.font.render("Select or type path then click Spawn", True, (120, 120, 140))
         surface.blit(model_hint, (bx, y))
         y += 18
 
@@ -1248,7 +1270,12 @@ class EditorUI:
             y += 24
             y = self._draw_properties(surface, y, bx, bw)
             y += 8
+            
+            self.delete_selected_button.rect = pygame.Rect(bx, y, bw, BUTTON_HEIGHT)
+            self.delete_selected_button.draw(surface, self.font)
+            y += BUTTON_HEIGHT + 8
         else:
+            self.delete_selected_button.rect.y = -100
             section_surf = self.font_bold.render("── Selected Object ──", True, (120, 230, 170))
             surface.blit(section_surf, (bx, y))
             y += 22
@@ -1403,7 +1430,7 @@ class EditorUI:
             y += INPUT_HEIGHT + 10
 
         # Toggle Physics fields side by side
-        tog_keys = ['is_kinematic', 'use_gravity', 'casts_shadows', 'receives_shadows']
+        tog_keys = ['is_kinematic', 'is_collideable', 'use_gravity', 'casts_shadows', 'receives_shadows']
         if all(k in self.prop_inputs for k in tog_keys):
             x = bx
             for key in tog_keys:

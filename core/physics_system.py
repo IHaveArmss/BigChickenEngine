@@ -63,7 +63,8 @@ class PhysicsSystem:
                 getattr(obj, 'bounciness', 0.0),
                 getattr(obj, 'friction', 0.5),
                 getattr(obj, 'drag', 0.02),
-                getattr(obj, 'use_gravity', False))
+                getattr(obj, 'use_gravity', False),
+                getattr(obj, 'is_collideable', True))
 
     def add_object(self, obj):
         """Register a SceneObject into the PyBullet world."""
@@ -111,6 +112,9 @@ class PhysicsSystem:
                          linearDamping=drag,
                          angularDamping=0.05,
                          physicsClientId=self.client_id)
+
+        if not getattr(obj, 'is_collideable', True):
+            p.setCollisionFilterGroupMask(body_id, -1, 0, 0, physicsClientId=self.client_id)
 
         obj.pybullet_body_id = body_id
         self.body_map[obj] = body_id
@@ -177,6 +181,10 @@ class PhysicsSystem:
                                  linearDamping=getattr(obj, 'drag', 0.02),
                                  angularDamping=0.05,
                                  physicsClientId=self.client_id)
+                if getattr(obj, 'is_collideable', True):
+                    p.setCollisionFilterGroupMask(body_id, -1, 1, -1, physicsClientId=self.client_id)
+                else:
+                    p.setCollisionFilterGroupMask(body_id, -1, 0, 0, physicsClientId=self.client_id)
                 self._cached_dynamics[obj] = new_dyn
 
         # --- Fixed-timestep accumulation ---

@@ -48,6 +48,7 @@ class SceneObject:
         self.bounciness = 0.0
         self.friction = 0.5
         self.drag = 0.02
+        self.is_collideable = True
         self._physics_dirty = True
         self.animator = None
         self.anim_state_controller = None
@@ -254,6 +255,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     obj.is_kinematic = entry.get('is_kinematic', True)
     obj.collider_type = entry.get('collider_type', 'box')
     obj.bounciness = entry.get('bounciness', 0.0)
+    obj.is_collideable = entry.get('is_collideable', True)
 
     # Friction: prefer 'friction', fall back to 'drag' for legacy scenes
     if 'friction' in entry:

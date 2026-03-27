@@ -182,6 +182,11 @@ class InputHandler:
                         eng.load_scene(eng.current_scene_file)
                         eng.editor_ui.set_scene_context(eng.current_scene_file, eng.list_scene_files())
                         print(f"[DevMode] Reloaded scene: {eng.current_scene_file}")
+                    elif action['action'] == 'delete_selected':
+                        eng.selected_index = eng.dev_tools.delete_selected(
+                            eng.scene_objects, eng.selected_index,
+                            eng._rebuild_renderables, eng.editor_ui,
+                        )
                     elif action['action'] == 'undo':
                         eng.undo()
                     elif action['action'] == 'redo':
