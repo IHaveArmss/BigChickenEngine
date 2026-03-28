@@ -68,6 +68,9 @@ class PhysicsSystem:
 
     def add_object(self, obj):
         """Register a SceneObject into the PyBullet world."""
+        if not getattr(obj, 'is_collideable', True):
+            return
+            
         is_kinematic = getattr(obj, 'is_kinematic', True)
         mass = 0.0 if is_kinematic else getattr(obj, 'mass', 1.0)
         bounciness = getattr(obj, 'bounciness', 0.0)
@@ -218,6 +221,13 @@ class PhysicsSystem:
         # --- Pre-step: register new objects, handle dirty state, update dynamics ---
         for obj in scene_objects:
             body_id = getattr(obj, 'pybullet_body_id', None)
+            is_collideable = getattr(obj, 'is_collideable', True)
+
+            if not is_collideable:
+                if body_id is not None:
+                    self.remove_object(obj)
+                    obj._physics_dirty = False
+                continue
 
             if body_id is None:
                 self.add_object(obj)

@@ -36,14 +36,24 @@
         0.341,
         0.341,
         0.4
-      ]
+      ],
+      "is_collideable": true
     },
     {
       "name": "AnimationTest",
       "model": "assets/models/walking_test.glb",
       "format": "glb",
-      "position": [0, 0, 0],
-      "scale":  [0.01, 0.01, 0.01]
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "is_collideable": true
     }
   ]
 }

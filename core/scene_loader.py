@@ -44,6 +44,7 @@ class SceneObject:
         
         # Physics Properties
         self.pybullet_body_id = None
+        self.is_collideable = True
         self.mass = 1.0
         self.use_gravity = False
         self.is_kinematic = True
@@ -285,6 +286,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
     obj.mass = entry.get('mass', 1.0)
     obj.use_gravity = entry.get('use_gravity', False)
+    obj.is_collideable = entry.get('is_collideable', True)
     obj.is_kinematic = entry.get('is_kinematic', True)
     obj.collider_type = entry.get('collider_type', 'box')
     obj.bounciness = entry.get('bounciness', 0.0)

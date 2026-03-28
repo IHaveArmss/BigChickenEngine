@@ -6,9 +6,21 @@
     {
       "name": "floor",
       "format": "cube",
-      "position": [0.0, -0.05, 0.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [50.0, 0.1, 50.0],
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        50.0,
+        0.1,
+        50.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -20,14 +32,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": true,
-      "color": [0.25, 0.24, 0.28]
+      "color": [
+        0.25,
+        0.24,
+        0.28
+      ],
+      "is_collideable": true
     },
     {
       "name": "ceiling",
       "format": "cube",
-      "position": [0.0, 3.05, 0.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [24.0, 0.1, 24.0],
+      "position": [
+        0.0,
+        3.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        24.0,
+        0.1,
+        24.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -39,14 +68,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": false,
-      "color": [0.15, 0.14, 0.18]
+      "color": [
+        0.15,
+        0.14,
+        0.18
+      ],
+      "is_collideable": true
     },
     {
       "name": "wall_north",
       "format": "cube",
-      "position": [0.0, 1.5, -12.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [24.0, 3.0, 0.5],
+      "position": [
+        0.0,
+        1.5,
+        -12.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        24.0,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -58,14 +104,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": true,
-      "color": [0.32, 0.30, 0.36]
+      "color": [
+        0.32,
+        0.3,
+        0.36
+      ],
+      "is_collideable": true
     },
     {
       "name": "wall_south",
       "format": "cube",
-      "position": [0.0, 1.5, 12.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [24.0, 3.0, 0.5],
+      "position": [
+        0.0,
+        1.5,
+        12.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        24.0,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -77,14 +140,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": true,
-      "color": [0.32, 0.30, 0.36]
+      "color": [
+        0.32,
+        0.3,
+        0.36
+      ],
+      "is_collideable": true
     },
     {
       "name": "wall_west",
       "format": "cube",
-      "position": [-12.0, 1.5, 0.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 24.0],
+      "position": [
+        -12.0,
+        1.5,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        24.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -96,14 +176,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": true,
-      "color": [0.32, 0.30, 0.36]
+      "color": [
+        0.32,
+        0.3,
+        0.36
+      ],
+      "is_collideable": true
     },
     {
       "name": "wall_east",
       "format": "cube",
-      "position": [12.0, 1.5, 0.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 24.0],
+      "position": [
+        12.0,
+        1.5,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        24.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -115,14 +212,31 @@
       "scripts": [],
       "casts_shadows": false,
       "receives_shadows": true,
-      "color": [0.32, 0.30, 0.36]
+      "color": [
+        0.32,
+        0.3,
+        0.36
+      ],
+      "is_collideable": true
     },
     {
       "name": "divider_n",
       "format": "cube",
-      "position": [0.0, 1.5, -3.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 6.0],
+      "position": [
+        0.0,
+        1.5,
+        -3.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        6.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -134,14 +248,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "divider_s",
       "format": "cube",
-      "position": [3.0, 1.5, 5.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 6.0],
+      "position": [
+        3.0,
+        1.5,
+        5.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        6.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -153,14 +284,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "cross_w",
       "format": "cube",
-      "position": [-5.5, 1.5, 2.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [5.0, 3.0, 0.5],
+      "position": [
+        -5.5,
+        1.5,
+        2.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        5.0,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -172,14 +320,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "cross_e",
       "format": "cube",
-      "position": [7.5, 1.5, 2.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [4.5, 3.0, 0.5],
+      "position": [
+        7.5,
+        1.5,
+        2.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        4.5,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -191,14 +356,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "alcove_nw_e",
       "format": "cube",
-      "position": [-4.0, 1.5, -6.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 5.0],
+      "position": [
+        -4.0,
+        1.5,
+        -6.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        5.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -210,14 +392,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "alcove_nw_s",
       "format": "cube",
-      "position": [-7.75, 1.5, -4.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [7.5, 3.0, 0.5],
+      "position": [
+        -7.75,
+        1.5,
+        -4.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        7.5,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -229,14 +428,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "alcove_se_w",
       "format": "cube",
-      "position": [6.5, 1.5, 7.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.5, 3.0, 4.5],
+      "position": [
+        6.5,
+        1.5,
+        7.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        3.0,
+        4.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -248,14 +464,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "alcove_se_n",
       "format": "cube",
-      "position": [9.25, 1.5, 5.25],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [5.5, 3.0, 0.5],
+      "position": [
+        9.25,
+        1.5,
+        5.25
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        5.5,
+        3.0,
+        0.5
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -267,14 +500,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.30, 0.28, 0.34]
+      "color": [
+        0.3,
+        0.28,
+        0.34
+      ],
+      "is_collideable": true
     },
     {
       "name": "pillar_nw",
       "format": "cube",
-      "position": [-5.5, 1.5, -4.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.6, 3.0, 0.6],
+      "position": [
+        -5.5,
+        1.5,
+        -4.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.6,
+        3.0,
+        0.6
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -286,14 +536,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.42, 0.40, 0.50]
+      "color": [
+        0.42,
+        0.4,
+        0.5
+      ],
+      "is_collideable": true
     },
     {
       "name": "pillar_ne",
       "format": "cube",
-      "position": [5.5, 1.5, -4.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.6, 3.0, 0.6],
+      "position": [
+        5.5,
+        1.5,
+        -4.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.6,
+        3.0,
+        0.6
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -305,14 +572,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.42, 0.40, 0.50]
+      "color": [
+        0.42,
+        0.4,
+        0.5
+      ],
+      "is_collideable": true
     },
     {
       "name": "pillar_sw",
       "format": "cube",
-      "position": [-5.5, 1.5, 5.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.6, 3.0, 0.6],
+      "position": [
+        -5.5,
+        1.5,
+        5.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.6,
+        3.0,
+        0.6
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -324,14 +608,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.42, 0.40, 0.50]
+      "color": [
+        0.42,
+        0.4,
+        0.5
+      ],
+      "is_collideable": true
     },
     {
       "name": "pillar_se",
       "format": "cube",
-      "position": [5.5, 1.5, 5.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [0.6, 3.0, 0.6],
+      "position": [
+        5.5,
+        1.5,
+        5.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.6,
+        3.0,
+        0.6
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -343,14 +644,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.42, 0.40, 0.50]
+      "color": [
+        0.42,
+        0.4,
+        0.5
+      ],
+      "is_collideable": true
     },
     {
       "name": "crate_a",
       "format": "cube",
-      "position": [-8.5, 0.5, 6.5],
-      "rotation": [0.0, 15.0, 0.0],
-      "scale": [1.0, 1.0, 1.0],
+      "position": [
+        -8.5,
+        0.5,
+        6.5
+      ],
+      "rotation": [
+        0.0,
+        15.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
       "mass": 5.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -362,14 +680,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.50, 0.38, 0.20]
+      "color": [
+        0.5,
+        0.38,
+        0.2
+      ],
+      "is_collideable": true
     },
     {
       "name": "crate_b",
       "format": "cube",
-      "position": [-7.3, 1.5, 6.8],
-      "rotation": [0.0, -8.0, 0.0],
-      "scale": [1.0, 1.0, 1.0],
+      "position": [
+        -7.3,
+        1.5,
+        6.8
+      ],
+      "rotation": [
+        0.0,
+        -8.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
       "mass": 5.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -381,14 +716,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.45, 0.34, 0.18]
+      "color": [
+        0.45,
+        0.34,
+        0.18
+      ],
+      "is_collideable": true
     },
     {
       "name": "crate_c",
       "format": "cube",
-      "position": [8.5, 0.5, -8.0],
-      "rotation": [0.0, 30.0, 0.0],
-      "scale": [0.8, 0.8, 0.8],
+      "position": [
+        8.5,
+        0.5,
+        -8.0
+      ],
+      "rotation": [
+        0.0,
+        30.0,
+        0.0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
       "mass": 3.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -400,14 +752,31 @@
       "scripts": [],
       "casts_shadows": true,
       "receives_shadows": true,
-      "color": [0.50, 0.38, 0.20]
+      "color": [
+        0.5,
+        0.38,
+        0.2
+      ],
+      "is_collideable": true
     },
     {
       "name": "light_entrance",
       "format": "light",
-      "position": [0.0, 2.5, 9.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [1.0, 1.0, 1.0],
+      "position": [
+        0.0,
+        2.5,
+        9.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -418,15 +787,32 @@
       "tag": "",
       "scripts": [],
       "intensity": 0.6,
-      "color": [0.4, 0.5, 0.7],
-      "light_casts_shadows": true
+      "color": [
+        0.4,
+        0.5,
+        0.7
+      ],
+      "light_casts_shadows": true,
+      "is_collideable": true
     },
     {
       "name": "light_alcove_nw",
       "format": "light",
-      "position": [-8.5, 2.2, -8.5],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [1.0, 1.0, 1.0],
+      "position": [
+        -8.5,
+        2.2,
+        -8.5
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -437,15 +823,32 @@
       "tag": "",
       "scripts": [],
       "intensity": 0.5,
-      "color": [0.4, 0.25, 0.6],
-      "light_casts_shadows": false
+      "color": [
+        0.4,
+        0.25,
+        0.6
+      ],
+      "light_casts_shadows": false,
+      "is_collideable": true
     },
     {
       "name": "light_alcove_se",
       "format": "light",
-      "position": [9.5, 2.2, 9.0],
-      "rotation": [0.0, 0.0, 0.0],
-      "scale": [1.0, 1.0, 1.0],
+      "position": [
+        9.5,
+        2.2,
+        9.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
@@ -456,8 +859,13 @@
       "tag": "",
       "scripts": [],
       "intensity": 0.5,
-      "color": [0.7, 0.2, 0.15],
-      "light_casts_shadows": false
+      "color": [
+        0.7,
+        0.2,
+        0.15
+      ],
+      "light_casts_shadows": false,
+      "is_collideable": true
     }
   ]
 }

@@ -275,6 +275,8 @@ class DevMode:
             
         if 'use_gravity' in values:
             obj.use_gravity = (values['use_gravity'] == True)
+        if 'is_collideable' in values:
+            obj.is_collideable = (values['is_collideable'] == True)
         if 'is_kinematic' in values:
             obj.is_kinematic = (values['is_kinematic'] == True)
         if 'casts_shadows' in values:
