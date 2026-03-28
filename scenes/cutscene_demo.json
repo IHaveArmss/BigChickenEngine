@@ -2,9 +2,9 @@
   "settings": {
     "gravity": -9.81,
     "sun_intensity": 1.0,
-    "sun_azimuth_deg": 45.0,
+    "sun_azimuth_deg": 140.0,
     "sun_elevation_deg": -55.0,
-    "ambient_strength": 0.15,
+    "ambient_strength": 0.3,
     "ambient_color_r": 1.0,
     "ambient_color_g": 1.0,
     "ambient_color_b": 1.0,
