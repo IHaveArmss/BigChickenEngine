@@ -83,6 +83,9 @@ class Mesh:
 
         lights: list of (position, color) tuples — each a glm.vec3 pair.
         """
+        prog = self.program  # local ref avoids repeated attribute lookups
+        _set = self._set_uniform
+
         model = self.transform.model_matrix()
         if hasattr(self, 'visual_offset') and glm.length(self.visual_offset) > 1e-6:
             model = model * glm.translate(glm.mat4(1.0), self.visual_offset)
@@ -91,76 +94,79 @@ class Mesh:
         aspect = self.ctx.screen.width / self.ctx.screen.height
         proj = camera.projection_matrix(aspect)
 
-        self._set_uniform('u_model', model)
-        self._set_uniform('u_view', view)
-        self._set_uniform('u_projection', proj)
+        _set('u_model', model)
+        _set('u_view', view)
+        _set('u_projection', proj)
 
         model_3x3 = glm.mat3(model)
         normal_matrix = glm.transpose(glm.inverse(model_3x3))
         nm_list = [normal_matrix[0][0], normal_matrix[0][1], normal_matrix[0][2],
                    normal_matrix[1][0], normal_matrix[1][1], normal_matrix[1][2],
                    normal_matrix[2][0], normal_matrix[2][1], normal_matrix[2][2]]
-        self._set_uniform('u_normal_matrix', nm_list)
+        _set('u_normal_matrix', nm_list)
 
         # Multi-light uniforms — moderngl requires setting ALL array
         # elements at once, so we pad unused slots with zeros
         MAX_LIGHTS = 8
+        _ZERO3 = (0.0, 0.0, 0.0)
         if lights:
             num = min(len(lights), MAX_LIGHTS)
-            self._set_uniform('u_num_lights', num)
+            _set('u_num_lights', num)
             pos_values = [(lp.x, lp.y, lp.z) for lp, lc in lights[:num]]
             col_values = [(lc.x, lc.y, lc.z) for lp, lc in lights[:num]]
             # Pad to full array length
-            pos_values += [(0.0, 0.0, 0.0)] * (MAX_LIGHTS - num)
-            col_values += [(0.0, 0.0, 0.0)] * (MAX_LIGHTS - num)
-            if 'u_light_pos' in self.program:
-                self.program['u_light_pos'].value = pos_values
-            if 'u_light_color' in self.program:
-                self.program['u_light_color'].value = col_values
+            pad = MAX_LIGHTS - num
+            if pad > 0:
+                pos_values += [_ZERO3] * pad
+                col_values += [_ZERO3] * pad
+            if 'u_light_pos' in prog:
+                prog['u_light_pos'].value = pos_values
+            if 'u_light_color' in prog:
+                prog['u_light_color'].value = col_values
         else:
-            self._set_uniform('u_num_lights', 0)
+            _set('u_num_lights', 0)
 
         if object_color is not None:
-            self._set_uniform('u_object_color', object_color)
+            _set('u_object_color', object_color)
 
-        self._set_uniform('u_view_pos', camera.position)
-        self._set_uniform('u_alpha', self.alpha)
+        _set('u_view_pos', camera.position)
+        _set('u_alpha', self.alpha)
 
         # Default: no texture (subclasses like ModelMesh override this)
-        self._set_uniform('u_use_texture', False)
+        _set('u_use_texture', False)
 
         # Optional retro/PS2 settings (silently ignored by shaders that don't use them)
         rs = render_settings
         if rs is not None:
-            self._set_uniform('u_ps2_enabled', bool(getattr(rs, 'ps2_enabled', False)))
-            self._set_uniform('u_lighting_ramp_enabled', bool(getattr(rs, 'lighting_ramp_enabled', True)))
-            self._set_uniform('u_lighting_ramp_steps', int(max(1, getattr(rs, 'lighting_ramp_steps', 4))))
-            self._set_uniform('u_specular_banding_enabled', bool(getattr(rs, 'specular_banding_enabled', False)))
-            self._set_uniform('u_specular_steps', int(max(1, getattr(rs, 'specular_steps', 3))))
-            self._set_uniform('u_wobble_enabled', bool(getattr(rs, 'wobble_enabled', False)))
-            self._set_uniform('u_wobble_pixel_size', int(max(1, getattr(rs, 'wobble_pixel_size', 2))))
+            _set('u_ps2_enabled', bool(getattr(rs, 'ps2_enabled', False)))
+            _set('u_lighting_ramp_enabled', bool(getattr(rs, 'lighting_ramp_enabled', True)))
+            _set('u_lighting_ramp_steps', int(max(1, getattr(rs, 'lighting_ramp_steps', 4))))
+            _set('u_specular_banding_enabled', bool(getattr(rs, 'specular_banding_enabled', False)))
+            _set('u_specular_steps', int(max(1, getattr(rs, 'specular_steps', 3))))
+            _set('u_wobble_enabled', bool(getattr(rs, 'wobble_enabled', False)))
+            _set('u_wobble_pixel_size', int(max(1, getattr(rs, 'wobble_pixel_size', 2))))
 
         if viewport is not None:
-            if 'u_viewport' in self.program:
-                self.program['u_viewport'].value = (float(viewport[0]), float(viewport[1]))
+            if 'u_viewport' in prog:
+                prog['u_viewport'].value = (float(viewport[0]), float(viewport[1]))
         if dir_light_vp is not None:
-            self._set_uniform('u_dir_light_vp', dir_light_vp)
-        self._set_uniform('u_receives_shadows', bool(receives_shadows))
+            _set('u_dir_light_vp', dir_light_vp)
+        _set('u_receives_shadows', bool(receives_shadows))
 
         if rs is not None:
-            self._set_uniform('u_directional_shadows_enabled', bool(getattr(rs, 'directional_shadows_enabled', False)))
-            self._set_uniform('u_shadow_bias', float(getattr(rs, 'shadow_bias', 0.0015)))
+            _set('u_directional_shadows_enabled', bool(getattr(rs, 'directional_shadows_enabled', False)))
+            _set('u_shadow_bias', float(getattr(rs, 'shadow_bias', 0.0015)))
             ambient = glm.vec3(
                 float(getattr(rs, 'ambient_color_r', 1.0)),
                 float(getattr(rs, 'ambient_color_g', 1.0)),
                 float(getattr(rs, 'ambient_color_b', 1.0)),
             )
-            self._set_uniform('u_ambient_color', ambient)
-            self._set_uniform('u_ambient_strength', float(getattr(rs, 'ambient_strength', 0.15)))
+            _set('u_ambient_color', ambient)
+            _set('u_ambient_strength', float(getattr(rs, 'ambient_strength', 0.15)))
 
-        self._set_uniform('u_highlight_strength', float(highlight_strength))
+        _set('u_highlight_strength', float(highlight_strength))
         color = highlight_color if highlight_color is not None else (1.0, 0.85, 0.2)
-        self._set_uniform('u_highlight_color', glm.vec3(*color))
+        _set('u_highlight_color', glm.vec3(*color))
 
     def _set_uniform(self, name, value):
         """Safely set a uniform — silently skip if it doesn't exist in the program."""

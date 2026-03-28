@@ -147,7 +147,7 @@ class SceneObject:
             m.alpha = self._alpha
 
 
-def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
+def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_manager=None):
     """Create a single SceneObject from a dict (used by load_scene, spawn, and prefabs).
     Returns the SceneObject or None if the model is missing."""
     from core.sprite_mesh import SpriteMesh
@@ -229,10 +229,13 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
             print(f"[SceneLoader] WARNING: model not found: {model_path}")
             return None
 
-        if fmt in ('glb', 'gltf'):
-            mesh_datas = load_gltf(model_path)
+        if resource_manager:
+            mesh_datas = resource_manager.get_model_data(model_path, fmt)
         else:
-            mesh_datas = load_obj(model_path)
+            if fmt in ('glb', 'gltf'):
+                mesh_datas = load_gltf(model_path)
+            else:
+                mesh_datas = load_obj(model_path)
 
         meshes = []
         skeleton_data = None
@@ -272,18 +275,55 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
             # PERMANENT FALLBACK: If no animation source is provided, use Cata's defaults
             if not anim_src and 'catahobov1.glb' in model_path.lower():
-                anim_src = 'assets/animations/cata_anims.glb'
+                anim_src = [
+                    'assets/animations/player/Idle.glb', 
+                    'assets/animations/player/Running.glb',
+                    'assets/animations/player/Jump.glb',
+                    'assets/animations/player/Falling.glb',
+                    'assets/animations/playerGun/pistol_Idle.glb',
+                    'assets/animations/playerGun/pistol_run.glb',
+                    'assets/animations/playerGun/pistol_jump.glb'
+                ]
 
             if anim_src:
-                if os.path.exists(anim_src):
-                    external_mesh_datas = load_gltf(anim_src)
-                    if external_mesh_datas:
-                        for emd in external_mesh_datas:
-                            if emd.get('has_skin'):
-                                animator.rebind_clips(emd.get('animations'), emd.get('skeleton'))
-                                break
+                # Support single string or list of strings
+                if isinstance(anim_src, str):
+                    sources = [anim_src]
                 else:
-                    print(f"[SceneLoader] WARNING: animation_source file not found: {anim_src}")
+                    sources = anim_src
+
+                for src in sources:
+                    if os.path.exists(src):
+                        # Extract basename as a potential clip name (e.g. Idle.glb -> Idle)
+                        base_name = os.path.splitext(os.path.basename(src))[0]
+                        
+                        external_mesh_datas = load_gltf(src)
+                        if external_mesh_datas:
+                            for emd in external_mesh_datas:
+                                if emd.get('has_skin'):
+                                    # Use cached data if available via the resource manager
+                                    anim_data = emd.get('animations')
+                                    if resource_manager:
+                                        ext_data = resource_manager.get_model_data(src, 'glb')
+                                        if ext_data:
+                                            for ed in ext_data:
+                                                if ed.get('has_skin'):
+                                                    anim_data = ed.get('animations')
+                                                    break
+                                    
+                                    # SMART RENAME: If there's only 1 animation, rename it to the file's name
+                                    # This prevents conflicts between files, regardless of what the modeling software exported it as.
+                                    if len(anim_data) == 1:
+                                        original_name = list(anim_data.keys())[0]
+                                        print(f"[SceneLoader] Found 1 animation '{original_name}' in {base_name}.glb, renaming to '{base_name}'")
+                                        clip = anim_data.pop(original_name)
+                                        clip.name = base_name
+                                        anim_data[base_name] = clip
+                                    
+                                    animator.rebind_clips(anim_data, emd.get('skeleton'))
+                                    break
+                    else:
+                        print(f"[SceneLoader] WARNING: animation_source file not found: {src}")
 
             # Optional auto state-machine controller for character-like animation.
             cfg = entry.get('anim_state', {})
@@ -312,9 +352,9 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                 obj.anim_state_controller = AnimationStateController(
                     animator,
                     idle_clip='Idle',
-                    run_clip='Run',
-                    jump_clip='jump',
-                    fall_clip='fall',
+                    run_clip='Running',
+                    jump_clip='Jump',
+                    fall_clip='Falling',
                     move_threshold=0.1,
                     vertical_threshold=0.15
                 )
@@ -378,7 +418,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     if visual_offset is None:
         model_path = entry.get('model', '').lower()
         if 'catahobov1.glb' in model_path:
-            visual_offset = [0, -0.36, 0]
+            visual_offset = [0, -0.39, 0]
         else:
             visual_offset = [0, 0, 0]
 
@@ -386,10 +426,30 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
         if hasattr(m, 'visual_offset'):
             m.visual_offset = glm.vec3(*visual_offset)
 
+    obj.interactable = entry.get('interactable', False)
+    obj.use_view_interaction = entry.get('use_view_interaction', False)
+    obj.interaction_distance = entry.get('interaction_distance', 5.0)
+
+    obj.interactable = entry.get('interactable', False)
+    obj.use_view_interaction = entry.get('use_view_interaction', False)
+    obj.interaction_distance = entry.get('interaction_distance', 5.0)
+
+    # Pass all other generic properties to the object so scripts can access them
+    standard_keys = {
+        'name', 'format', 'position', 'rotation', 'scale', 'mass', 'use_gravity',
+        'is_collideable', 'is_kinematic', 'collider_type', 'bounciness', 'friction',
+        'drag_linear', 'tag', 'scripts', 'casts_shadows', 'receives_shadows', 'is_trigger',
+        'dialogue_data', 'color', 'model', 'animation_source', 'use_anim_state_controller',
+        'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha'
+    }
+    for key, value in entry.items():
+        if key not in standard_keys:
+            setattr(obj, key, value)
+
     return obj
 
 
-def load_scene(scene_path, ctx, texture_loader):
+def load_scene(scene_path, ctx, texture_loader, resource_manager=None):
     """Load a scene JSON file. Returns (scene_objects, all_meshes, settings)."""
     with open(scene_path, 'r') as f:
         data = json.load(f)
@@ -399,7 +459,7 @@ def load_scene(scene_path, ctx, texture_loader):
     all_meshes = []
 
     for entry in data.get('objects', []):
-        obj = spawn_from_entry(entry, ctx, texture_loader)
+        obj = spawn_from_entry(entry, ctx, texture_loader, resource_manager=resource_manager)
         if obj is None:
             continue
         all_meshes.extend(obj.meshes)

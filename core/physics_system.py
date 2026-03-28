@@ -329,25 +329,24 @@ class PhysicsSystem:
         num_steps = min(int(self._time_accumulator / FIXED_TIMESTEP), MAX_SUBSTEPS)
         self._time_accumulator -= num_steps * FIXED_TIMESTEP
 
-        # Apply per-body properties before stepping
-        for obj in scene_objects:
-            body_ids = getattr(obj, 'pybullet_body_ids', [getattr(obj, 'pybullet_body_id', None)])
-            if not body_ids or body_ids[0] is None:
-                continue
-
-            if getattr(obj, 'is_kinematic', True):
-                continue
-
-            # Apply forces/gravity to all chunks of the object
-            use_grav = getattr(obj, 'use_gravity', False)
-            mass = getattr(obj, 'mass', 1.0)
-            
-            if not use_grav and mass > 0:
-                for bid in body_ids:
-                    p.applyExternalForce(bid, -1,
-                                         [0, -self.gravity * mass, 0],
-                                         [0, 0, 0], p.WORLD_FRAME,
-                                         physicsClientId=self.client_id)
+        # Apply per-body forces before stepping (merged into one pass to reduce iterations)
+        if num_steps > 0:
+            grav = self.gravity
+            cid = self.client_id
+            for obj in scene_objects:
+                body_id = getattr(obj, 'pybullet_body_id', None)
+                if body_id is None:
+                    continue
+                if getattr(obj, 'is_kinematic', True):
+                    continue
+                use_grav = getattr(obj, 'use_gravity', False)
+                mass = getattr(obj, 'mass', 1.0)
+                if not use_grav and mass > 0:
+                    body_ids = getattr(obj, 'pybullet_body_ids', [body_id])
+                    anti_grav = [0, -grav * mass, 0]
+                    for bid in body_ids:
+                        p.applyExternalForce(bid, -1, anti_grav, [0, 0, 0], p.WORLD_FRAME,
+                                             physicsClientId=cid)
 
         for _ in range(num_steps):
             p.stepSimulation(physicsClientId=self.client_id)

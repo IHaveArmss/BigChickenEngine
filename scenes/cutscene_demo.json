@@ -7,13 +7,13 @@
       "name": "player",
       "format": "glb",
       "position": [
-        31.49,
-        6.33,
-        -18.25
+        27.32,
+        5.86,
+        -23.68
       ],
       "rotation": [
-        -5.9,
-        -89.98,
+        0.0,
+        -90.0,
         0.0
       ],
       "scale": [
@@ -42,9 +42,9 @@
       "use_anim_state_controller": true,
       "anim_state": {
         "idle": "Idle",
-        "run": "Run",
-        "jump": "jump",
-        "fall": "fall",
+        "run": "Running",
+        "jump": "Jump",
+        "fall": "Falling",
         "move_threshold": 0.1,
         "vertical_threshold": 0.15
       }
@@ -121,7 +121,7 @@
       "dialogue_data": null,
       "color": [
         0.4,
-        0.494,
+        0.49,
         0.6
       ]
     },
@@ -247,9 +247,9 @@
       "name": "Trigger_EI",
       "format": "cube",
       "position": [
-        -7.11,
+        -1.93,
         6.88,
-        30.0
+        3.98
       ],
       "rotation": [
         0.0,
@@ -257,9 +257,9 @@
         0.0
       ],
       "scale": [
-        13.319,
-        6.668,
-        1.622
+        54.314,
+        10.508,
+        1.061
       ],
       "mass": 0.0,
       "use_gravity": false,
@@ -396,6 +396,53 @@
       "dialogue_data": null,
       "model": "assets/models/low-poly_brick_wall.glb",
       "folder": "alleyIncident"
+    },
+    {
+      "name": "pizza_door",
+      "format": "cube",
+      "position": [
+        -18.42,
+        6.72,
+        -25.6
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        2.771,
+        4.72,
+        0.217
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "interactable",
+      "scripts": [
+        "scene_trigger"
+      ],
+      "scene_path": "scenes/pizza.json",
+      "target_position": [5.04, 1.99, 1.28],
+      "target_rotation": [0.0, -90.0, 0.0],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.8,
+        0.69
+      ],
+      "alpha": 0.1,
+      "interactable": true,
+      "use_view_interaction": true,
+      "interaction_distance": 5.0
     }
   ]
 }

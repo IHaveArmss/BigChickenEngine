@@ -86,15 +86,19 @@ class Animator:
         self.speed = 1.0
 
         n = min(skeleton.num_joints, MAX_BONES)
+        self._num_active_bones = n
         self._bone_matrices = [glm.mat4(1.0)] * n
+
+        # Pre-allocate world matrix list (reused every frame to avoid GC pressure)
+        self._world_matrices = [glm.mat4(1.0)] * n
 
         # Always keep a full MAX_BONES-sized buffer so model_mesh never has to
         # pad or mutate it.  Unused slots are pre-filled with identity matrices
         # so zero-influence vertices skin correctly even before the first update.
-        identity_bytes = glm.mat4(1.0).to_bytes()
+        _IDENTITY_BYTES = glm.mat4(1.0).to_bytes()
         self._bone_bytes = bytearray(MAX_BONES * 64)
         for i in range(MAX_BONES):
-            self._bone_bytes[i * 64:(i + 1) * 64] = identity_bytes
+            self._bone_bytes[i * 64:(i + 1) * 64] = _IDENTITY_BYTES
 
         self._root_world = glm.mat4(1.0)  # world matrix of bone 0, updated each frame
 
@@ -112,8 +116,17 @@ class Animator:
     def is_playing(self):
         return self.playing
 
+    def _get_clip(self, name):
+        if name in self.animations:
+            return self.animations[name]
+        # Case-insensitive fallback
+        for k, v in self.animations.items():
+            if k.lower() == name.lower():
+                return v
+        return None
+
     def play(self, name, loop=True, speed=1.0):
-        clip = self.animations.get(name)
+        clip = self._get_clip(name)
         if clip is None:
             print(f"[Animator] WARNING: clip '{name}' not found. Available: {self.clip_names}")
             return
@@ -125,7 +138,7 @@ class Animator:
         self.speed = speed
 
     def crossfade(self, name, duration=0.3, loop=True, speed=1.0):
-        clip = self.animations.get(name)
+        clip = self._get_clip(name)
         if clip is None:
             print(f"[Animator] WARNING: clip '{name}' not found.")
             return
@@ -186,11 +199,12 @@ class Animator:
             self.playing = False
 
         skel = self.skeleton
-        n = min(skel.num_joints, MAX_BONES)
+        n = self._num_active_bones
 
-        t_a = list(skel.bind_translations)
-        r_a = list(skel.bind_rotations)
-        s_a = list(skel.bind_scales)
+        # Slice-copy is faster than list() for small lists of glm objects
+        t_a = skel.bind_translations[:]
+        r_a = skel.bind_rotations[:]
+        s_a = skel.bind_scales[:]
         _apply_clip(clip, self.time, t_a, r_a, s_a)
 
         if self._blend_clip is not None:
@@ -205,9 +219,9 @@ class Animator:
                 if prev.duration > 0:
                     self._blend_time = self._blend_time % prev.duration
 
-                t_b = list(skel.bind_translations)
-                r_b = list(skel.bind_rotations)
-                s_b = list(skel.bind_scales)
+                t_b = skel.bind_translations[:]
+                r_b = skel.bind_rotations[:]
+                s_b = skel.bind_scales[:]
                 _apply_clip(prev, self._blend_time, t_b, r_b, s_b)
 
                 for i in range(n):
@@ -215,20 +229,35 @@ class Animator:
                     r_a[i] = glm.slerp(r_b[i], r_a[i], blend_factor)
                     s_a[i] = glm.mix(s_b[i], s_a[i], blend_factor)
 
-        world = [glm.mat4(1.0)] * n
+        # Hardcode fix: Mixamo / Blender animations often apply a 90-degree 
+        # rotation to the armature root bone, throwing the character on their back.
+        # They also often mess up the height (Z vs Y).
+        # Discarding the clip's rotation AND translation for bone 0 forces him to stay upright and at the correct level.
+        if n > 0:
+            r_a[0] = skel.bind_rotations[0]
+            t_a[0] = skel.bind_translations[0]
+
+        # Reuse pre-allocated world matrix list instead of creating a new one
+        world = self._world_matrices
+        bone_mats = self._bone_matrices
+        inv_binds = skel.inverse_bind_matrices
+        parents = skel.parent_indices
+        buf = self._bone_bytes
+
         for i in range(n):
             local = (glm.translate(glm.mat4(1.0), t_a[i])
                      * glm.mat4_cast(r_a[i])
                      * glm.scale(glm.mat4(1.0), s_a[i]))
-            parent = skel.parent_indices[i]
-            world[i] = (world[parent] * local) if 0 <= parent < n else local
-            self._bone_matrices[i] = world[i] * skel.inverse_bind_matrices[i]
+            parent = parents[i]
+            w = (world[parent] * local) if 0 <= parent < n else local
+            world[i] = w
+            m = w * inv_binds[i]
+            bone_mats[i] = m
+            # Write directly into the byte buffer (avoids a second loop)
+            buf[i * 64:(i + 1) * 64] = m.to_bytes()
 
         if n > 0:
             self._root_world = world[0]
-
-        for i, m in enumerate(self._bone_matrices):
-            self._bone_bytes[i * 64:(i + 1) * 64] = m.to_bytes()
 
     @property
     def bone_bytes(self):

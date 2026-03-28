@@ -40,7 +40,13 @@ class ThirdPerson:
         self.cam_collision_smoothness = 10.0  # speed for camera distance smoothing
 
         # Camera angles (degrees)
-        self.cam_yaw   = 0.0             # 0 = behind the player (-Z in world)
+        # Initialize from the entity's actual spawn rotation so scene transitions work
+        start_rot = getattr(self.entity, 'rotation_euler', None)
+        if start_rot:
+            self.cam_yaw = start_rot.y - 180.0
+        else:
+            self.cam_yaw = 0.0
+            
         self.cam_pitch = 15.0            # slight downward look
 
         # Register this entity as the player for interaction detection
@@ -130,15 +136,7 @@ class ThirdPerson:
                 pos.y += step
             self.entity.position = pos
 
-    # ------------------------------------------------------------------ #
-    # update — runs once per frame (camera)                              #
-    # ------------------------------------------------------------------ #
     def update(self, dt):
-        # DialogueManager controls the camera during dialogue
-        if self.engine.dialogue.active:
-            pygame.mouse.get_rel()  # drain stale mouse delta
-            return
-
         # -------- mouse input → orbit angles --------
         rel_x, rel_y = pygame.mouse.get_rel()
         self.cam_yaw   -= rel_x * self.sensitivity
@@ -146,7 +144,13 @@ class ThirdPerson:
         self.cam_pitch  = max(-60.0, min(75.0, self.cam_pitch))
 
         # -------- player always faces away from camera --------
+        # Move this ABOVE the dialogue check so the player pivots to face
+        # the look-direction even during conversations.
         self.entity.set_rotation_euler(0.0, self.cam_yaw + 180.0, 0.0)
+
+        # DialogueManager controls the camera during dialogue
+        if self.engine.dialogue.active:
+            return
 
         # -------- ideal camera position (spherical offset) --------
         rad_yaw   = glm.radians(self.cam_yaw)
