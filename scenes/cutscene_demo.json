@@ -10,7 +10,7 @@
     "ambient_color_b": 1.0,
     "directional_shadows_enabled": true,
     "directional_shadow_distance": 40.0,
-    "skybox_path": ""
+    "skybox_path": "assets/sky.png"
   },
   "objects": [
     {
