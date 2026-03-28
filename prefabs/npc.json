@@ -1,0 +1,36 @@
+{
+  "name": "NPC_Guardian",
+  "format": "cube",
+  "position": [
+    0.0,
+    1.0,
+    0.0
+  ],
+  "rotation": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "scale": [
+    1.0,
+    2.0,
+    1.0
+  ],
+  "mass": 1.0,
+  "use_gravity": true,
+  "is_kinematic": false,
+  "is_trigger": false,
+  "collider_type": "box",
+  "tag": "npc",
+  "interactable": true,
+  "interaction_distance": 4.0,
+  "scripts": [
+    "npc"
+  ],
+  "color": [
+    0.9,
+    0.4,
+    0.8
+  ],
+  "dialogue_data": null
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Interactable_Button",
+  "format": "cube",
+  "position": [
+    0.0,
+    1.0,
+    0.0
+  ],
+  "rotation": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "scale": [
+    0.4,
+    0.4,
+    0.4
+  ],
+  "mass": 0.0,
+  "use_gravity": false,
+  "is_kinematic": true,
+  "is_trigger": true,
+  "collider_type": "box",
+  "bounciness": 0.0,
+  "friction": 0.5,
+  "drag_linear": 0.02,
+  "tag": "interactable",
+  "interactable": true,
+  "interaction_distance": 3.0,
+  "scripts": [
+    "interactable_button"
+  ],
+  "color": [
+    0.2,
+    0.8,
+    0.7
+  ],
+  "casts_shadows": true,
+  "receives_shadows": true
+}

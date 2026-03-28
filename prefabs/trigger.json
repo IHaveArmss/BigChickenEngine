@@ -1,0 +1,37 @@
+{
+  "name": "Trigger_Entity",
+  "format": "cube",
+  "position": [
+    0.0,
+    0.5,
+    0.0
+  ],
+  "rotation": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "scale": [
+    2.0,
+    2.0,
+    2.0
+  ],
+  "mass": 0.0,
+  "use_gravity": false,
+  "is_kinematic": true,
+  "is_trigger": true,
+  "collider_type": "box",
+  "bounciness": 0.0,
+  "friction": 0.0,
+  "drag_linear": 0.0,
+  "alpha": 0.4,
+  "tag": "trigger",
+  "scripts": [
+    "trigger"
+  ],
+  "color": [
+    0.8,
+    0.2,
+    1.0
+  ]
+}

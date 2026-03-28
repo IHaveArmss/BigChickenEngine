@@ -259,6 +259,8 @@ class InputHandler:
                                 eng.editor_ui.cutscene_can_player_move = eng.cutscenes.can_player_move
                                 eng.editor_ui.cutscene_is_looping = eng.cutscenes.is_looping
                                 eng.editor_ui.cutscene_speed_input.text = str(eng.cutscenes.playback_speed)
+                    elif action['action'] == 'refresh_ui':
+                        eng.editor_ui._current_obj_name = None
                     elif action['action'] == 'spawn_sprite':
                         sprite_path = (action.get('path') or '').strip()
                         sprite_name = (action.get('name') or 'sprite').strip()
