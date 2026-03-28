@@ -16,7 +16,14 @@ class HoboFinder:
                 body_id, -1, 0, 0, 
                 physicsClientId=self.engine.physics_system.client_id
             )
-        print(f"[HoboFinder] Ready. Waiting for unlock...")
+        # Check if already triggered in a past visit to this scene
+        if self.engine.global_flags.get('hobo_found', False):
+            self.triggered = True
+            # Make sure the Hobo is revealed immediately if returning to the scene
+            self.summon_hobo()
+            print(f"[HoboFinder] Hobo already found. Skipping trigger.")
+        else:
+            print(f"[HoboFinder] Ready. Waiting for unlock...")
 
     def update(self, dt):
         if self.triggered:
@@ -43,6 +50,8 @@ class HoboFinder:
 
     def on_trigger_enter(self):
         print(f"[HoboFinder] Triggered! Playing 'hobo_find' cutscene...")
+        # Mark as persistent 'found' so it never plays again
+        self.engine.global_flags['hobo_found'] = True
         
         # 1. Play the cutscene
         if self.engine.cutscenes.load('hobo_find'):

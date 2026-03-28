@@ -318,11 +318,22 @@
               {
                 "text": "Looking for something extra..",
                 "next": "response_b"
+              },
+              {
+                "text": "I shot that thief...",
+                "next": "thief_shot_response",
+                "requires": {"thief_shot": true}
               }
             ]
+          },
+          "thief_shot_response": {
+            "speaker": "NPC_Guardian",
+            "text": "You shot him?! Man, you're more cold-blooded than I thought. But thanks... I guess.",
+            "next": "exit"
           }
         }
       },
+
       "model": "assets/models/pizzamanboss.glb",
       "interactable": true,
       "use_view_interaction": true,
