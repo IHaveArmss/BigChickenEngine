@@ -9,7 +9,6 @@ Returns a list of MeshData dicts, each containing:
 """
 
 import os
-import struct
 import numpy as np
 
 

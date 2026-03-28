@@ -18,7 +18,6 @@ class InteractionManager:
         self._player = None
 
         # Cone half-angle thresholds (dot product)
-        self._player_dot_threshold = 0.6   # ~53 deg — player must face more toward object
         self._camera_dot_threshold = 0.1  # ~84 deg — used for camera-only fallback
 
     def set_player(self, entity):
@@ -32,6 +31,7 @@ class InteractionManager:
         if player is not None:
             self._player = player
         return self._player
+
 
     def _player_forward(self, player):
         """Return the player's horizontal forward vector from their Y rotation."""
@@ -49,48 +49,45 @@ class InteractionManager:
         if glm.length(cam.front) < 0.001:
             return
 
-        if player is not None:
-            origin_pos = player.position
-            player_fwd = self._player_forward(player)
-            
-            # Flatten player forward to XZ plane (ignore height)
-            player_fwd_xz = glm.normalize(glm.vec3(player_fwd.x, 0.0, player_fwd.z))
-            dot_threshold = self._player_dot_threshold
-        else:
-            origin_pos = cam.position
-            player_fwd_xz = None
-            dot_threshold = self._camera_dot_threshold
-
+        # Proximity origin
+        origin_pos = player.position if player else cam.position
+        
         best, best_dist = None, float('inf')
         for obj in self.engine.scene_objects:
             if not obj.interactable:
                 continue
 
             # 1. Proximity check
-            dist_to_origin = glm.length(obj.position - origin_pos)
-            if dist_to_origin < 0.001 or dist_to_origin > obj.interaction_distance:
+            delta = obj.position - origin_pos
+            dist_to_origin = glm.length(delta)
+            if dist_to_origin > obj.interaction_distance:
                 continue
 
-            # 2. Direction check - use player facing with XZ flattening
-            if player is not None:
-                delta = obj.position - origin_pos
-                # Flatten to XZ plane
-                dir_xz = glm.normalize(glm.vec3(delta.x, 0.0, delta.z))
-                dot = glm.dot(player_fwd_xz, dir_xz)
-                
-                if dot < dot_threshold:
-                    continue
-            else:
-                # Fallback to camera direction
-                delta_eye = obj.position - origin_pos
-                dist_eye = glm.length(delta_eye)
-                
-                if dist_eye > 0.001:
-                    dir_from_eye = delta_eye / dist_eye
-                    dot = glm.dot(cam.front, dir_from_eye)
-                    
-                    if dot < dot_threshold:
+            # 2. Strategy-based Direction check
+            is_view_mode = getattr(obj, 'use_view_interaction', False) or player is None
+            
+            # Hysteresis: If already hovered, make the cone more lenient to prevent flickering
+            is_currently_hovered = (obj is self.hovered_object)
+            
+            if is_view_mode:
+                # Modern camera-view gaze check (relative to camera origin for better picking)
+                threshold = 0.5 if is_currently_hovered else 0.7
+                delta_cam = obj.position - cam.position
+                if glm.length(delta_cam) > 0.001:
+                    dir_to_obj = glm.normalize(delta_cam)
+                    dot = glm.dot(cam.front, dir_to_obj)
+                    if dot < threshold:
                         continue
+            else:
+                # Classic character-facing check (horizontal)
+                threshold = 0.5 if is_currently_hovered else 0.6
+                player_fwd = self._player_forward(player)
+                player_fwd_xz = glm.normalize(glm.vec3(player_fwd.x, 0.0, player_fwd.z))
+                
+                delta_xz = glm.normalize(glm.vec3(delta.x, 0.0, delta.z))
+                dot = glm.dot(player_fwd_xz, delta_xz)
+                if dot < threshold:
+                    continue
 
             if dist_to_origin < best_dist:
                 best_dist = dist_to_origin

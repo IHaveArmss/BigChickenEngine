@@ -32,6 +32,7 @@ class SceneObject:
         self.folder = folder
         self.tag = tag
         self.interactable = False
+        self.use_view_interaction = False
         self.interaction_distance = 3.0
         self.is_hovered = False
         self._alpha = alpha
@@ -346,6 +347,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
     obj.scripts = normalize_script_names(entry.get('scripts', []))
     obj.interactable = bool(entry.get('interactable', False))
+    obj.use_view_interaction = bool(entry.get('use_view_interaction', False))
     obj.interaction_distance = float(entry.get('interaction_distance', 3.0))
     obj.casts_shadows = bool(entry.get('casts_shadows', True))
     obj.receives_shadows = bool(entry.get('receives_shadows', True))

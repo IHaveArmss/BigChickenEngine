@@ -320,7 +320,8 @@
       },
       "model": "assets/models/pizzamanboss.glb",
       "interactable": true,
-      "interaction_distance": 4.0,
+      "use_view_interaction": true,
+      "interaction_distance": 8.0,
       "dialogue_cam_pos": [
         -2.5,
         4.0,
@@ -365,7 +366,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.329,
+        0.325,
         0.318,
         0.318
       ]
@@ -487,10 +488,53 @@
       "color": [
         1.0,
         1.0,
-        0.898
+        0.894
       ],
       "light_casts_shadows": true,
       "alpha": 0.0
+    },
+    {
+      "name": "Interactable_Button",
+      "format": "cube",
+      "position": [
+        7.12,
+        1.65,
+        1.34
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.095,
+        4.609,
+        1.891
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "interactable",
+      "scripts": [
+        "interactable_button"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.8,
+        0.698
+      ],
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 3.0
     }
   ]
 }

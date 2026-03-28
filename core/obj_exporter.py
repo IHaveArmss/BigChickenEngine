@@ -1,7 +1,6 @@
 """OBJ Exporter — combines scene objects in a folder into a single .obj file."""
 
 import os
-import struct
 import numpy as np
 import glm
 

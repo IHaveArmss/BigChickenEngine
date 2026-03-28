@@ -1,4 +1,3 @@
-import struct
 import numpy as np
 import glm
 from core.transform import Transform

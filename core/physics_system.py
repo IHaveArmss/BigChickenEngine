@@ -3,7 +3,6 @@ import pybullet_data
 import glm
 import numpy as np
 import os
-import struct
 
 FIXED_TIMESTEP = 1.0 / 240.0
 MAX_SUBSTEPS = 10
@@ -128,6 +127,9 @@ class PhysicsSystem:
             )
             body_ids.append(bid)
             self._body_to_obj[bid] = obj
+        # Performance Optimization: Only apply the 'smooth' margin to primitives.
+        # High-poly meshes (like WorldB) must use a 0.0 margin to avoid a massive FPS hit.
+        margin = 0.0 if col_type in ('mesh', 'convex_hull') else 0.04
 
         angular_damp = 0.99 if col_type in ('capsule', 'sphere') else 0.05
         for bid in body_ids:
@@ -136,6 +138,7 @@ class PhysicsSystem:
                              lateralFriction=friction,
                              linearDamping=drag,
                              angularDamping=angular_damp,
+                             collisionMargin=margin,
                              physicsClientId=self.client_id)
             
             if getattr(obj, 'is_trigger', False):
@@ -306,8 +309,10 @@ class PhysicsSystem:
             if self._cached_dynamics.get(obj) != new_dyn:
                 mass = 0.0 if is_kinematic else getattr(obj, 'mass', 1.0)
                 # Update dynamics for all chunks
-                body_ids = getattr(obj, 'pybullet_body_ids', [body_id])
-                mass = 0.0 if getattr(obj, 'is_kinematic', True) else getattr(obj, 'mass', 1.0)
+                # Dynamic Margin Update
+                col_type = getattr(obj, 'collider_type', 'box')
+                margin = 0.0 if col_type in ('mesh', 'convex_hull') else 0.04
+
                 for bid in body_ids:
                     p.changeDynamics(bid, -1,
                                      mass=mass,
@@ -315,6 +320,7 @@ class PhysicsSystem:
                                      lateralFriction=getattr(obj, 'friction', 0.5),
                                      linearDamping=getattr(obj, 'drag', 0.02),
                                      angularDamping=0.05,
+                                     collisionMargin=margin,
                                      physicsClientId=self.client_id)
                 self._cached_dynamics[obj] = new_dyn
 

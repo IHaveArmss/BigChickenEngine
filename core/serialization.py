@@ -69,6 +69,7 @@ def serialize_scene_object(obj):
 
     if getattr(obj, 'interactable', False):
         entry["interactable"] = True
+        entry["use_view_interaction"] = bool(getattr(obj, 'use_view_interaction', False))
         entry["interaction_distance"] = round(getattr(obj, 'interaction_distance', 3.0), 3)
 
     # Dialogue camera overrides — only write when set so the JSON stays clean.
