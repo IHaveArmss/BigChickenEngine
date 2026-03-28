@@ -470,8 +470,22 @@ def load_gltf(glb_path):
                     raw_idx = _get_accessor_data(prim.indices).astype(np.uint32)
                 normals_arr = _compute_normals(positions, raw_idx)
 
+            # Detect if this primitive has skinning data
+            prim_has_skin = False
+            joints_arr = None
+            weights_arr = None
+            if skeleton is not None:
+                j0 = getattr(prim.attributes, 'JOINTS_0', None)
+                w0 = getattr(prim.attributes, 'WEIGHTS_0', None)
+                if j0 is not None and w0 is not None:
+                    joints_arr = _get_accessor_data(j0).astype('f4').reshape(-1, 4)
+                    weights_arr = _get_accessor_data(w0).astype('f4').reshape(-1, 4)
+                    prim_has_skin = True
+
             # Apply the node's world transform into vertex data.
-            if has_node_xform:
+            # IMPORTANT: We skip this for skinned primitives because the skeleton
+            # already handles the world-space placement from the bind pose.
+            if has_node_xform and not prim_has_skin:
                 M33 = world_np[:3, :3]
                 pos_h = np.hstack([positions, np.ones((len(positions), 1), dtype='f4')])
                 positions = (pos_h @ world_np.T)[:, :3].astype('f4')
@@ -487,19 +501,7 @@ def load_gltf(glb_path):
             else:
                 uvs = np.zeros((len(positions), 2), dtype='f4')
 
-            has_skin = False
-            joints_arr = None
-            weights_arr = None
-
-            if skeleton is not None:
-                j0 = getattr(prim.attributes, 'JOINTS_0', None)
-                w0 = getattr(prim.attributes, 'WEIGHTS_0', None)
-                if j0 is not None and w0 is not None:
-                    joints_arr = _get_accessor_data(j0).astype('f4').reshape(-1, 4)
-                    weights_arr = _get_accessor_data(w0).astype('f4').reshape(-1, 4)
-                    has_skin = True
-
-            if has_skin:
+            if prim_has_skin:
                 vertex_data = np.hstack([
                     positions,
                     normals_arr,
@@ -539,9 +541,9 @@ def load_gltf(glb_path):
                 'color': color,
                 'texture_image': texture_image,
                 'texture_path': None,
-                'has_skin': has_skin,
+                'has_skin': prim_has_skin,
             }
-            if has_skin:
+            if prim_has_skin:
                 md['skeleton'] = skeleton
                 md['animations'] = animations
 

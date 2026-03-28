@@ -161,7 +161,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
     if fmt == 'cube':
         c = color or [0.49, 0.48, 1.0]
-        cube = Cube(ctx, color=glm.vec3(*c), shader_cache=shader_cache)
+        cube = Cube(ctx, color=glm.vec3(*c[:3]), shader_cache=shader_cache)
         cube.transform.position = glm.vec3(*pos)
         cube.transform.scale = glm.vec3(*scl)
         meshes = [cube]
@@ -172,7 +172,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
     elif fmt == 'triangle':
         c = color or [1.0, 0.4, 0.2]
-        tri = Triangle(ctx, color=glm.vec3(*c), shader_cache=shader_cache)
+        tri = Triangle(ctx, color=glm.vec3(*c[:3]), shader_cache=shader_cache)
         tri.transform.position = glm.vec3(*pos)
         tri.transform.scale = glm.vec3(*scl)
         meshes = [tri]
@@ -184,13 +184,13 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     elif fmt == 'light':
         intensity = entry.get('intensity', 1.0)
         lc = color or [1.0, 1.0, 0.9]
-        orb = LightOrb(ctx, radius=0.3, color=glm.vec3(*lc), shader_cache=shader_cache)
+        orb = LightOrb(ctx, radius=0.3, color=glm.vec3(*lc[:3]), shader_cache=shader_cache)
         orb.transform.position = glm.vec3(*pos)
         orb.transform.scale = glm.vec3(*scl)
         meshes = [orb]
         obj = SceneObject(name, '', 'light', meshes,
                           is_light=True, light_intensity=intensity,
-                          light_color=glm.vec3(*lc),
+                          light_color=glm.vec3(*lc[:3]),
                           alpha=entry.get('alpha', 1.0),
                           folder=entry.get('folder', 'Scene'),
                           tag=entry.get('tag', ''))
@@ -322,6 +322,12 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
 
     for m in obj.meshes:
         m.owner_obj = obj
+
+    # Apply visual offset to meshes
+    visual_offset = entry.get('visual_offset', [0, 0, 0])
+    for m in meshes:
+        if hasattr(m, 'visual_offset'):
+            m.visual_offset = glm.vec3(*visual_offset)
 
     return obj
 

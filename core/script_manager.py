@@ -160,6 +160,16 @@ class ScriptManager:
                     name = type(script).__name__
                     print(f"[ScriptManager] ERROR in {name}.on_dialogue_action():\n{traceback.format_exc()}")
 
+    def dispatch_mouse_down(self, button):
+        """Notify all scripts about a mouse down event."""
+        for script in self.active_scripts:
+            if hasattr(script, 'on_mouse_down'):
+                try:
+                    script.on_mouse_down(button)
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.on_mouse_down():\n{traceback.format_exc()}")
+
     def stop_all(self):
         """Calls stop() on each script, then clears and cleans up loaded modules."""
         if self.active_scripts:

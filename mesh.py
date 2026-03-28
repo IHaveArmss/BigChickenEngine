@@ -12,6 +12,7 @@ class Mesh:
         self._shader_cache = shader_cache
         self.program = self._load_program(program_name)
         self.transform = Transform()
+        self.visual_offset = glm.vec3(0, 0, 0)
         self.alpha = 1.0
         self.vbo = self.get_vbo()
         self.vao = self.get_vao()
@@ -84,6 +85,9 @@ class Mesh:
         lights: list of (position, color) tuples — each a glm.vec3 pair.
         """
         model = self.transform.model_matrix()
+        if hasattr(self, 'visual_offset') and glm.length(self.visual_offset) > 1e-6:
+            model = model * glm.translate(glm.mat4(1.0), self.visual_offset)
+
         view = camera.view_matrix()
         aspect = self.ctx.screen.width / self.ctx.screen.height
         proj = camera.projection_matrix(aspect)
@@ -180,5 +184,4 @@ class Mesh:
 
     def destroy(self):
         self.vbo.release()
-        self.program.release()
         self.vao.release()

@@ -330,6 +330,9 @@ class InputHandler:
                         eng.editor_ui._current_obj_name = None
                         print("[DevMode] Deselected")
 
+        elif not eng.dev_mode and event.button == 1:
+            eng.script_manager.dispatch_mouse_down(1)
+        
         elif eng.dev_mode and event.button == 1:
             idx = pick_object(eng.active_camera, eng.scene_objects,
                              physics_system=eng.physics_system)

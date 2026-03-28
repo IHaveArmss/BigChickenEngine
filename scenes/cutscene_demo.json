@@ -5,43 +5,87 @@
   "objects": [
     {
       "name": "player",
-      "format": "cube",
+      "format": "glb",
       "position": [
-        -5.969,
-        4.52,
-        -1.465
+        12.04,
+        5.5,
+        -4.75
       ],
       "rotation": [
         0.0,
-        3.487,
+        180.0,
         0.0
       ],
       "scale": [
-        1.0,
-        1.0,
-        1.0
+        3.162,
+        3.162,
+        3.162
       ],
+      "visual_offset": [0, -0.34, 0],
       "mass": 1.0,
       "use_gravity": true,
-      "is_kinematic": false,
       "is_collideable": true,
-      "collider_type": "box",
+      "is_kinematic": false,
+      "collider_type": "capsule",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.0,
       "tag": "player",
       "scripts": [
         "third_person",
-        "intro_splash"
+        "weapon"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
+      "model": "assets/playerModel/CataHobov1.glb",
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
+      "name": "target_npc",
+      "format": "cube",
+      "position": [
+        10.0,
+        10.0,
+        5.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
       "color": [
-        0.2,
-        0.8,
-        0.298
+        0.9,
+        0.1,
+        0.1
       ]
     },
     {
@@ -64,8 +108,8 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
-      "is_kinematic": true,
       "is_collideable": true,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -83,7 +127,7 @@
       ]
     },
     {
-      "name": "world",
+      "name": "worldB",
       "format": "glb",
       "position": [
         -15.0,
@@ -102,9 +146,9 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
-      "is_kinematic": true,
       "is_collideable": true,
-      "collider_type": "convex_hull",
+      "is_kinematic": true,
+      "collider_type": "mesh",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -114,9 +158,8 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/models/world.glb"
+      "model": "assets/models/worldB.glb"
     },
-
     {
       "name": "light_1_EI",
       "format": "light",
@@ -137,6 +180,7 @@
       ],
       "mass": 1.0,
       "use_gravity": false,
+      "is_collideable": false,
       "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
@@ -177,8 +221,8 @@
       ],
       "mass": 1.0,
       "use_gravity": false,
+      "is_collideable": false,
       "is_kinematic": true,
-      "is_collideable": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -206,7 +250,7 @@
       "position": [
         -7.11,
         6.88,
-        2.23
+        30.0
       ],
       "rotation": [
         0.0,
@@ -220,6 +264,7 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
+      "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
@@ -261,6 +306,7 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
+      "is_collideable": false,
       "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
@@ -277,6 +323,45 @@
       "autocrop": true,
       "alpha": 0.0,
       "folder": "cutscene"
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        34.23,
+        4.54,
+        -19.21
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.438,
+        19.744,
+        15.448
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0
     }
   ]
 }

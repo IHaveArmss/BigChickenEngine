@@ -146,7 +146,7 @@ class ThirdPerson:
         self.cam_pitch  = max(-60.0, min(75.0, self.cam_pitch))
 
         # -------- player always faces away from camera --------
-        self.entity.set_rotation_euler(0.0, self.cam_yaw, 0.0)
+        self.entity.set_rotation_euler(0.0, self.cam_yaw + 180.0, 0.0)
 
         # -------- ideal camera position (spherical offset) --------
         rad_yaw   = glm.radians(self.cam_yaw)

@@ -77,172 +77,178 @@ class PhysicsSystem:
         bounciness = getattr(obj, 'bounciness', 0.0)
         friction = getattr(obj, 'friction', 0.5)
         drag = getattr(obj, 'drag', 0.02)
-        use_gravity = getattr(obj, 'use_gravity', False)
 
         col_type = getattr(obj, 'collider_type', 'box')
         sx, sy, sz = self._extract_scale(obj)
 
+        shape_ids = []
         if col_type == 'box':
-            shape_id = p.createCollisionShape(
+            shape_ids.append(p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id)
+                physicsClientId=self.client_id))
         elif col_type == 'sphere':
-            shape_id = p.createCollisionShape(
+            shape_ids.append(p.createCollisionShape(
                 p.GEOM_SPHERE, radius=max(sx, sy, sz) * 0.5,
-                physicsClientId=self.client_id)
+                physicsClientId=self.client_id))
         elif col_type == 'capsule':
-            # Capsule: radius from the narrower XZ footprint, cylinder height fills
-            # the remainder so the total height (cylinder + 2 hemispheres) == sy.
             radius = min(sx, sz) * 0.35
             cyl_h  = max(sy - radius * 2.0, 0.0)
-            shape_id = p.createCollisionShape(
+            shape_ids.append(p.createCollisionShape(
                 p.GEOM_CAPSULE, radius=radius, height=cyl_h,
-                physicsClientId=self.client_id)
+                physicsClientId=self.client_id))
         elif col_type == 'mesh' and getattr(obj, 'model_path', '') and os.path.exists(obj.model_path):
             ext = os.path.splitext(obj.model_path)[1].lower()
             if ext in ('.glb', '.gltf'):
-                # PyBullet doesn't support .glb files for GEOM_MESH via fileName.
-                # Use our memory-based triangle mesh/convex hull generator instead.
-                shape_id = self._create_mesh_collision(obj, sx, sy, sz)
+                shape_ids = self._create_mesh_collision(obj, sx, sy, sz)
             elif ext == '.obj':
-                shape_id = p.createCollisionShape(
+                shape_ids.append(p.createCollisionShape(
                     p.GEOM_MESH, fileName=obj.model_path, meshScale=[sx, sy, sz],
-                    physicsClientId=self.client_id)
+                    physicsClientId=self.client_id))
             else:
-                # Fallback for other formats (stl, etc.)
-                shape_id = self._create_mesh_collision(obj, sx, sy, sz)
+                shape_ids = self._create_mesh_collision(obj, sx, sy, sz)
         elif col_type == 'convex_hull':
-            shape_id = self._create_mesh_collision(obj, sx, sy, sz, force_convex=True)
+            shape_ids = self._create_mesh_collision(obj, sx, sy, sz, force_convex=True)
         else:
-            shape_id = p.createCollisionShape(
+            shape_ids.append(p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id)
+                physicsClientId=self.client_id))
 
         pos = [obj.position.x, obj.position.y, obj.position.z]
         quat = [obj.rotation.x, obj.rotation.y, obj.rotation.z, obj.rotation.w]
 
-        body_id = p.createMultiBody(
-            baseMass=mass,
-            baseCollisionShapeIndex=shape_id,
-            basePosition=pos,
-            baseOrientation=quat,
-            physicsClientId=self.client_id,
-        )
+        # Register one or more bodies (chunks) for this object
+        body_ids = []
+        for sid in shape_ids:
+            bid = p.createMultiBody(
+                baseMass=mass,
+                baseCollisionShapeIndex=sid,
+                basePosition=pos,
+                baseOrientation=quat,
+                physicsClientId=self.client_id,
+            )
+            body_ids.append(bid)
+            self._body_to_obj[bid] = obj
 
-        # Lock rotation for capsule/sphere colliders (character controllers).
-        # High angular damping prevents edge contacts from tipping the body.
         angular_damp = 0.99 if col_type in ('capsule', 'sphere') else 0.05
-        p.changeDynamics(body_id, -1,
-                         restitution=bounciness,
-                         lateralFriction=friction,
-                         linearDamping=drag,
-                         angularDamping=angular_damp,
-                         physicsClientId=self.client_id)
-        
-        # --- Trigger Support (Ghost Mode) ---
-        if getattr(obj, 'is_trigger', False):
-            p.setCollisionFilterGroupMask(body_id, -1, 0, 0, physicsClientId=self.client_id)
+        for bid in body_ids:
+            p.changeDynamics(bid, -1,
+                             restitution=bounciness,
+                             lateralFriction=friction,
+                             linearDamping=drag,
+                             angularDamping=angular_damp,
+                             physicsClientId=self.client_id)
+            
+            if getattr(obj, 'is_trigger', False):
+                p.setCollisionFilterGroupMask(bid, -1, 0, 0, physicsClientId=self.client_id)
 
-        obj.pybullet_body_id = body_id
-        self.body_map[obj] = body_id
-        self._body_to_obj[body_id] = obj
+        # pybullet_body_id remains an int (the primary part) for script compatibility.
+        # pybullet_body_ids stores the full list for internal physics management.
+        obj.pybullet_body_id = body_ids[0]
+        obj.pybullet_body_ids = body_ids
+        
+        self.body_map[obj] = obj.pybullet_body_id
         self.body_scales[obj] = glm.vec3(sx, sy, sz)
         self._cached_dynamics[obj] = self._dynamics_key(obj)
 
     def _create_mesh_collision(self, obj, sx, sy, sz, force_convex=False):
-        """Create a triangle mesh (concave, for static/kinematic) or convex hull collision shape.
-
-        Args:
-            force_convex: If True, always build a convex hull regardless of body type.
-                          Used when collider_type == 'convex_hull' is explicitly requested.
+        """Create triangle mesh or convex hull collision shapes. 
+        Splits high-poly meshes into multiple chunks to stay under PyBullet vertex limits.
         """
-        all_positions = []
-        all_indices = []
-        vertex_offset = 0
+        shape_ids = []
+        
+        def commit_chunk(positions, indices):
+            """Internal helper to build one collision chunk and return its shape ID."""
+            # Deduplicate vertices for convex hulls
+            if force_convex:
+                final_verts = np.unique(positions, axis=0)
+            else:
+                final_verts = positions
+
+            try:
+                if not force_convex and indices:
+                    return p.createCollisionShape(
+                        p.GEOM_MESH,
+                        vertices=final_verts.tolist(),
+                        indices=np.concatenate(indices).tolist() if isinstance(indices, list) else indices.tolist(),
+                        meshScale=[1, 1, 1],
+                        physicsClientId=self.client_id)
+                else:
+                    return p.createCollisionShape(
+                        p.GEOM_MESH,
+                        vertices=final_verts.tolist(),
+                        meshScale=[1, 1, 1],
+                        physicsClientId=self.client_id)
+            except Exception as e:
+                print(f"[Physics] ERROR: Chunk creation failed for {obj.name}: {e}")
+                return None
+
+        current_chunk_verts = []
+        current_chunk_indices = []
+        current_vcount = 0
+        v_offset = 0
 
         for mesh in obj.meshes:
             positions = mesh._mesh_data.get('collision_verts')
-
             if positions is None:
-                # Fallback: derive positions from the interleaved vertex array
                 raw = mesh._mesh_data.get('vertices')
-                if raw is None or len(raw) == 0:
-                    continue
+                if raw is None or len(raw) == 0: continue
                 floats_per_vert = 16 if mesh._has_skin else 8
                 positions = raw.reshape(-1, floats_per_vert)[:, :3].astype('f4')
-
-            if positions is None or len(positions) == 0:
-                continue
-
-            all_positions.append(positions)
-
+            
+            if positions is None or len(positions) == 0: continue
+            
+            scaled_pos = positions * np.array([sx, sy, sz], dtype='f4')
             mesh_indices = mesh._mesh_data.get('indices')
-            if mesh_indices is not None:
-                all_indices.append(mesh_indices.astype(np.uint32) + vertex_offset)
-            else:
+            if mesh_indices is None:
                 n = len(positions)
-                tri_count = n // 3
-                base = np.arange(tri_count * 3, dtype=np.uint32).reshape(-1, 3) + vertex_offset
-                all_indices.append(base.ravel())
+                mesh_indices = np.arange(n, dtype=np.uint32)
 
-            vertex_offset += len(positions)
+            # --- Chunking Logic ---
+            # If adding this mesh would exceed the 60k limit, finalize the current chunk first.
+            if current_vcount + len(scaled_pos) > 60000 and current_chunk_verts:
+                sid = commit_chunk(np.concatenate(current_chunk_verts), current_chunk_indices)
+                if sid is not None: shape_ids.append(sid)
+                current_chunk_verts = []
+                current_chunk_indices = []
+                current_vcount = 0
+                v_offset = 0
 
-        if not all_positions:
-            print(f"[Physics] Warning: No vertices found for {obj.name}, using box fallback")
-            return p.createCollisionShape(
+            current_chunk_verts.append(scaled_pos)
+            current_chunk_indices.append(mesh_indices.astype(np.uint32) + v_offset)
+            current_vcount += len(scaled_pos)
+            v_offset += len(scaled_pos)
+
+        # Finalize the last chunk
+        if current_chunk_verts:
+            sid = commit_chunk(np.concatenate(current_chunk_verts), current_chunk_indices)
+            if sid is not None: shape_ids.append(sid)
+
+        if not shape_ids:
+            print(f"[Physics] Warning: No mesh chunks found for {obj.name}, using box fallback")
+            shape_ids.append(p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id)
-
-        combined = np.concatenate(all_positions, axis=0)
-        combined_scaled = combined * np.array([sx, sy, sz], dtype='f4')
-
-        # Kinematic objects behave as static for collision purposes — check both flags
-        is_static = getattr(obj, 'is_kinematic', True) or (getattr(obj, 'mass', 1.0) == 0.0)
-        use_concave = is_static and not force_convex and all_indices
-
-        if use_concave:
-            # Concave triangle mesh: accurate for complex static geometry
-            flat_indices = np.concatenate(all_indices).tolist()
-            return p.createCollisionShape(
-                p.GEOM_MESH,
-                vertices=combined_scaled.tolist(),
-                indices=flat_indices,
-                physicsClientId=self.client_id)
-        else:
-            # Convex hull: required for dynamic bodies; deduplicate verts for a tighter hull
-            unique_verts = np.unique(combined_scaled, axis=0)
-            return p.createCollisionShape(
-                p.GEOM_MESH,
-                vertices=unique_verts.tolist(),
-
-        mass = getattr(obj, 'mass', 1.0)
-        # Use GEOM_MESH with indices for concave collision if static (mass=0)
-        # Dynamic objects in PyBullet MUST be convex hulls for stable collision.
-        try:
-            if mass == 0.0 and indices:
-                return p.createCollisionShape(
-                    p.GEOM_MESH, vertices=vertices, indices=indices,
-                    physicsClientId=self.client_id)
-            else:
-                return p.createCollisionShape(
-                    p.GEOM_MESH, vertices=vertices,
-                    physicsClientId=self.client_id)
-        except Exception as e:
-            print(f"[Physics] ERROR: createCollisionShape failed for {obj.name}: {e}")
-            print(f"[Physics] Falling back to simplified box collision for stability.")
-            return p.createCollisionShape(
-                p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id)
+                physicsClientId=self.client_id))
+            
+        return shape_ids
 
     def remove_object(self, obj):
-        """Remove an object from PyBullet world."""
-        if getattr(obj, 'pybullet_body_id', None) is not None:
-            self._body_to_obj.pop(obj.pybullet_body_id, None)
-            p.removeBody(obj.pybullet_body_id, physicsClientId=self.client_id)
-            self.body_map.pop(obj, None)
-            self.body_scales.pop(obj, None)
-            self._cached_dynamics.pop(obj, None)
-            obj.pybullet_body_id = None
+        """Remove all physical parts of an object from PyBullet world."""
+        body_ids = getattr(obj, 'pybullet_body_ids', None)
+        if body_ids is None:
+            # Fallback for objects that might only have the single ID
+            body_ids = getattr(obj, 'pybullet_body_id', None)
+            if body_ids is None: return
+            if not isinstance(body_ids, list): body_ids = [body_ids]
+
+        for bid in body_ids:
+            self._body_to_obj.pop(bid, None)
+            p.removeBody(bid, physicsClientId=self.client_id)
+            
+        self.body_map.pop(obj, None)
+        self.body_scales.pop(obj, None)
+        self._cached_dynamics.pop(obj, None)
+        obj.pybullet_body_id = None
+        obj.pybullet_body_ids = None
 
     def reset(self):
         """Tear down all bodies and start fresh."""
@@ -282,24 +288,34 @@ class PhysicsSystem:
             if is_kinematic or getattr(obj, 'mass', 1.0) == 0.0 or getattr(obj, '_physics_dirty', False):
                 pos = [obj.position.x, obj.position.y, obj.position.z]
                 quat = [obj.rotation.x, obj.rotation.y, obj.rotation.z, obj.rotation.w]
-                p.resetBasePositionAndOrientation(body_id, pos, quat,
-                                                  physicsClientId=self.client_id)
+                
+                # Update all chunks of the body
+                body_ids = getattr(obj, 'pybullet_body_ids', [body_id])
+                for bid in body_ids:
+                    p.resetBasePositionAndOrientation(bid, pos, quat,
+                                                      physicsClientId=self.client_id)
+                    if getattr(obj, '_physics_dirty', False):
+                        p.resetBaseVelocity(bid, [0, 0, 0], [0, 0, 0],
+                                            physicsClientId=self.client_id)
+                
                 if getattr(obj, '_physics_dirty', False):
-                    p.resetBaseVelocity(body_id, [0, 0, 0], [0, 0, 0],
-                                        physicsClientId=self.client_id)
                     obj._physics_dirty = False
                 self.body_scales[obj] = cur_scale
 
             new_dyn = self._dynamics_key(obj)
             if self._cached_dynamics.get(obj) != new_dyn:
                 mass = 0.0 if is_kinematic else getattr(obj, 'mass', 1.0)
-                p.changeDynamics(body_id, -1,
-                                 mass=mass,
-                                 restitution=getattr(obj, 'bounciness', 0.0),
-                                 lateralFriction=getattr(obj, 'friction', 0.5),
-                                 linearDamping=getattr(obj, 'drag', 0.02),
-                                 angularDamping=0.05,
-                                 physicsClientId=self.client_id)
+                # Update dynamics for all chunks
+                body_ids = getattr(obj, 'pybullet_body_ids', [body_id])
+                mass = 0.0 if getattr(obj, 'is_kinematic', True) else getattr(obj, 'mass', 1.0)
+                for bid in body_ids:
+                    p.changeDynamics(bid, -1,
+                                     mass=mass,
+                                     restitution=getattr(obj, 'bounciness', 0.0),
+                                     lateralFriction=getattr(obj, 'friction', 0.5),
+                                     linearDamping=getattr(obj, 'drag', 0.02),
+                                     angularDamping=0.05,
+                                     physicsClientId=self.client_id)
                 self._cached_dynamics[obj] = new_dyn
 
         # --- Fixed-timestep accumulation ---
@@ -307,17 +323,22 @@ class PhysicsSystem:
         num_steps = min(int(self._time_accumulator / FIXED_TIMESTEP), MAX_SUBSTEPS)
         self._time_accumulator -= num_steps * FIXED_TIMESTEP
 
-        # Apply per-body gravity override before stepping
+        # Apply per-body properties before stepping
         for obj in scene_objects:
-            body_id = getattr(obj, 'pybullet_body_id', None)
-            if body_id is None:
+            body_ids = getattr(obj, 'pybullet_body_ids', [getattr(obj, 'pybullet_body_id', None)])
+            if not body_ids or body_ids[0] is None:
                 continue
+
             if getattr(obj, 'is_kinematic', True):
                 continue
-            if not getattr(obj, 'use_gravity', False):
-                mass = getattr(obj, 'mass', 1.0)
-                if mass > 0:
-                    p.applyExternalForce(body_id, -1,
+
+            # Apply forces/gravity to all chunks of the object
+            use_grav = getattr(obj, 'use_gravity', False)
+            mass = getattr(obj, 'mass', 1.0)
+            
+            if not use_grav and mass > 0:
+                for bid in body_ids:
+                    p.applyExternalForce(bid, -1,
                                          [0, -self.gravity * mass, 0],
                                          [0, 0, 0], p.WORLD_FRAME,
                                          physicsClientId=self.client_id)
@@ -434,5 +455,3 @@ class PhysicsSystem:
         hit_normal = glm.vec3(0.0, 1.0, 0.0)
         
         return (hit_obj, hit_pos, hit_fraction, hit_normal)
-
-        return None
