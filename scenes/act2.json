@@ -391,6 +391,352 @@
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
+    },
+    {
+      "name": "low_poly_heap_of_construction_debris_bricks",
+      "format": "glb",
+      "position": [
+        -21.78,
+        4.5,
+        13.02
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        3.562,
+        3.562,
+        3.562
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_heap_of_construction_debris_bricks.glb"
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        -19.29,
+        5.18,
+        14.54
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.809,
+        13.402,
+        25.475
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "low_poly_heap_of_construction_debris_bricks",
+      "format": "glb",
+      "position": [
+        -10.45,
+        4.61,
+        42.9
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        2.699,
+        2.699,
+        2.699
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_heap_of_construction_debris_bricks.glb"
+    },
+    {
+      "name": "cube_2",
+      "format": "cube",
+      "position": [
+        -12.7,
+        5.12,
+        39.06
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        17.19,
+        14.999,
+        0.677
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "low-poly_brick_wall",
+      "format": "glb",
+      "position": [
+        -36.21,
+        3.92,
+        28.28
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        2.286,
+        2.286,
+        2.286
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low-poly_brick_wall.glb"
+    },
+    {
+      "name": "cube_3",
+      "format": "cube",
+      "position": [
+        -23.84,
+        6.5,
+        53.46
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.026,
+        2.689,
+        12.082
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "cube_4",
+      "format": "cube",
+      "position": [
+        -32.26,
+        4.84,
+        44.78
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        15.768,
+        9.365,
+        1.6
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "cube_5",
+      "format": "cube",
+      "position": [
+        -46.06,
+        5.73,
+        39.59
+      ],
+      "rotation": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "scale": [
+        0.955,
+        8.188,
+        22.177
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "interog_door",
+      "format": "cube",
+      "position": [
+        -41.4,
+        6.01,
+        31.72
+      ],
+      "rotation": [
+        0.0,
+        35.0,
+        0.0
+      ],
+      "scale": [
+        3.8,
+        3.779,
+        0.269
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "interactable",
+      "scripts": [
+        "interactable_button"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.8,
+        0.698
+      ],
+      "alpha": 0.05,
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 3.0
     }
   ]
 }
