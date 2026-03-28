@@ -6,3 +6,4 @@ numpy==2.2.6
 Pillow>=11.0.0
 pybullet>=3.2.6
 pygltflib>=1.16.0
+opencv-python>=4.8.0

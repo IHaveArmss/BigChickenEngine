@@ -781,7 +781,21 @@ class GraphicsEngine:
     # Main loop
     # ------------------------------------------------------------------
 
+    def play_intro(self):
+        intro_path = os.path.join('assets', 'videos', 'intro.mp4')
+        if os.path.exists(intro_path):
+            from core.video_player import VideoPlayer
+            player = VideoPlayer(self.ctx, self.shader_cache, intro_path)
+            if player.valid:
+                player.play(skip_sec=0.5, fade_in_sec=1.0)
+            player.destroy()
+
     def run(self):
+        self.play_intro()
+        
+        # Reset clock so time spent in video doesn't cause a huge dt update jump
+        self.clock.tick()
+        
         while True:
             self.input_handler.process_events()
             self.update()
