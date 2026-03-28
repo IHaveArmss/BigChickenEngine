@@ -1,4 +1,5 @@
 import pygame
+import math
 import pybullet as p
 import glm
 from core.physics_system import PhysicsSystem
@@ -167,7 +168,8 @@ class Weapon:
         return float(lin_vel[0]), float(lin_vel[1]), float(lin_vel[2])
 
     # ------------------------------------------------------------------ #
-    # Shooting                                                            #
+    # ------------------------------------------------------------------ #
+    # Shooting (AoE Cone)                                               #
     # ------------------------------------------------------------------ #
     def on_mouse_down(self, button):
         if not self.weapon_drawn or self.engine.dev_mode or button != 1:
@@ -177,40 +179,57 @@ class Weapon:
             return
 
         self.fire_cooldown = 0.5
-
         self.engine.audio.play_sfx('assets/sounds/gunshot.mp3')
+        print("[Weapon] AOE BLAST!")
 
-        cam      = self.engine.active_camera
-        ray_from = self.entity.position + glm.vec3(0, 1.5, 0)
-        ray_to   = ray_from + cam.front * 200.0
+        cam = self.engine.active_camera
+        player_pos = self.entity.position + glm.vec3(0, 1.5, 0)
+        forward = cam.front
 
-        print("[Weapon] FIRE!")
+        # Parameters for the "Long Cone"
+        MAX_RANGE = 50.0
+        CONE_ANGLE_RAD = glm.radians(30.0) # 30 degree spread
 
-        hit_data = self.engine.physics_system.raycast_detailed(
-            ray_from, ray_to, ignore=[self.entity])
+        hit_any = False
+        
+        # Scan all objects for NPCs in the cone
+        for obj in self.engine.scene_objects:
+            if getattr(obj, 'tag', '') != 'npc':
+                continue
+                
+            # Calculate vector to NPC
+            to_npc = obj.position - player_pos
+            distance = glm.length(to_npc)
+            
+            if distance > MAX_RANGE:
+                continue
+            
+            # Normalize for angle calculation
+            dir_to_npc = glm.normalize(to_npc)
+            cos_angle = glm.dot(forward, dir_to_npc)
+            angle = math.acos(max(-1.0, min(1.0, cos_angle)))
 
-        if hit_data:
-            hit_obj, hit_pos, _, _ = hit_data
-
-            marker = self.engine.spawn(
-                'cube',
-                name='bullet_marker',
-                position=list(hit_pos),
-                scale=[0.15, 0.15, 0.15],
-                color=[1, 0, 0],
-                is_collideable=False
-            )
-            self.markers.append((marker, 1.0))
-
-            if getattr(hit_obj, 'tag', '') == 'npc':
-                if hit_obj.alpha > 0.5:
-                    print(f"[Weapon] HIT NPC: {hit_obj.name}")
-                    hit_obj.alpha = 0.5
+            if angle <= CONE_ANGLE_RAD / 2.0:
+                # HIT!
+                if obj.alpha > 0.5:
+                    print(f"[Weapon] CONE HIT NPC: {obj.name}")
+                    obj.alpha = 0.5
                     self.engine.audio.play_sfx('assets/sounds/bloodGushing.mp3')
-                    self.engine.show_image_overlay('assets/transitions/act2.jpg', 3.0)
-                    self.engine.global_flags['thief_shot'] = True
-                    self.tp_timer = 3.0
+                    hit_any = True
+                    
+                    # Special Story Trigger (matches original behavior)
+                    # We trigger this if ANY npc in the cone is "dying" and haven't already
+                    if not self.engine.global_flags.get('thief_shot'):
+                        self.engine.hud.set_task("A cruel realisation", "Talk to Tony")
+                        self.engine.show_image_overlay('assets/transitions/act2.jpg', 3.0)
+                        self.engine.global_flags['thief_shot'] = True
+                        self.tp_timer = 3.0
                 else:
-                    print(f"[Weapon] ALREADY DEAD: {hit_obj.name}")
-        else:
-            print("[Weapon] Miss...")
+                    print(f"[Weapon] NPC {obj.name} already hit.")
+
+        if not hit_any:
+            print("[Weapon] Blast missed everything.")
+
+    def _import_math(self):
+        import math
+        return math

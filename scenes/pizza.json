@@ -299,7 +299,7 @@
           },
           "response_a": {
             "speaker": "NPC_Guardian",
-            "text": "Are you serious?",
+            "text": "You can`t afford it it`s 3 bucks",
             "next": "exit"
           },
           "response_b": {
