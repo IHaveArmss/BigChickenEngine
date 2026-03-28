@@ -268,6 +268,7 @@ class LightOrb(Mesh):
         self._set_uniform('u_view', view)
         self._set_uniform('u_projection', proj)
         self._set_uniform('u_object_color', object_color or self.color)
+        self._set_uniform('u_alpha', self.alpha)
 
 
 def camera_aspect(ctx):
