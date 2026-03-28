@@ -537,7 +537,7 @@
       "drag_linear": 0.02,
       "tag": "interactable",
       "scripts": [
-        "scene_trigger"
+        "pizzeria_exit_logic"
       ],
       "casts_shadows": true,
       "receives_shadows": true,

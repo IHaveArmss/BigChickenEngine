@@ -12,11 +12,7 @@ class InteractableButton:
         """Called when the player presses E while looking at this object."""
         print(f"[Button] Interaction triggered on {self.entity.name}!")
         
-        # Example: Pulse the color when pressed
-        if hasattr(self.entity, 'meshes') and self.entity.meshes:
-            # You can add logic here, like opening a door or starting a cutscene
-            pass
-            
-        # Return a string if you want to trigger a dialogue alongside the action:
-        # return "You pressed the button!"
+        # Trigger transition back to cutscene_demo, using the spawn_from_lobby marker
+        self.engine.load_scene("scenes/cutscene_demo.json", target_marker="spawn_from_lobby")
+        
         return None
