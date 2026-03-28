@@ -9,6 +9,13 @@ class LobbyNpc:
     def start(self):
         self.entity.interactable = True
         self._has_spoken = False
+        self._task_updated = False
+
+    def update(self, dt):
+        # Trigger task update after the first conversation ends
+        if self._has_spoken and not self.engine.dialogue.active and not self._task_updated:
+            self.engine.hud.set_task("Hungry rush", "Go back to Tony S. Prano")
+            self._task_updated = True
 
     def on_interact(self):
         if self._has_spoken:

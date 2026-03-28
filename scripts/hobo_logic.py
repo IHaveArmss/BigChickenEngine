@@ -31,6 +31,7 @@ class HoboLogic:
 
     def select_choice(self, index):
         print(f"[HoboLogic] Choice {index} made. Summoning Thief...")
+        self.engine.hud.set_task("Hero?", "Defend yourself (F for gun)")
         self.summon_thief()
 
     def summon_thief(self):

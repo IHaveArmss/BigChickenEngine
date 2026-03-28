@@ -52,6 +52,10 @@ class HUD:
         self._overlay_path = None
         self._overlay_fade = 1.0  # Optional: could add fade in/out later
 
+        # --- Task System ---
+        self.task_name = "Task: Man im hungry"
+        self.task_requirement = "Requirement: Go buy a pizza"
+
     def toggle_controls(self):
         self.show_controls = not self.show_controls
 
@@ -79,6 +83,12 @@ class HUD:
             print(f"[HUD] Showing overlay: {path} for {duration}s")
         except Exception as e:
             print(f"[HUD] ERROR loading overlay {path}: {e}")
+
+    def set_task(self, name, requirement):
+        """Update the on-screen task information."""
+        self.task_name = f"Task: {name}"
+        self.task_requirement = f"Requirement: {requirement}"
+        print(f"[HUD] Task Updated: {name}")
 
     def render(self):
         """Render the HUD overlay on top of the scene."""
@@ -141,7 +151,12 @@ class HUD:
             return surface
 
         if not self.dev_mode and not self.show_controls:
+            # Even if not in dev mode, draw the task
+            self._draw_task(surface)
             return surface
+
+        # Draw task in dev mode too
+        self._draw_task(surface)
 
         y = 10
 
@@ -254,6 +269,34 @@ class HUD:
                                 self.font_small, (210, 210, 210, 230))
                 cy += 19
             cy += 6
+
+    def _draw_task(self, surface):
+        """Draw the current task in the top-left corner on a dark panel."""
+        # Hide task during cutscenes or image overlays for a clean cinematic look
+        if self.engine.cutscenes.is_playing or self._overlay_active:
+            return
+            
+        tx, ty = 20, 20
+        pad = 12
+        line_h = 24
+        
+        # Measure text to determine panel size
+        name_surf = self.font_large.render(self.task_name, True, (255, 255, 255))
+        req_surf = self.font_small.render(self.task_requirement, True, (255, 255, 255))
+        
+        box_w = max(name_surf.get_width(), req_surf.get_width()) + pad * 2
+        box_h = pad * 2 + line_h + 20 # Task + gap + Req
+        
+        # Draw background panel
+        panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        panel.fill((0, 0, 0, 150)) # Semi-transparent black
+        pygame.draw.rect(panel, (255, 255, 255, 120), panel.get_rect(), 1, border_radius=4)
+        surface.blit(panel, (tx - pad, ty - pad))
+        
+        # Draw Task Name (Bold/Bright)
+        surface.blit(name_surf, (tx, ty))
+        # Draw Requirement (Slightly smaller/dimmer)
+        surface.blit(req_surf, (tx, ty + line_h + 4))
 
     def _draw_text(self, surface, text, x, y, font, color):
         text_surf = font.render(text, True, color[:3])

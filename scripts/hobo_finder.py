@@ -26,6 +26,11 @@ class HoboFinder:
             print(f"[HoboFinder] Ready. Waiting for unlock...")
 
     def update(self, dt):
+        # Trigger 'Hero for today' task once the discovering cutscene ends
+        if self.triggered and not self.engine.cutscenes.is_playing and not self.engine.global_flags.get('task_hero_today_set'):
+            self.engine.hud.set_task("Hero for today", "Help the injured man")
+            self.engine.global_flags['task_hero_today_set'] = True
+
         if self.triggered:
             return
 

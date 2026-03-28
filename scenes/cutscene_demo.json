@@ -863,9 +863,9 @@
       "name": "player_spawn",
       "format": "cube",
       "position": [
-        31.65,
+        30.42,
         6.03,
-        -23.96
+        -20.22
       ],
       "rotation": [
         0.0,
@@ -965,11 +965,11 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.478,
+        0.475,
         0.475,
         1.0
       ],
-      "alpha": 0.5
+      "alpha": 0.0
     },
     {
       "name": "spawn_from_pizza",

@@ -15,7 +15,7 @@ class PizzeriaExitLogic:
         
         if thief_shot:
             print("[PizzeriaExit] Branch detected: Thief was shot. Loading ACT 2...")
-            # Load Act 2 using the specific marker I just added
+            self.engine.hud.set_task("A cruel realisation", "Talk to Tony")
             self.engine.load_scene("scenes/act2.json", target_marker="spawn_player_act2")
         else:
             print("[PizzeriaExit] Default branch: Thief alive. Loading Town...")

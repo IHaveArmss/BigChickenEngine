@@ -67,8 +67,8 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/cutscene_demo.json'
-PLAY_INTRO = False # Set to False to skip the opening video
+SCENE_FILE = 'scenes/act2.json'
+PLAY_INTRO = False # Set to False to skip the opening cinematic
 # ======================================================================
 
 AUTOSAVE_INTERVAL = 30.0  # seconds
@@ -268,6 +268,7 @@ class GraphicsEngine:
 
         # Subsystems
         self.hud = HUD(self.ctx, self.win_size)
+        self.hud.engine = self
         self.editor_ui = EditorUI(self.win_size)
         self.hud.editor_ui = self.editor_ui
         self.scene_hierarchy = SceneHierarchy(self.win_size)
@@ -334,6 +335,9 @@ class GraphicsEngine:
         # Synchronize play-mode state on startup so camera snaps correctly without F1
         self.dev_mode = True
         self.toggle_dev_mode() # This sets dev_mode to False and primes scripts/input/cursor
+
+        self.clock = pygame.time.Clock()
+        self.time = 0.0
 
         self.clock = pygame.time.Clock()
         self.time = 0.0
@@ -689,8 +693,29 @@ class GraphicsEngine:
                     'scale': glm.vec3(obj.scale),
                 }
             self.script_manager.load_scripts(self, self.scene_objects)
+        
+        self._apply_scene_default_task(scene_path)
 
         print(f"[Engine] Scene loaded: {scene_path}")
+
+    def _apply_scene_default_task(self, scene_path):
+        """Set the HUD task based on the scene being loaded."""
+        base_name = os.path.basename(scene_path).lower()
+        
+        if base_name == "act2.json":
+            self.hud.set_task("Consequences", "Follow the agents into the interogation room")
+        elif base_name == "cutscene_demo.json":
+            self.hud.set_task("Man im hungry", "Go buy a pizza")
+        elif base_name == "bosshallway.json":
+            self.hud.set_task("Meet your maker", "Defeat corruption?")
+        elif base_name == "pizza.json":
+            if self.global_flags.get('thief_shot', False):
+                self.hud.set_task("A cruel realisation", "Talk to Tony")
+            else:
+                self.hud.set_task("Man im hungry", "Go buy a pizza")
+        else:
+            # Fallback if no specific task is defined for this scene
+            print(f"[Engine] No default task defined for {base_name}")
 
     # ------------------------------------------------------------------
     # Save As
@@ -956,9 +981,26 @@ class GraphicsEngine:
 
     def run(self):
         if PLAY_INTRO:
+            # 1. Video
             self.play_intro()
+
+            # 2. Act 1 transition image (sequential)
+            self.show_image_overlay('assets/transitions/act1.jpg', 3.0)
+            
+            # Mini-loop to show the image before cutscene starts
+            start_time = pygame.time.get_ticks()
+            while pygame.time.get_ticks() - start_time < 3000:
+                dt = self.clock.tick(60) / 1000.0
+                self.input_handler.process_events() # Check for quit/esc
+                self.update()
+                self.render()
+
+            # 3. JSON Cutscene
+            if self.cutscenes.load("intro-cutscene"):
+                print("[Engine] Sequence: Starting intro cutscene after Act 1 card.")
+                self.cutscenes.play()
         
-        # Reset clock so time spent in video doesn't cause a huge dt update jump
+        # Reset clock so time spent in intro doesn't cause a huge dt update jump
         self.clock.tick()
         
         while True:

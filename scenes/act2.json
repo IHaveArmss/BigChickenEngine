@@ -1,10 +1,10 @@
 {
   "settings": {
     "gravity": -9.81,
-    "sun_intensity": 1.0,
+    "sun_intensity": 0.02,
     "sun_azimuth_deg": 45.0,
     "sun_elevation_deg": -55.0,
-    "ambient_strength": 0.15,
+    "ambient_strength": 0.2,
     "ambient_color_r": 1.0,
     "ambient_color_g": 1.0,
     "ambient_color_b": 1.0,
@@ -94,46 +94,6 @@
       "model": "assets/models/world_ruin_blank.glb"
     },
     {
-      "name": "main_light",
-      "format": "light",
-      "position": [
-        0.0,
-        50.0,
-        0.0
-      ],
-      "rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "scale": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "mass": 1.0,
-      "use_gravity": false,
-      "is_collideable": false,
-      "is_kinematic": true,
-      "collider_type": "box",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.02,
-      "tag": "light",
-      "scripts": [],
-      "casts_shadows": true,
-      "receives_shadows": true,
-      "is_trigger": false,
-      "dialogue_data": null,
-      "intensity": 0.5,
-      "color": [
-        1.0,
-        1.0,
-        0.9
-      ],
-      "light_casts_shadows": true
-    },
-    {
       "name": "spawn_player_act2",
       "format": "cube",
       "position": [
@@ -191,9 +151,9 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
+      "use_gravity": false,
       "is_collideable": true,
-      "is_kinematic": false,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -207,7 +167,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.898,
+        0.894,
         0.4,
         0.8
       ],
@@ -235,9 +195,9 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
+      "use_gravity": false,
       "is_collideable": true,
-      "is_kinematic": false,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -251,7 +211,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.898,
+        0.894,
         0.4,
         0.8
       ],
@@ -279,9 +239,9 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
+      "use_gravity": false,
       "is_collideable": true,
-      "is_kinematic": false,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -295,7 +255,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.898,
+        0.894,
         0.4,
         0.8
       ],
@@ -323,9 +283,9 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
+      "use_gravity": false,
       "is_collideable": true,
-      "is_kinematic": false,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -339,7 +299,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.898,
+        0.894,
         0.4,
         0.8
       ],
@@ -367,9 +327,9 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
+      "use_gravity": false,
       "is_collideable": true,
-      "is_kinematic": false,
+      "is_kinematic": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -383,7 +343,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.898,
+        0.894,
         0.4,
         0.8
       ],
@@ -454,13 +414,13 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [],
-      "casts_shadows": true,
+      "casts_shadows": false,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -528,13 +488,13 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [],
-      "casts_shadows": true,
+      "casts_shadows": false,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -602,13 +562,13 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [],
-      "casts_shadows": true,
+      "casts_shadows": false,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -642,13 +602,13 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [],
-      "casts_shadows": true,
+      "casts_shadows": false,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -682,13 +642,13 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [],
-      "casts_shadows": true,
+      "casts_shadows": false,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -722,7 +682,7 @@
       "drag_linear": 0.02,
       "tag": "interactable",
       "scripts": [
-        "interactable_button"
+        "interog_door_logic"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -737,6 +697,290 @@
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 3.0
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        2.87,
+        5.58,
+        -20.22
+      ],
+      "rotation": [
+        0.0,
+        -20.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        17.763,
+        15.69
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": false,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "cube_2",
+      "format": "cube",
+      "position": [
+        -14.27,
+        5.57,
+        -30.48
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        9.59,
+        7.427,
+        0.785
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": false,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "low-poly_brick_wall",
+      "format": "glb",
+      "position": [
+        -6.3,
+        4.28,
+        15.85
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        1.621,
+        3.009,
+        0.958
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low-poly_brick_wall.glb"
+    },
+    {
+      "name": "Thug6",
+      "format": "cube",
+      "position": [
+        -6.18,
+        6.0,
+        31.34
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "NPC_Guardian_1",
+      "format": "cube",
+      "position": [
+        -6.0,
+        6.0,
+        34.52
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "cube_5",
+      "format": "cube",
+      "position": [
+        -2.11,
+        5.42,
+        32.31
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        9.136,
+        10.109
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": false,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0,
+      "folder": "C"
+    },
+    {
+      "name": "NPC_Guardian",
+      "format": "cube",
+      "position": [
+        -30.11,
+        6.0,
+        42.57
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
     }
   ]
 }
