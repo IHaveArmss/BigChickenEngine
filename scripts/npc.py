@@ -1,7 +1,7 @@
 import glm
 import math
 
-class NPC:
+class Npc:
     """
     Dynamic NPC script with 'Look At Player' focus.
     Returns dialogue data set via the Editor's NPC Dialogue section.

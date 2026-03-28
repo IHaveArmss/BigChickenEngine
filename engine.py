@@ -58,6 +58,7 @@ class ShaderCache:
 
 # ======================================================================
 SCENE_FILE = 'scenes/floor.json'
+PLAY_INTRO = False # Set to False to skip the opening video
 # ======================================================================
 
 AUTOSAVE_INTERVAL = 30.0  # seconds
@@ -791,7 +792,8 @@ class GraphicsEngine:
             player.destroy()
 
     def run(self):
-        self.play_intro()
+        if PLAY_INTRO:
+            self.play_intro()
         
         # Reset clock so time spent in video doesn't cause a huge dt update jump
         self.clock.tick()

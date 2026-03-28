@@ -33,9 +33,10 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
+      "dialogue_data": null,
       "color": [
-        0.333,
-        0.333,
+        0.329,
+        0.329,
         0.4
       ]
     },
@@ -71,6 +72,7 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
+      "dialogue_data": null,
       "color": [
         0.475,
         0.475,
@@ -111,6 +113,7 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
+      "dialogue_data": null,
       "color": [
         0.478,
         0.475,
@@ -149,13 +152,88 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
+      "dialogue_data": null,
       "color": [
         0.2,
         0.8,
-        0.698
+        0.694
       ],
       "interactable": true,
       "interaction_distance": 3.0
+    },
+    {
+      "name": "NPC_Guardian",
+      "format": "cube",
+      "position": [
+        0.74,
+        1.0,
+        4.22
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "NPC_Guardiann",
+            "text": "Who are you",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "NPC_Guardiann",
+            "text": "what?",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "NPC_Guardiann",
+            "text": "what?",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "NPC_Guardiann",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "kami sama",
+                "next": "response_a"
+              },
+              {
+                "text": "skibidi sama",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "interactable": true,
+      "interaction_distance": 4.0
     }
   ]
 }

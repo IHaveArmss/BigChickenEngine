@@ -1092,7 +1092,7 @@ class EditorUI:
                         if k.startswith('diag_line'):
                             try: max_line = max(max_line, int(k[9:]))
                             except ValueError: pass
-                    self._diag_line_count = max_line + 2 # add one more
+                    self._diag_line_count = max_line + 1 # add one more
                     return {'action': 'refresh_ui'} # signal engine to re-build UI
                 
                 rem_btn = info.get('remove_line_btn')
@@ -1102,7 +1102,7 @@ class EditorUI:
                         if k.startswith('diag_line'):
                             try: max_line = max(max_line, int(k[9:]))
                             except ValueError: pass
-                    self._diag_line_count = max(1, max_line) # remove last one
+                    self._diag_line_count = max(1, max_line - 1) # remove last one
                     return {'action': 'refresh_ui'}
 
         # Sprite controls (only when expanded)
