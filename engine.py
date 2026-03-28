@@ -826,6 +826,7 @@ class GraphicsEngine:
             win_size=self.win_size,
             main_light_dir=self.main_light_dir,
             main_light_color=effective_sun_color,
+            dialogue_active=self.dialogue.active,
         )
 
         pygame.display.flip()

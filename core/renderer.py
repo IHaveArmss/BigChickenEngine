@@ -241,7 +241,8 @@ class Renderer:
                orbiting_light_pos, orbiting_light_color,
                dev_mode_active, selected_index,
                render_settings=None, win_size=None,
-               main_light_dir=None, main_light_color=None):
+               main_light_dir=None, main_light_color=None,
+               dialogue_active=False):
         """Full frame render with frustum culling + optional postprocess."""
         if win_size:
             self.resize(win_size[0], win_size[1])
@@ -352,7 +353,7 @@ class Renderer:
 
         for obj in opaque:
             owner = getattr(obj, 'owner_obj', None)
-            hl = 0.35 if getattr(owner, 'is_hovered', False) else 0.0
+            hl = 0.35 if (getattr(owner, 'is_hovered', False) and not dialogue_active) else 0.0
             obj.set_uniforms(
                 camera,
                 lights=lights,
@@ -384,7 +385,7 @@ class Renderer:
             self.ctx.blend_func = (moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA)
             for obj in transparent:
                 owner = getattr(obj, 'owner_obj', None)
-                hl = 0.35 if getattr(owner, 'is_hovered', False) else 0.0
+                hl = 0.35 if (getattr(owner, 'is_hovered', False) and not dialogue_active) else 0.0
                 obj.set_uniforms(
                     camera,
                     lights=lights,
