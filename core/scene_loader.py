@@ -324,7 +324,16 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
         m.owner_obj = obj
 
     # Apply visual offset to meshes
-    visual_offset = entry.get('visual_offset', [0, 0, 0])
+    visual_offset = entry.get('visual_offset', None)
+    
+    # PERMANENT FALLBACK: If no offset is provided in JSON, check for model-specific defaults
+    if visual_offset is None:
+        model_path = entry.get('model', '').lower()
+        if 'catahobov1.glb' in model_path:
+            visual_offset = [0, -0.34, 0]
+        else:
+            visual_offset = [0, 0, 0]
+
     for m in meshes:
         if hasattr(m, 'visual_offset'):
             m.visual_offset = glm.vec3(*visual_offset)

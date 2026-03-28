@@ -7,13 +7,13 @@
       "name": "player",
       "format": "glb",
       "position": [
-        12.04,
-        5.5,
-        -4.75
+        31.37,
+        6.23,
+        -18.03
       ],
       "rotation": [
         0.0,
-        180.0,
+        -89.98,
         0.0
       ],
       "scale": [
@@ -21,7 +21,6 @@
         3.162,
         3.162
       ],
-      "visual_offset": [0, -0.34, 0],
       "mass": 1.0,
       "use_gravity": true,
       "is_collideable": true,
@@ -357,11 +356,46 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0
+    },
+    {
+      "name": "low-poly_brick_wall",
+      "format": "glb",
+      "position": [
+        -23.06,
+        4.0,
+        -2.35
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        1.108,
+        1.987,
+        4.892
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low-poly_brick_wall.glb",
+      "folder": "alleyIncident"
     }
   ]
 }
