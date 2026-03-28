@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"dlg_cam_pos\\\\|dialogue_cam_pos\\\\|dialogue_facing.*=\" /d/Coding/BIGCHICKEN/GIT/israel/BigChickenEngine/core/*.py)"
+    ]
+  }
+}
