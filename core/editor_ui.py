@@ -438,6 +438,7 @@ class EditorUI:
         self.sprite_autocrop_rect = pygame.Rect(0, 0, 40, 22)
         
         self.section_dialogue = CollapsibleSection("── NPC Dialogue ──", default_expanded=False)
+        self.section_dialogue_cam = CollapsibleSection("── Dialogue Camera ──", default_expanded=False)
         self._diag_line_count = 1  # Standard start
 
     def update_gravity_ui(self, gravity):
@@ -800,6 +801,18 @@ class EditorUI:
         self.prop_inputs['interaction_distance'] = {
             'label': 'Interact Dist', 'value': f'{getattr(obj, "interaction_distance", 3.0):.2f}', 'field': None,
         }
+
+        # Dialogue camera overrides — separate X/Y/Z fields
+        dcp = getattr(obj, 'dialogue_cam_pos', None)
+        self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp.x:.2f}' if dcp else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp.y:.2f}' if dcp else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp.z:.2f}' if dcp else '', 'field': None}
+        dcl = getattr(obj, 'dialogue_cam_look_at', None)
+        self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': f'{dcl.x:.2f}' if dcl else '', 'field': None}
+        self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': f'{dcl.y:.2f}' if dcl else '', 'field': None}
+        self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': f'{dcl.z:.2f}' if dcl else '', 'field': None}
+        df = getattr(obj, 'dialogue_facing', None)
+        self.prop_inputs['dialogue_facing'] = {'label': 'Face Angle', 'value': f'{df:.1f}' if df is not None else '', 'field': None}
         self.prop_inputs['is_trigger'] = {
             'label': 'Is Trigger', 'value': getattr(obj, 'is_trigger', False), 'field': 'toggle',
         }
@@ -1086,6 +1099,10 @@ class EditorUI:
         
         # Dialogue section toggle
         if self.section_dialogue.toggle(mouse_pos):
+            return None
+
+        # Dialogue camera section toggle
+        if self.section_dialogue_cam.toggle(mouse_pos):
             return None
 
         # Dialogue dynamic line buttons (only when expanded)
@@ -1818,6 +1835,62 @@ class EditorUI:
             info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
             info['field'].draw(surface, self.font)
             y += INPUT_HEIGHT + 10
+
+        # Dialogue camera overrides — collapsible section with XYZ rows
+        if 'dlg_cam_pos_x' in self.prop_inputs:
+            y = self.section_dialogue_cam.draw(surface, self.font_bold, bx, y)
+            if self.section_dialogue_cam.expanded:
+                lbl_c = {'X': (255, 80, 80), 'Y': (80, 255, 80), 'Z': (80, 80, 255)}
+
+                # Cam Position row
+                label_surf = self.font_bold.render("Cam Position", True, (100, 220, 160))
+                surface.blit(label_surf, (bx, y))
+                y += 18
+                x = bx
+                for key in ['dlg_cam_pos_x', 'dlg_cam_pos_y', 'dlg_cam_pos_z']:
+                    info = self.prop_inputs[key]
+                    lbl = self.font_bold.render(info['label'], True, lbl_c[info['label']])
+                    surface.blit(lbl, (x, y + 3))
+                    if info['field'] is None:
+                        info['field'] = TextInput(x + 16, y, single_w, INPUT_HEIGHT, info['label'], info['value'])
+                    info['field'].rect = pygame.Rect(x + 16, y, single_w, INPUT_HEIGHT)
+                    info['field'].draw(surface, self.font)
+                    x += single_w + 24
+                y += INPUT_HEIGHT + 8
+
+                # Cam Look At row
+                label_surf = self.font_bold.render("Cam Look At", True, (100, 220, 160))
+                surface.blit(label_surf, (bx, y))
+                y += 18
+                x = bx
+                for key in ['dlg_cam_look_x', 'dlg_cam_look_y', 'dlg_cam_look_z']:
+                    info = self.prop_inputs[key]
+                    lbl = self.font_bold.render(info['label'], True, lbl_c[info['label']])
+                    surface.blit(lbl, (x, y + 3))
+                    if info['field'] is None:
+                        info['field'] = TextInput(x + 16, y, single_w, INPUT_HEIGHT, info['label'], info['value'])
+                    info['field'].rect = pygame.Rect(x + 16, y, single_w, INPUT_HEIGHT)
+                    info['field'].draw(surface, self.font)
+                    x += single_w + 24
+                y += INPUT_HEIGHT + 8
+
+                # Face Angle row (single field)
+                label_surf = self.font_bold.render("Face Angle (deg)", True, (100, 220, 160))
+                surface.blit(label_surf, (bx, y))
+                y += 18
+                info = self.prop_inputs['dialogue_facing']
+                full_w = PANEL_WIDTH - PANEL_PADDING * 2 - 10
+                if info['field'] is None:
+                    info['field'] = TextInput(bx, y, full_w, INPUT_HEIGHT, 'degrees (empty = auto)', info['value'])
+                info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
+                info['field'].draw(surface, self.font)
+                y += INPUT_HEIGHT + 4
+
+                hint = self.font.render("Leave blank to use auto-detection", True, (110, 110, 140))
+                surface.blit(hint, (bx, y))
+                y += 18
+
+            y += 4
 
         # Folder
         if 'folder' in self.prop_inputs:

@@ -1,4 +1,7 @@
 {
+  "settings": {
+    "gravity": -9.81
+  },
   "objects": [
     {
       "name": "floor",
@@ -10,7 +13,7 @@
       ],
       "rotation": [
         0.0,
-        0.0,
+        -0.0,
         0.0
       ],
       "scale": [
@@ -20,18 +23,26 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
+      "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
       "color": [
-        0.3,
-        0.3,
-        0.35
-      ],
-      "is_collideable": true
+        0.298,
+        0.298,
+        0.349
+      ]
     },
     {
       "name": "pizza",
-      "model": "assets/models/pizza.glb",
       "format": "glb",
       "position": [
         0.0,
@@ -40,7 +51,7 @@
       ],
       "rotation": [
         0.0,
-        0.0,
+        -0.0,
         0.0
       ],
       "scale": [
@@ -48,19 +59,73 @@
         1.1,
         1.1
       ],
-      "is_collideable": true
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/pizza.glb"
     },
     {
       "name": "player",
       "format": "cube",
       "position": [
-        0.0,
-        1.0,
-        0.0
+        2.82,
+        0.99,
+        1.86
       ],
       "rotation": [
         0.0,
+        84.8,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        4.707,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "capsule",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "player",
+      "scripts": [
+        "third_person"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.6,
+        1.0
+      ]
+    },
+    {
+      "name": "pizzadesk",
+      "format": "glb",
+      "position": [
+        -0.65,
+        0.5,
+        0.3
+      ],
+      "rotation": [
         0.0,
+        -0.0,
         0.0
       ],
       "scale": [
@@ -69,19 +134,363 @@
         1.0
       ],
       "mass": 1.0,
-      "use_gravity": true,
-      "is_kinematic": false,
-      "collider_type": "capsule",
-      "color": [
-        0.2,
-        0.6,
-        1.0
-      ],
+      "use_gravity": false,
       "is_collideable": true,
-      "scripts": [
-        "third_person"
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/pizzadesk.glb"
+    },
+    {
+      "name": "mese (1)",
+      "format": "glb",
+      "position": [
+        -5.67,
+        0.78,
+        -5.32
       ],
-      "tag": "player"
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.15,
+        0.13,
+        0.1
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/mese (1).glb"
+    },
+    {
+      "name": "mese (1)",
+      "format": "glb",
+      "position": [
+        2.35,
+        0.78,
+        -5.23
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.15,
+        0.13,
+        0.1
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/mese (1).glb"
+    },
+    {
+      "name": "pizzadish",
+      "format": "glb",
+      "position": [
+        4.4,
+        2.83,
+        -8.67
+      ],
+      "rotation": [
+        0.0,
+        -30.0,
+        0.0
+      ],
+      "scale": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/pizzadish.glb"
+    },
+    {
+      "name": "PizzaManBoss",
+      "format": "glb",
+      "position": [
+        -5.52,
+        0.47,
+        0.58
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        250.0,
+        250.0,
+        250.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "tony"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "NPC_Guardian",
+            "text": "What's up small fella, would you like to order?",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "NPC_Guardian",
+            "text": "Are you serious?",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "NPC_Guardian",
+            "text": "You're in luck, I got a job for you.",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "NPC_Guardian",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "Give me the cheapest thing you got!",
+                "next": "response_a"
+              },
+              {
+                "text": "Looking for something extra..",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/pizzamanboss.glb",
+      "interactable": true,
+      "interaction_distance": 4.0,
+      "dialogue_cam_pos": [
+        -2.5,
+        4.0,
+        0.58
+      ],
+      "dialogue_cam_look_at": [
+        -7.0,
+        1.5,
+        0.58
+      ]
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        0.49,
+        6.04,
+        -3.2
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        17.117,
+        0.09,
+        16.168
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.329,
+        0.318,
+        0.318
+      ]
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        0.48,
+        5.98,
+        -2.91
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        0.26,
+        0.957
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 1.0,
+      "color": [
+        1.0,
+        1.0,
+        0.89
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        0.46,
+        6.01,
+        -2.92
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.425,
+        0.514,
+        1.222
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        0.306,
+        0.29,
+        0.29
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        0.48,
+        6.08,
+        -2.89
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.252,
+        1.0,
+        1.113
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
     }
   ]
 }

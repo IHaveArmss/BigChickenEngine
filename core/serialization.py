@@ -65,6 +65,17 @@ def serialize_scene_object(obj):
         entry["interactable"] = True
         entry["interaction_distance"] = round(getattr(obj, 'interaction_distance', 3.0), 3)
 
+    # Dialogue camera overrides — only write when set so the JSON stays clean.
+    dcp = getattr(obj, 'dialogue_cam_pos', None)
+    if dcp is not None:
+        entry["dialogue_cam_pos"] = [round(dcp.x, 3), round(dcp.y, 3), round(dcp.z, 3)]
+    dcl = getattr(obj, 'dialogue_cam_look_at', None)
+    if dcl is not None:
+        entry["dialogue_cam_look_at"] = [round(dcl.x, 3), round(dcl.y, 3), round(dcl.z, 3)]
+    df = getattr(obj, 'dialogue_facing', None)
+    if df is not None:
+        entry["dialogue_facing"] = round(df, 2)
+
     if getattr(obj, 'animator', None) is not None:
         entry["use_anim_state_controller"] = bool(getattr(obj, 'use_anim_state_controller', False))
         cfg = getattr(obj, 'anim_state_config', {})

@@ -71,7 +71,7 @@ class GraphicsEngine:
     def _capture_scene_state(self):
         return {
             'scene_file': self.current_scene_file,
-            'settings': {'gravity': self.physics_system.gravity},
+            'settings': self._build_scene_settings(),
             'objects': [self._serialize_object_entry(o) for o in self.scene_objects],
             'selected_index': self.selected_index,
         }
@@ -88,9 +88,7 @@ class GraphicsEngine:
         self._pending_destroys.clear()
 
         self.current_scene_file = state.get('scene_file', self.current_scene_file)
-        settings = state.get('settings', {'gravity': -9.81})
-        self.physics_system.set_gravity(settings.get('gravity', -9.81))
-        self.editor_ui.update_gravity_ui(self.physics_system.gravity)
+        self._apply_scene_settings(state.get('settings', {}))
 
         for entry in state.get('objects', []):
             obj = spawn_from_entry(entry, self.ctx, self.texture_loader, self.shader_cache)
@@ -170,8 +168,11 @@ class GraphicsEngine:
 
     def toggle_dev_mode(self):
         self.dev_mode = not self.dev_mode
+        # Dev mode always starts in cursor mode (UI visible, mouse free).
+        # Play mode always starts with mouse locked to window.
         self.cursor_mode = self.dev_mode
         pygame.mouse.set_visible(self.cursor_mode)
+        pygame.event.set_grab(not self.cursor_mode)
 
         if self.dev_mode:
             # Entered Editor Mode — stop scripts and restore pre-play transforms
@@ -365,12 +366,10 @@ class GraphicsEngine:
         self.scene_objects, self.model_meshes, settings = load_scene(
             self.current_scene_file, self.ctx, self.texture_loader
         )
-        gravity = settings.get('gravity', -9.81)
-        self.physics_system.set_gravity(gravity)
-        self.editor_ui.update_gravity_ui(gravity)
+        self._apply_scene_settings(settings)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
-        
+
         self._rebuild_renderables()
         # Place the light orb roughly along the main light direction so the
         # user can see where the sun is.
@@ -514,6 +513,56 @@ class GraphicsEngine:
     # Scene switching
     # ------------------------------------------------------------------
 
+    def _build_scene_settings(self):
+        """Collect all scene-level settings into a dict for saving."""
+        rs = self.render_settings
+        return {
+            'gravity':                      self.physics_system.gravity,
+            'sun_intensity':                rs.sun_intensity,
+            'sun_azimuth_deg':              rs.sun_azimuth_deg,
+            'sun_elevation_deg':            rs.sun_elevation_deg,
+            'ambient_strength':             rs.ambient_strength,
+            'ambient_color_r':              rs.ambient_color_r,
+            'ambient_color_g':              rs.ambient_color_g,
+            'ambient_color_b':              rs.ambient_color_b,
+            'directional_shadows_enabled':  rs.directional_shadows_enabled,
+            'directional_shadow_distance':  rs.directional_shadow_distance,
+        }
+
+    def _apply_scene_settings(self, settings):
+        """Apply a settings dict (from scene JSON or state snapshot) to the engine."""
+        gravity = settings.get('gravity', -9.81)
+        self.physics_system.set_gravity(gravity)
+        self.editor_ui.update_gravity_ui(gravity)
+
+        rs = self.render_settings
+        # Only override values that are explicitly present in the scene JSON so
+        # scenes that don't specify a key keep whatever the user has configured.
+        if 'sun_intensity' in settings:
+            rs.sun_intensity = float(settings['sun_intensity'])
+            self.editor_ui.sun_intensity_input.text = f"{rs.sun_intensity:.2f}"
+        if 'sun_azimuth_deg' in settings:
+            rs.sun_azimuth_deg = float(settings['sun_azimuth_deg'])
+            self.editor_ui.sun_azimuth_input.text = f"{rs.sun_azimuth_deg:.1f}"
+        if 'sun_elevation_deg' in settings:
+            rs.sun_elevation_deg = float(settings['sun_elevation_deg'])
+            self.editor_ui.sun_elevation_input.text = f"{rs.sun_elevation_deg:.1f}"
+        if 'ambient_strength' in settings:
+            rs.ambient_strength = float(settings['ambient_strength'])
+            self.editor_ui.ambient_strength_input.text = f"{rs.ambient_strength:.2f}"
+        if 'ambient_color_r' in settings:
+            rs.ambient_color_r = float(settings['ambient_color_r'])
+        if 'ambient_color_g' in settings:
+            rs.ambient_color_g = float(settings['ambient_color_g'])
+        if 'ambient_color_b' in settings:
+            rs.ambient_color_b = float(settings['ambient_color_b'])
+        if 'directional_shadows_enabled' in settings:
+            rs.directional_shadows_enabled = bool(settings['directional_shadows_enabled'])
+            self.editor_ui.directional_shadows_enabled = rs.directional_shadows_enabled
+        if 'directional_shadow_distance' in settings:
+            rs.directional_shadow_distance = float(settings['directional_shadow_distance'])
+            self.editor_ui.directional_shadow_distance_input.text = f"{rs.directional_shadow_distance:.1f}"
+
     def load_scene(self, scene_path):
         """Tear down the current scene and load a new one.
         Can be called from scripts to switch levels."""
@@ -534,9 +583,7 @@ class GraphicsEngine:
         self.scene_objects, self.model_meshes, settings = load_scene(
             scene_path, self.ctx, self.texture_loader
         )
-        gravity = settings.get('gravity', -9.81)
-        self.physics_system.set_gravity(gravity)
-        self.editor_ui.update_gravity_ui(gravity)
+        self._apply_scene_settings(settings)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
         self._rebuild_renderables()
@@ -568,7 +615,7 @@ class GraphicsEngine:
             safe_name = "untitled"
         path = os.path.join('scenes', f'{safe_name}.json')
         os.makedirs('scenes', exist_ok=True)
-        save_scene(path, self.scene_objects, settings={'gravity': self.physics_system.gravity})
+        save_scene(path, self.scene_objects, settings=self._build_scene_settings())
         self.current_scene_file = path
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self._record_history_snapshot(force=True)
@@ -604,7 +651,7 @@ class GraphicsEngine:
             self.autosave_timer += dt
             if self.autosave_timer >= AUTOSAVE_INTERVAL:
                 self.autosave_timer = 0.0
-                save_scene(self.current_scene_file, self.scene_objects, settings={'gravity': self.physics_system.gravity})
+                save_scene(self.current_scene_file, self.scene_objects, settings=self._build_scene_settings())
                 print("[Autosave] Scene saved")
 
         # Physics and scripts only run in play mode.
