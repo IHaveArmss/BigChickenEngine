@@ -7,12 +7,12 @@
       "name": "player",
       "format": "glb",
       "position": [
-        31.37,
-        6.23,
-        -18.03
+        31.49,
+        6.33,
+        -18.25
       ],
       "rotation": [
-        0.0,
+        -5.9,
         -89.98,
         0.0
       ],
@@ -39,10 +39,10 @@
       "is_trigger": false,
       "dialogue_data": null,
       "model": "assets/playerModel/CataHobov1.glb",
-      "use_anim_state_controller": false,
+      "use_anim_state_controller": true,
       "anim_state": {
-        "idle": "idle",
-        "run": "run",
+        "idle": "Idle",
+        "run": "Run",
         "jump": "jump",
         "fall": "fall",
         "move_threshold": 0.1,

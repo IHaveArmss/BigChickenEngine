@@ -142,6 +142,33 @@ class Animator:
         self.looping = loop
         self.speed = speed
 
+    def rebind_clips(self, external_clips, external_skeleton):
+        """Map external animations to this skeleton using joint name matching."""
+        if not external_clips or not external_skeleton:
+            return
+
+        # Map current joint names to their indices
+        name_map = {name: i for i, name in enumerate(self.skeleton.joint_names)}
+
+        for name, clip in external_clips.items():
+            new_channels = []
+            for ch in clip.channels:
+                if ch.bone_index < 0 or ch.bone_index >= len(external_skeleton.joint_names):
+                    continue
+                
+                # Use the name to find the corresponding joint in our target skeleton
+                joint_name = external_skeleton.joint_names[ch.bone_index]
+                target_idx = name_map.get(joint_name)
+                
+                if target_idx is not None:
+                    # Create a new channel pointing to our local bone index
+                    new_ch = Channel(target_idx, ch.path, ch.times, ch.values, ch.interpolation)
+                    new_channels.append(new_ch)
+            
+            # Store the re-bound clip
+            self.animations[name] = AnimationClip(clip.name, clip.duration, new_channels)
+            print(f"[Animator] Re-bound external clip '{name}' ({len(new_channels)}/{len(clip.channels)} channels mapped)")
+
     def stop(self):
         self.playing = False
 

@@ -341,7 +341,11 @@ def load_gltf(glb_path):
 
         for ji, ni in enumerate(joint_nodes):
             node = gltf.nodes[ni]
-            joint_names.append(node.name or f'bone_{ji}')
+            original_name = node.name or f'bone_{ji}'
+            # Normalize: mixamorig:Hips -> mixamorig_Hips
+            # This handles different Mixamo/Blender export naming conventions.
+            norm_name = original_name.replace(':', '_').replace(' ', '_')
+            joint_names.append(norm_name)
 
             p_node = parent_map.get(ni)
             parent_indices.append(node_to_joint.get(p_node, -1) if p_node is not None else -1)

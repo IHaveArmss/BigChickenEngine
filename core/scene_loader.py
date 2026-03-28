@@ -250,8 +250,11 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                           folder=entry.get('folder', 'Scene'),
                           tag=entry.get('tag', ''))
 
-        if skeleton_data and animations_data:
-            animator = Animator(skeleton_data, animations_data)
+        # Initialize Animator if the model has a skeleton
+        if skeleton_data:
+            # We initialize even if animations_data is empty, allowing
+            # for external injection of clips (e.g. via cata_anims.glb)
+            animator = Animator(skeleton_data, animations_data or {})
             obj.animator = animator
             for m in meshes:
                 if getattr(m, '_has_skin', False):
@@ -261,6 +264,25 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                 animator.play(first_clip)
             print(f"[SceneLoader]   -> Skeleton with {skeleton_data.num_joints} bones, "
                   f"{len(animations_data)} animation(s)")
+
+            # External animation injection (if requested or hardcoded)
+            # MUST happen BEFORE state controller is created so clips exist when _resolve_clips() runs
+            anim_src = entry.get('animation_source')
+
+            # PERMANENT FALLBACK: If no animation source is provided, use Cata's defaults
+            if not anim_src and 'catahobov1.glb' in model_path.lower():
+                anim_src = 'assets/animations/cata_anims.glb'
+
+            if anim_src:
+                if os.path.exists(anim_src):
+                    external_mesh_datas = load_gltf(anim_src)
+                    if external_mesh_datas:
+                        for emd in external_mesh_datas:
+                            if emd.get('has_skin'):
+                                animator.rebind_clips(emd.get('animations'), emd.get('skeleton'))
+                                break
+                else:
+                    print(f"[SceneLoader] WARNING: animation_source file not found: {anim_src}")
 
             # Optional auto state-machine controller for character-like animation.
             cfg = entry.get('anim_state', {})
@@ -280,9 +302,23 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
                     run_clip=obj.anim_state_config['run'],
                     jump_clip=obj.anim_state_config['jump'],
                     fall_clip=obj.anim_state_config['fall'],
-                move_threshold=float(obj.anim_state_config['move_threshold']),
-                vertical_threshold=float(obj.anim_state_config['vertical_threshold']),
-            )
+                    move_threshold=float(obj.anim_state_config['move_threshold']),
+                    vertical_threshold=float(obj.anim_state_config['vertical_threshold']),
+                )
+
+            # PERMANENT FALLBACK: Force Animation State Controller for the player
+            if 'catahobov1.glb' in model_path.lower() and not obj.anim_state_controller:
+                obj.anim_state_controller = AnimationStateController(
+                    animator,
+                    idle_clip='Idle',
+                    run_clip='Run',
+                    jump_clip='jump',
+                    fall_clip='fall',
+                    move_threshold=0.1,
+                    vertical_threshold=0.15
+                )
+                # Bug 2 fix: make sure the engine loop ticks this controller
+                obj.use_anim_state_controller = True
 
     obj.mass = entry.get('mass', 1.0)
     obj.use_gravity = entry.get('use_gravity', False)
@@ -330,7 +366,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     if visual_offset is None:
         model_path = entry.get('model', '').lower()
         if 'catahobov1.glb' in model_path:
-            visual_offset = [0, -0.34, 0]
+            visual_offset = [0, -0.36, 0]
         else:
             visual_offset = [0, 0, 0]
 

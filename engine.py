@@ -733,20 +733,21 @@ class GraphicsEngine:
             obj.update(dt)
 
         for obj in self.scene_objects:
-            if getattr(obj, 'anim_state_controller', None) is not None and getattr(obj, 'use_anim_state_controller', False):
-                obj.anim_state_controller.update(dt, obj=obj, physics_system=self.physics_system)
-            if obj.animator is not None:
-                obj.animator.update(dt)
-                # If non-skinned, apply root bone to object transform
-                if obj.meshes and not getattr(obj.meshes[0], '_has_skin', False):
-                    p, r, s = obj.animator.get_root_transform()
-                    if p is not None:
-                        obj.position = p
-                        # obj.rotation is a quat in SceneObject
-                        for m in obj.meshes:
-                            m.transform.rotation = r
-                        obj.scale = s
-                        obj._physics_dirty = True
+            if not self.dev_mode:
+                if getattr(obj, 'anim_state_controller', None) is not None and getattr(obj, 'use_anim_state_controller', False):
+                    obj.anim_state_controller.update(dt, obj=obj, physics_system=self.physics_system)
+                if obj.animator is not None:
+                    obj.animator.update(dt)
+                    # If non-skinned, apply root bone to object transform
+                    if obj.meshes and not getattr(obj.meshes[0], '_has_skin', False):
+                        p, r, s = obj.animator.get_root_transform()
+                        if p is not None:
+                            obj.position = p
+                            # obj.rotation is a quat in SceneObject
+                            for m in obj.meshes:
+                                m.transform.rotation = r
+                            obj.scale = s
+                            obj._physics_dirty = True
 
         # HUD info
         if sel_obj:
