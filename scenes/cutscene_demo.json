@@ -7,14 +7,14 @@
       "name": "player",
       "format": "glb",
       "position": [
-        27.32,
-        5.86,
-        -23.68
+        -18.002,
+        5.458,
+        -22.0
       ],
       "rotation": [
-        0.0,
-        -90.0,
-        0.0
+        -0.0,
+        -0.0,
+        0.101
       ],
       "scale": [
         3.162,
@@ -248,7 +248,7 @@
       "format": "cube",
       "position": [
         -1.93,
-        6.88,
+        13.2,
         3.98
       ],
       "rotation": [
@@ -276,13 +276,51 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
-      "dialogue_data": null,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Trigger_EI",
+            "text": "An ominous door stands before you.",
+            "next": "line_1"
+          },
+          "line_1": {
+            "speaker": "Trigger_EI",
+            "text": "Something EVIL is going on inside.",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "Trigger_EI",
+            "text": "yes",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "Trigger_EI",
+            "text": "no",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "Trigger_EI",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "Proceed?",
+                "next": "response_a"
+              },
+              {
+                "text": "idk",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
       "color": [
         0.8,
         0.2,
         1.0
       ],
-      "alpha": 0.4,
+      "alpha": 0.1,
       "folder": "cutscene"
     },
     {
@@ -356,7 +394,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
@@ -427,9 +465,6 @@
       "scripts": [
         "scene_trigger"
       ],
-      "scene_path": "scenes/pizza.json",
-      "target_position": [5.04, 1.99, 1.28],
-      "target_rotation": [0.0, -90.0, 0.0],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -437,12 +472,407 @@
       "color": [
         0.2,
         0.8,
-        0.69
+        0.686
       ],
       "alpha": 0.1,
       "interactable": true,
       "use_view_interaction": true,
-      "interaction_distance": 5.0
+      "interaction_distance": 5.0,
+      "scene_path": "scenes/pizza.json",
+      "target_position": [
+        5.04,
+        1.99,
+        1.28
+      ],
+      "target_rotation": [
+        0.0,
+        -90.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Hobo",
+      "format": "glb",
+      "position": [
+        -21.87,
+        4.55,
+        -2.48
+      ],
+      "rotation": [
+        0.0,
+        -9.0,
+        0.0
+      ],
+      "scale": [
+        1.449,
+        2.898,
+        1.449
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc",
+        "hobo_logic"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Hobo",
+            "text": "save...yourself...",
+            "next": "line_1"
+          },
+          "line_1": {
+            "speaker": "Hobo",
+            "text": "...",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "Hobo",
+            "text": "A heavy revolver stains your hands.",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "Hobo",
+            "text": "Trying to escape only make it heavier.",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "Hobo",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "Take weapon",
+                "next": "response_a"
+              },
+              {
+                "text": "Accept fate",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/homeless_laying.glb",
+      "alpha": 0.0,
+      "interactable": true,
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "dialogue_cam_pos": [
+        -18.0,
+        8.22,
+        -3.2
+      ],
+      "dialogue_cam_look_at": [
+        -22.0,
+        4.7,
+        -3.2
+      ],
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
+      "name": "Thief",
+      "format": "glb",
+      "position": [
+        -11.63,
+        4.36,
+        -4.72
+      ],
+      "rotation": [
+        90.0,
+        -89.972,
+        0.0
+      ],
+      "scale": [
+        5.239,
+        3.328,
+        1.932
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc",
+        "thief_logic"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/thief_standing.glb",
+      "alpha": 0.0,
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
+      "name": "low-poly_door",
+      "format": "glb",
+      "position": [
+        -9.23,
+        4.42,
+        40.36
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low-poly_door.glb"
+    },
+    {
+      "name": "npcDoor",
+      "format": "cube",
+      "position": [
+        -9.18,
+        5.39,
+        40.33
+      ],
+      "rotation": [
+        0.0,
+        -89.98,
+        0.0
+      ],
+      "scale": [
+        0.97,
+        2.327,
+        0.111
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc",
+        "door_guardian"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Ominous Door",
+            "text": "An small ominous door stands before you.",
+            "next": "line_1"
+          },
+          "line_1": {
+            "speaker": "Ominous Door",
+            "text": "Something EVIL is going on inside",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "Ominous Door",
+            "text": "You feel like a heavy burden has been placed upon you.",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "Ominous Door",
+            "text": "You feel lighter.",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "Ominous Door",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "Enter",
+                "next": "response_a"
+              },
+              {
+                "text": "Leave",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
+      "color": [
+        0.894,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.1,
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "look_from",
+      "format": "cube",
+      "position": [
+        -18.6,
+        8.22,
+        -3.2
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0
+    },
+    {
+      "name": "look_at",
+      "format": "cube",
+      "position": [
+        -22.02,
+        4.78,
+        -4.77
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0
+    },
+    {
+      "name": "trigger_hobo",
+      "format": "cube",
+      "position": [
+        -9.04,
+        5.9,
+        3.71
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        17.623,
+        3.945,
+        2.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "hobo_finder"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "alpha": 0.0
     }
   ]
 }

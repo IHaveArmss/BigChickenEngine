@@ -606,8 +606,8 @@ class GraphicsEngine:
         # (meaning we booted the game fresh, not transitioning from a door), force the position.
         # This prevents the Save Scene editor button from permanently corrupting the start state.
         if spawn_pos is None and "cutscene_demo.json" in scene_path.lower():
-            spawn_pos = [27.32, 5.86, -23.68]
-            spawn_rot = [0.0, -90.0, 0.0]
+            spawn_pos = [-18.0, 6.13, -22.0]
+            spawn_rot = [0.0, 0.0, 0.0]
 
         # Override player spawn if provided by the transition or hardcode
         if spawn_pos is not None or spawn_rot is not None:

@@ -86,7 +86,10 @@ class Weapon:
 
             # 2. Check for NPC hit
             if getattr(hit_obj, 'tag', '') == 'npc':
-                print(f"[Weapon] ELIMINATED: {hit_obj.name}")
-                self.engine.destroy(hit_obj)
+                if hit_obj.alpha > 0.5:
+                    print(f"[Weapon] HIT: {hit_obj.name}")
+                    hit_obj.alpha = 0.5 # Change opacity instead of deleting
+                else:
+                    print(f"[Weapon] ALREADY HIT: {hit_obj.name}")
         else:
             print("[Weapon] Miss...")
