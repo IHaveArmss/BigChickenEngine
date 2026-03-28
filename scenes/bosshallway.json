@@ -1,0 +1,609 @@
+{
+  "settings": {
+    "gravity": -9.81,
+    "sun_intensity": 0.0,
+    "ambient_strength": 0.0
+  },
+  "objects": [
+    {
+      "name": "player",
+      "format": "cube",
+      "position": [
+        0.329,
+        0.706,
+        -0.038
+      ],
+      "rotation": [
+        180.0,
+        62.804,
+        180.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "player",
+      "scripts": [
+        "third_person"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.6,
+        1.0
+      ]
+    },
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        321.891,
+        0.1,
+        39.557
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.282,
+        0.282,
+        0.282
+      ]
+    },
+    {
+      "name": "bosslevel",
+      "format": "glb",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/bosslevel.glb"
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        -48.29,
+        9.35,
+        -0.08
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        154.242,
+        0.1,
+        21.923
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.118,
+        0.114,
+        0.114
+      ]
+    },
+    {
+      "name": "light_el",
+      "format": "light",
+      "position": [
+        8.3,
+        4.82,
+        -0.66
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.3,
+      "color": [
+        1.0,
+        1.0,
+        0.886
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_3",
+      "format": "light",
+      "position": [
+        -41.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_2",
+      "format": "light",
+      "position": [
+        -29.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_4",
+      "format": "light",
+      "position": [
+        -53.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_5",
+      "format": "light",
+      "position": [
+        -65.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_6",
+      "format": "light",
+      "position": [
+        -77.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_7",
+      "format": "light",
+      "position": [
+        -89.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_8",
+      "format": "light",
+      "position": [
+        -101.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "light_9",
+      "format": "light",
+      "position": [
+        -113.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.878
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    },
+    {
+      "name": "Trigger_Entity",
+      "format": "cube",
+      "position": [
+        -8.68,
+        4.96,
+        -1.03
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.451,
+        11.317,
+        15.812
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "bosshallway_light"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.8,
+        0.2,
+        1.0
+      ],
+      "alpha": 0.0
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        -17.0,
+        9.55,
+        -0.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true,
+      "alpha": 0.0
+    }
+  ]
+}
