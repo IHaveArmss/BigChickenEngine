@@ -67,7 +67,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/lobby_act3.json'
+SCENE_FILE = 'scenes/cutscene_demo.json'
 PLAY_INTRO = False # Set to False to skip the opening video
 # ======================================================================
 
@@ -331,6 +331,10 @@ class GraphicsEngine:
         self.editor_ui.set_prefab_context(self.list_prefab_names())
         self._record_history_snapshot(force=True)
 
+        # Synchronize play-mode state on startup so camera snaps correctly without F1
+        self.dev_mode = True
+        self.toggle_dev_mode() # This sets dev_mode to False and primes scripts/input/cursor
+
         self.clock = pygame.time.Clock()
         self.time = 0.0
 
@@ -369,9 +373,10 @@ class GraphicsEngine:
             self.current_scene_file, self.ctx, self.texture_loader, 
             resource_manager=self.resource_manager
         )
-        self._apply_scene_settings(settings)
-        self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
+
+        # Apply marker-based spawn on boot
+        self._apply_spawn_logic()
 
         # Register physics before scripts run
         for obj in self.scene_objects:
@@ -423,6 +428,55 @@ class GraphicsEngine:
     def find_by_tag(self, tag):
         """Return a list of all SceneObjects with the given tag."""
         return [o for o in self.scene_objects if getattr(o, 'tag', '') == tag]
+
+    def _apply_spawn_logic(self, override_pos=None, override_rot=None):
+        """Finds the player and snaps them to the correct starting point.
+        Hierarchy: 1. Manual Overrides (Transitions) > 2. Scene 'player_spawn' Marker > 3. Default JSON pos.
+        """
+        player = self.find_one_by_tag('player')
+        if not player:
+            return
+
+        final_pos = None
+        final_rot = None
+
+        # 1. Manual Overrides (usually from Door script or command line)
+        if override_pos is not None:
+            final_pos = glm.vec3(override_pos)
+            print(f"[Spawn] Logic: Transition Override -> {final_pos}")
+        if override_rot is not None:
+            final_rot = override_rot
+
+        # 2. Scene Marker (an object tagged or named 'player_spawn')
+        if final_pos is None:
+            marker = None
+            for obj in self.scene_objects:
+                tag = getattr(obj, 'tag', '').lower()
+                name = getattr(obj, 'name', '').lower()
+                if tag == 'player_spawn' or name == 'player_spawn':
+                    marker = obj
+                    break
+
+            if marker:
+                final_pos = glm.vec3(marker.position)
+                # Extract Euler from the marker's rotation
+                e = marker.rotation_euler
+                final_rot = [e.x, e.y, e.z]
+                print(f"[Spawn] Logic: Marker ('{marker.name}') -> {final_pos}")
+                # Hide spawn markers in play mode (vague heuristic)
+                if not self.dev_mode:
+                    marker.is_collideable = False
+            else:
+                print(f"[Spawn] Logic: Default JSON (No marker found)")
+
+        # Apply results
+        if final_pos is not None:
+            player.position = final_pos
+        if final_rot is not None:
+            player.set_rotation_euler(final_rot[0], final_rot[1], final_rot[2])
+
+        # Ensure physics is synced immediately
+        player._physics_dirty = True
 
     def find_one_by_tag(self, tag):
         """Return the first SceneObject with the given tag, or None."""
@@ -608,23 +662,8 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
 
-        # Hardcoded Boot Default: if loading cutscene_demo with NO explicit spawn_pos
-        # (meaning we booted the game fresh, not transitioning from a door), force the position.
-        # This prevents the Save Scene editor button from permanently corrupting the start state.
-        if spawn_pos is None and "cutscene_demo.json" in scene_path.lower():
-            spawn_pos = [27.32, 5.86, -23.68]
-            spawn_rot = [0.0, -90.0, 0.0]
-
-        # Override player spawn if provided by the transition or hardcode
-        if spawn_pos is not None or spawn_rot is not None:
-            player = self.find_one_by_tag('player')
-            if player:
-                if spawn_pos is not None:
-                    # spawn_pos is likely a list [x,y,z], we cast to glm.vec3
-                    # or unpack if it's a tuple.
-                    player.position = glm.vec3(spawn_pos[0], spawn_pos[1], spawn_pos[2])
-                if spawn_rot is not None:
-                    player.set_rotation_euler(spawn_rot[0], spawn_rot[1], spawn_rot[2])
+        # Apply spawn logic (marker-based or manual override)
+        self._apply_spawn_logic(spawn_pos, spawn_rot)
 
         # Register physics before scripts run
         for obj in self.scene_objects:
