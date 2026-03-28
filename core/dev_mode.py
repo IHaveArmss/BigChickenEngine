@@ -324,14 +324,15 @@ class DevMode:
                 pass
             return None
 
-        obj.dialogue_cam_pos     = _parse_xyz('dlg_cam_pos_x',  'dlg_cam_pos_y',  'dlg_cam_pos_z')
-        obj.dialogue_cam_look_at = _parse_xyz('dlg_cam_look_x', 'dlg_cam_look_y', 'dlg_cam_look_z')
-
-        df_str = values.get('dialogue_facing', '').strip()
-        try:
-            obj.dialogue_facing = float(df_str) if df_str else None
-        except (ValueError, TypeError):
-            pass
+        obj.dialogue_cam_pos = _parse_xyz('dlg_cam_pos_x', 'dlg_cam_pos_y', 'dlg_cam_pos_z')
+        def _parse_float(key):
+            s = values.get(key, '').strip()
+            try:
+                return float(s) if s else None
+            except (ValueError, TypeError):
+                return None
+        obj.dialogue_cam_yaw   = _parse_float('dlg_cam_yaw')
+        obj.dialogue_cam_pitch = _parse_float('dlg_cam_pitch')
             
         obj._physics_dirty = True
 

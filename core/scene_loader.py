@@ -395,15 +395,14 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     obj.is_trigger = bool(entry.get('is_trigger', False))
     obj.dialogue_data = entry.get('dialogue_data', None)
 
-    # Optional dialogue camera overrides (world-space).
-    # dialogue_cam_pos:    [x, y, z]  — exact camera position during dialogue
-    # dialogue_cam_look_at:[x, y, z]  — point the camera looks at (default: NPC face)
-    # dialogue_facing:     float (degrees) — legacy: angle the NPC face points toward
+    # Optional dialogue camera overrides.
+    # dialogue_cam_pos:   [x, y, z]  — exact world-space camera position during dialogue
+    # dialogue_cam_yaw:   float      — camera horizontal angle in degrees
+    # dialogue_cam_pitch: float      — camera vertical angle in degrees
     raw_dcp = entry.get('dialogue_cam_pos')
-    obj.dialogue_cam_pos = glm.vec3(*raw_dcp) if raw_dcp else None
-    raw_dcl = entry.get('dialogue_cam_look_at')
-    obj.dialogue_cam_look_at = glm.vec3(*raw_dcl) if raw_dcl else None
-    obj.dialogue_facing = entry.get('dialogue_facing', None)
+    obj.dialogue_cam_pos   = glm.vec3(*raw_dcp) if raw_dcp else None
+    obj.dialogue_cam_yaw   = entry.get('dialogue_cam_yaw', None)
+    obj.dialogue_cam_pitch = entry.get('dialogue_cam_pitch', None)
 
     if any(r != 0 for r in rot):
         obj.set_rotation_euler(*rot)
@@ -440,8 +439,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
         'is_collideable', 'is_kinematic', 'collider_type', 'bounciness', 'friction',
         'drag_linear', 'tag', 'scripts', 'casts_shadows', 'receives_shadows', 'is_trigger',
         'dialogue_data', 'color', 'model', 'animation_source', 'use_anim_state_controller',
-        'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha',
-        'dialogue_cam_pos', 'dialogue_cam_look_at', 'dialogue_facing'
+        'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha'
     }
     for key, value in entry.items():
         if key not in standard_keys:

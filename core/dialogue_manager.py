@@ -69,7 +69,7 @@ class DialogueManager:
         self._saved_cam_right = glm.vec3(1, 0, 0)
         self._saved_cam_up = glm.vec3(0, 1, 0)
         self._dialogue_cam_pos = glm.vec3(0)
-        self._dialogue_cam_focus = glm.vec3(0)
+        self._dialogue_cam_front = glm.vec3(0, 0, -1)
         self._zoom_progress = 0.0
         self._zoom_speed = 2.5
         self._returning = False
@@ -117,52 +117,33 @@ class DialogueManager:
         self._saved_cam_right = glm.vec3(cam.right)
         self._saved_cam_up = glm.vec3(cam.up)
 
-        # ---- Dialogue camera position & focus (three-tier priority) ----
+        # ---- Dialogue camera position & direction (manual only) ----
         #
-        # Tier 1 — Explicit world-space override in scene JSON:
-        #   "dialogue_cam_pos": [x, y, z]        — exact camera world position
-        #   "dialogue_cam_look_at": [x, y, z]    — what to look at (default: NPC head)
+        # Set in scene JSON on the NPC object:
+        #   "dialogue_cam_pos": [x, y, z]  — world-space camera position
+        #   "dialogue_cam_yaw": float       — horizontal angle in degrees (0=+X, 90=+Z, 180/-180=-X, 270/-90=-Z)
+        #   "dialogue_cam_pitch": float     — vertical angle in degrees (+= look up, -= look down)
         #
-        # Tier 2 — dialogue_facing angle (legacy, degrees):
-        #   "dialogue_facing": 90.0               — world-space angle the face points to
-        #
-        # Tier 3 — Auto-derive from mesh forward vector (local -Z in world space).
+        # If not set the camera stays exactly where it is.
 
-        npc_head = glm.vec3(target.position) + glm.vec3(0.0, 1.0, 0.0)
+        explicit_pos   = getattr(target, 'dialogue_cam_pos', None)
+        explicit_yaw   = getattr(target, 'dialogue_cam_yaw', None)
+        explicit_pitch = getattr(target, 'dialogue_cam_pitch', None)
 
-        explicit_pos  = getattr(target, 'dialogue_cam_pos', None)
-        explicit_look = getattr(target, 'dialogue_cam_look_at', None)
-        dialogue_facing = getattr(target, 'dialogue_facing', None)
+        # Camera position — stay put if not manually set
+        self._dialogue_cam_pos = glm.vec3(explicit_pos) if explicit_pos is not None else glm.vec3(cam.position)
 
-        # Focus point (what the camera looks at)
-        self._dialogue_cam_focus = explicit_look if explicit_look is not None else npc_head
-
-        if explicit_pos is not None:
-            # Tier 1: fully explicit — use exactly as given
-            self._dialogue_cam_pos = glm.vec3(explicit_pos)
-
-        elif dialogue_facing is not None:
-            # Tier 2: angle specifies which direction the NPC's face points (world XZ).
-            # Camera goes in that direction from the head so it looks back at the face.
-            angle_rad = math.radians(dialogue_facing)
-            face_dir = glm.normalize(glm.vec3(math.sin(angle_rad), 0.0, math.cos(angle_rad)))
-            self._dialogue_cam_pos = self._dialogue_cam_focus + face_dir * 4.0
-
+        # Camera direction — derive front vector from yaw/pitch, or keep current
+        if explicit_yaw is not None or explicit_pitch is not None:
+            yaw_rad   = math.radians(explicit_yaw   or 0.0)
+            pitch_rad = math.radians(explicit_pitch or 0.0)
+            self._dialogue_cam_front = glm.normalize(glm.vec3(
+                math.cos(yaw_rad) * math.cos(pitch_rad),
+                math.sin(pitch_rad),
+                math.sin(yaw_rad) * math.cos(pitch_rad),
+            ))
         else:
-            # Tier 3: derive from the mesh transform (local -Z = face direction).
-            if target.meshes:
-                raw = target.meshes[0].transform.forward()  # rotation * (0,0,-1)
-            else:
-                rot = target.rotation
-                raw = glm.normalize(rot * glm.vec3(0.0, 0.0, -1.0)) if hasattr(rot, 'w') else glm.vec3(0.0, 0.0, -1.0)
-
-            face_dir = glm.vec3(raw.x, 0.0, raw.z)
-            if glm.length(face_dir) < 0.001:
-                face_dir = glm.vec3(0.0, 0.0, -1.0)
-            else:
-                face_dir = glm.normalize(face_dir)
-
-            self._dialogue_cam_pos = self._dialogue_cam_focus + face_dir * 4.0
+            self._dialogue_cam_front = glm.vec3(cam.front)
 
         # Navigate to first node
         if self._is_new_format:
@@ -241,20 +222,17 @@ class DialogueManager:
         cam = self.engine.active_camera
 
         if not self._returning:
-            # Zoom in toward NPC
+            # Zoom in to dialogue camera position
             cam.position = glm.mix(self._saved_cam_pos, self._dialogue_cam_pos, t)
 
-            # Point camera at dialogue focus
-            focus_dir = self._dialogue_cam_focus - cam.position
-            if glm.length(focus_dir) > 0.001:
-                focus_dir = glm.normalize(focus_dir)
-                cam.front = focus_dir
-                cam.right = glm.normalize(glm.cross(focus_dir, glm.vec3(0, 1, 0)))
-                cam.up = glm.normalize(glm.cross(cam.right, focus_dir))
+            # Blend toward the target direction
+            blended = glm.normalize(glm.mix(self._saved_cam_front, self._dialogue_cam_front, t))
+            cam.front = blended
+            cam.right = glm.normalize(glm.cross(blended, glm.vec3(0, 1, 0)))
+            cam.up    = glm.normalize(glm.cross(cam.right, blended))
         else:
             # Keep return target in sync with the live third-person camera so we
-            # always return to wherever the player camera currently is, not where
-            # it was when the dialogue started.
+            # always return to wherever the player camera currently is.
             if self._play_cam is not None and self._play_cam is not cam:
                 self._saved_cam_pos   = glm.vec3(self._play_cam.position)
                 self._saved_cam_front = glm.vec3(self._play_cam.front)
@@ -263,11 +241,7 @@ class DialogueManager:
 
             cam.position = glm.mix(self._dialogue_cam_pos, self._saved_cam_pos, t)
 
-            # Smoothly blend the camera direction back toward the player camera
-            # direction instead of pointing at the NPC (which caused the jerk).
-            cam.front = glm.normalize(glm.mix(
-                glm.vec3(self._dialogue_cam_focus - self._dialogue_cam_pos),
-                self._saved_cam_front, t))
+            cam.front = glm.normalize(glm.mix(self._dialogue_cam_front, self._saved_cam_front, t))
             cam.right = glm.normalize(glm.cross(cam.front, glm.vec3(0, 1, 0)))
             cam.up    = glm.normalize(glm.cross(cam.right, cam.front))
 

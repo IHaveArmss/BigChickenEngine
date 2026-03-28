@@ -378,6 +378,7 @@ class EditorUI:
         self.sun_azimuth_input = TextInput(bx, 0, 60, INPUT_HEIGHT, 'SunAz', '45')
         self.sun_elevation_input = TextInput(bx, 0, 60, INPUT_HEIGHT, 'SunEl', '-55')
         self.sun_intensity_input = TextInput(bx, 0, 60, INPUT_HEIGHT, 'SunInt', '1.0')
+        self.skybox_path_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'Skybox', '')
         
         self.global_gravity_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'Gravity', '-9.81')
         self.scene_load_input = TextInput(bx, 0, bw, INPUT_HEIGHT, 'Scene', 'floor')
@@ -565,6 +566,12 @@ class EditorUI:
         hint = self.font.render("Az: around Y (0=+X, 90=+Z)  El: up/down", True, (140, 140, 150))
         surface.blit(hint, (bx, y))
         y += 18
+
+        label = self.font.render("Skybox", True, LABEL_COLOR[:3])
+        surface.blit(label, (bx, y + 4))
+        self.skybox_path_input.rect = pygame.Rect(bx, y + 18, bw, INPUT_HEIGHT)
+        self.skybox_path_input.draw(surface, self.font)
+        y += 18 + INPUT_HEIGHT + 4
         return y
 
     def _draw_shadows_section(self, surface, bx, bw, y):
@@ -806,36 +813,16 @@ class EditorUI:
 
         # Dialogue camera overrides — separate X/Y/Z fields
         dcp = getattr(obj, 'dialogue_cam_pos', None)
-        if dcp is not None:
-            if hasattr(dcp, 'x'):
-                self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp.x:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp.y:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp.z:.2f}', 'field': None}
-            elif isinstance(dcp, (list, tuple)) and len(dcp) >= 3:
-                self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp[0]:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp[1]:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp[2]:.2f}', 'field': None}
-        else:
-            self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': '', 'field': None}
-            self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': '', 'field': None}
-            self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': '', 'field': None}
-
-        dcl = getattr(obj, 'dialogue_cam_look_at', None)
-        if dcl is not None:
-            if hasattr(dcl, 'x'):
-                self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': f'{dcl.x:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': f'{dcl.y:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': f'{dcl.z:.2f}', 'field': None}
-            elif isinstance(dcl, (list, tuple)) and len(dcl) >= 3:
-                self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': f'{dcl[0]:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': f'{dcl[1]:.2f}', 'field': None}
-                self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': f'{dcl[2]:.2f}', 'field': None}
-        else:
-            self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': '', 'field': None}
-            self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': '', 'field': None}
-            self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': '', 'field': None}
-        df = getattr(obj, 'dialogue_facing', None)
-        self.prop_inputs['dialogue_facing'] = {'label': 'Face Angle', 'value': f'{df:.1f}' if df is not None else '', 'field': None}
+        dcp_x = (dcp[0] if isinstance(dcp, (list, tuple)) else dcp.x) if dcp is not None else None
+        dcp_y = (dcp[1] if isinstance(dcp, (list, tuple)) else dcp.y) if dcp is not None else None
+        dcp_z = (dcp[2] if isinstance(dcp, (list, tuple)) else dcp.z) if dcp is not None else None
+        self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp_x:.2f}' if dcp_x is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp_y:.2f}' if dcp_y is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp_z:.2f}' if dcp_z is not None else '', 'field': None}
+        dcy = getattr(obj, 'dialogue_cam_yaw', None)
+        dcp2 = getattr(obj, 'dialogue_cam_pitch', None)
+        self.prop_inputs['dlg_cam_yaw']   = {'label': 'Yaw',   'value': f'{float(dcy):.1f}'  if dcy   is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_pitch'] = {'label': 'Pitch', 'value': f'{float(dcp2):.1f}' if dcp2  is not None else '', 'field': None}
         self.prop_inputs['is_trigger'] = {
             'label': 'Is Trigger', 'value': getattr(obj, 'is_trigger', False), 'field': 'toggle',
         }
@@ -1189,6 +1176,7 @@ class EditorUI:
         self.sun_azimuth_input.handle_event(event)
         self.sun_elevation_input.handle_event(event)
         self.sun_intensity_input.handle_event(event)
+        self.skybox_path_input.handle_event(event)
         self.recording_name_input.handle_event(event)
         self.anim_interval.handle_event(event)
         self.cutscene_name_input.handle_event(event)
@@ -1260,6 +1248,7 @@ class EditorUI:
         self.sun_azimuth_input.update(dt)
         self.sun_elevation_input.update(dt)
         self.sun_intensity_input.update(dt)
+        self.skybox_path_input.update(dt)
         self.recording_name_input.update(dt)
         self.anim_interval.update(dt)
         self.cutscene_name_input.update(dt)
@@ -1905,37 +1894,23 @@ class EditorUI:
                     x += single_w + 24
                 y += INPUT_HEIGHT + 8
 
-                # Cam Look At row
-                label_surf = self.font_bold.render("Cam Look At", True, (100, 220, 160))
+                # Cam Yaw / Pitch row
+                label_surf = self.font_bold.render("Cam Direction", True, (100, 220, 160))
                 surface.blit(label_surf, (bx, y))
                 y += 18
                 x = bx
-                for key in ['dlg_cam_look_x', 'dlg_cam_look_y', 'dlg_cam_look_z']:
+                half_w = (PANEL_WIDTH - PANEL_PADDING * 2 - 24) // 2
+                for key in ['dlg_cam_yaw', 'dlg_cam_pitch']:
                     info = self.prop_inputs[key]
-                    lbl = self.font_bold.render(info['label'], True, lbl_c[info['label']])
-                    surface.blit(lbl, (x, y + 3))
+                    lbl_surf = self.font_bold.render(info['label'], True, (200, 200, 200))
+                    surface.blit(lbl_surf, (x, y + 3))
+                    lbl_w = lbl_surf.get_width() + 6
                     if info['field'] is None:
-                        info['field'] = TextInput(x + 16, y, single_w, INPUT_HEIGHT, info['label'], info['value'])
-                    info['field'].rect = pygame.Rect(x + 16, y, single_w, INPUT_HEIGHT)
+                        info['field'] = TextInput(x + lbl_w, y, half_w - lbl_w, INPUT_HEIGHT, info['label'], info['value'])
+                    info['field'].rect = pygame.Rect(x + lbl_w, y, half_w - lbl_w, INPUT_HEIGHT)
                     info['field'].draw(surface, self.font)
-                    x += single_w + 24
+                    x += half_w + 24
                 y += INPUT_HEIGHT + 8
-
-                # Face Angle row (single field)
-                label_surf = self.font_bold.render("Face Angle (deg)", True, (100, 220, 160))
-                surface.blit(label_surf, (bx, y))
-                y += 18
-                info = self.prop_inputs['dialogue_facing']
-                full_w = PANEL_WIDTH - PANEL_PADDING * 2 - 10
-                if info['field'] is None:
-                    info['field'] = TextInput(bx, y, full_w, INPUT_HEIGHT, 'degrees (empty = auto)', info['value'])
-                info['field'].rect = pygame.Rect(bx, y, full_w, INPUT_HEIGHT)
-                info['field'].draw(surface, self.font)
-                y += INPUT_HEIGHT + 4
-
-                hint = self.font.render("Leave blank to use auto-detection", True, (110, 110, 140))
-                surface.blit(hint, (bx, y))
-                y += 18
 
             y += 4
 
