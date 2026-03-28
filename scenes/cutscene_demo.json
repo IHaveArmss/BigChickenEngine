@@ -9,21 +9,22 @@
     "ambient_color_g": 1.0,
     "ambient_color_b": 1.0,
     "directional_shadows_enabled": true,
-    "directional_shadow_distance": 40.0
+    "directional_shadow_distance": 40.0,
+    "skybox_path": ""
   },
   "objects": [
     {
       "name": "player",
       "format": "glb",
       "position": [
-        29.535,
-        5.126,
-        -23.634
+        31.65,
+        6.03,
+        -23.96
       ],
       "rotation": [
-        180.0,
-        89.62,
-        180.0
+        0.0,
+        -89.98,
+        0.0
       ],
       "scale": [
         3.162,
@@ -59,44 +60,6 @@
       }
     },
     {
-      "name": "target_npc",
-      "format": "cube",
-      "position": [
-        10.0,
-        10.0,
-        5.0
-      ],
-      "rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "scale": [
-        1.5,
-        1.5,
-        1.5
-      ],
-      "mass": 0.0,
-      "use_gravity": false,
-      "is_collideable": true,
-      "is_kinematic": true,
-      "collider_type": "box",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.02,
-      "tag": "npc",
-      "scripts": [],
-      "casts_shadows": true,
-      "receives_shadows": true,
-      "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.9,
-        0.1,
-        0.1
-      ]
-    },
-    {
       "name": "platform",
       "format": "cube",
       "position": [
@@ -130,7 +93,7 @@
       "dialogue_data": null,
       "color": [
         0.4,
-        0.49,
+        0.486,
         0.6
       ]
     },
@@ -582,11 +545,6 @@
         8.22,
         -3.2
       ],
-      "dialogue_cam_look_at": [
-        -22.0,
-        4.7,
-        -3.2
-      ],
       "use_anim_state_controller": false,
       "anim_state": {
         "idle": "idle",
@@ -607,7 +565,7 @@
       ],
       "rotation": [
         90.0,
-        -89.98,
+        -89.972,
         0.0
       ],
       "scale": [
@@ -710,7 +668,7 @@
       "tag": "npc",
       "scripts": [
         "npc",
-        "door_guardian"
+        "door_enter_lobby"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -755,14 +713,32 @@
         }
       },
       "color": [
-        0.894,
+        0.89,
         0.4,
         0.8
       ],
       "alpha": 0.1,
       "interactable": true,
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "dialogue_cam_pos": [
+        -7.0,
+        6.0,
+        38.4
+      ],
+      "dialogue_cam_yaw": 0.0,
+      "dialogue_cam_pitch": 0.0,
+      "scene_path": "scenes/lobby.json",
+      "target_position": [
+        -4.59,
+        0.674,
+        0.129
+      ],
+      "target_rotation": [
+        180.0,
+        89.62,
+        180.0
+      ]
     },
     {
       "name": "look_from",

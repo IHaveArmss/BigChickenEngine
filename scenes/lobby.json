@@ -52,21 +52,21 @@
     },
     {
       "name": "player",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -4.59,
         0.674,
         0.129
       ],
       "rotation": [
-        -4.826,
-        87.802,
-        -4.829
+        180.0,
+        89.62,
+        180.0
       ],
       "scale": [
-        1.0,
-        1.496,
-        1.0
+        3.162,
+        3.162,
+        3.162
       ],
       "mass": 1.0,
       "use_gravity": true,
@@ -75,20 +75,26 @@
       "collider_type": "capsule",
       "bounciness": 0.0,
       "friction": 0.5,
-      "drag_linear": 0.02,
+      "drag_linear": 0.0,
       "tag": "player",
       "scripts": [
-        "third_person"
+        "third_person",
+        "weapon"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.2,
-        0.6,
-        1.0
-      ]
+      "model": "assets/playerModel/CataHobov1.glb",
+      "use_anim_state_controller": true,
+      "anim_state": {
+        "idle": "Idle",
+        "run": "Running",
+        "jump": "Jump",
+        "fall": "Falling",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "lobby",
