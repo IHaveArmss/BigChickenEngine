@@ -37,8 +37,7 @@
         0.333,
         0.333,
         0.4
-      ],
-      "is_collideable": true
+      ]
     },
     {
       "name": "cube_1",
@@ -78,8 +77,7 @@
         1.0
       ],
       "interactable": true,
-      "interaction_distance": 3.0,
-      "is_collideable": true
+      "interaction_distance": 3.0
     },
     {
       "name": "cube_1",
@@ -117,8 +115,7 @@
         0.478,
         0.475,
         1.0
-      ],
-      "is_collideable": true
+      ]
     },
     {
       "name": "Interactable_Button",
@@ -158,8 +155,7 @@
         0.698
       ],
       "interactable": true,
-      "interaction_distance": 3.0,
-      "is_collideable": true
+      "interaction_distance": 3.0
     }
   ]
 }
