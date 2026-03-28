@@ -205,24 +205,8 @@ class GraphicsEngine:
                 }
             self.play_camera = None
             self.script_manager.load_scripts(self, self.scene_objects)
-    def load_engine_config(self):
-        self.engine_config = {'play_intro': True}
-        if os.path.exists('engine_config.json'):
-            try:
-                with open('engine_config.json', 'r') as f:
-                    self.engine_config.update(json.load(f))
-            except Exception as e:
-                print(f"[Engine] Failed to load engine config: {e}")
-
-    def save_engine_config(self):
-        try:
-            with open('engine_config.json', 'w') as f:
-                json.dump(self.engine_config, f, indent=4)
-        except Exception as e:
-            print(f"[Engine] Failed to save engine config: {e}")
-
     def __init__(self, win_size=(1280, 720)):
-        self.load_engine_config()
+        self.play_intro_enabled = True
         pygame.init()
 
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
@@ -290,7 +274,7 @@ class GraphicsEngine:
         self.editor_ui.available_cutscenes = self.cutscenes.list_cutscenes()
 
         # Keep Dev UI in sync with runtime settings (initial defaults)
-        self.editor_ui.play_intro_enabled = self.engine_config.get('play_intro', True)
+        self.editor_ui.play_intro_enabled = self.play_intro_enabled
         self.editor_ui.ps2_enabled = self.render_settings.ps2_enabled
         self.editor_ui.postprocess_enabled = self.render_settings.postprocess_enabled
         self.editor_ui.quantize_enabled = self.render_settings.quantize_enabled
@@ -642,9 +626,7 @@ class GraphicsEngine:
 
         # Ensure Play Intro config matches UI
         if hasattr(self.editor_ui, 'play_intro_enabled'):
-            if self.engine_config.get('play_intro', True) != self.editor_ui.play_intro_enabled:
-                self.engine_config['play_intro'] = self.editor_ui.play_intro_enabled
-                self.save_engine_config()
+            self.play_intro_enabled = self.editor_ui.play_intro_enabled
 
         # Autosave
         if self.autosave_enabled and self.dev_mode:
@@ -854,7 +836,7 @@ class GraphicsEngine:
 
     def play_intro(self):
         intro_path = os.path.join('assets', 'videos', 'intro.mp4')
-        if os.path.exists(intro_path) and self.engine_config.get('play_intro', True):
+        if os.path.exists(intro_path) and self.play_intro_enabled:
             from core.video_player import VideoPlayer
             player = VideoPlayer(self.ctx, self.shader_cache, intro_path)
             if player.valid:

@@ -17,7 +17,7 @@ class Tony:
                 "nodes": {
                     "repeat": {
                         "speaker": "Tony Esprano",
-                        "text": "Get moving, the pizza will get cold!",
+                        "text": "Get moving, you lazy bastard!!",
                         "next": "exit"
                     },
                     "exit": {
