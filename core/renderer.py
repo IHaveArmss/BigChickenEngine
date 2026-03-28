@@ -410,9 +410,10 @@ class Renderer:
             sel = scene_objects[selected_index]
             self.ctx.wireframe = True
             for mesh in sel.meshes:
-                # ModelMesh instances own their material colours and textures —
-                # passing object_color would overwrite them and drop the texture.
-                # Let them render with their natural material in wireframe mode.
+                # ModelMesh instances own their material colours and textures.
+                # Use the highlight system (additive tint over the texture) instead
+                # of object_color so the texture is preserved while still showing
+                # a clear green selection indicator on the wireframe edges.
                 if isinstance(mesh, ModelMesh):
                     mesh.set_uniforms(
                         camera, lights=lights,
@@ -420,6 +421,8 @@ class Renderer:
                         viewport=viewport,
                         dir_light_vp=self._dir_light_vp if dir_shadows else None,
                         receives_shadows=True,
+                        highlight_strength=0.6,
+                        highlight_color=glm.vec3(0.0, 0.9, 0.35),
                     )
                 else:
                     mesh.set_uniforms(
