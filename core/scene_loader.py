@@ -288,7 +288,8 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     obj.use_gravity = entry.get('use_gravity', False)
     obj.is_collideable = entry.get('is_collideable', True)
     obj.is_kinematic = entry.get('is_kinematic', True)
-    obj.collider_type = entry.get('collider_type', 'box')
+    default_collider = 'mesh' if fmt in ('glb', 'gltf') else 'box'
+    obj.collider_type = entry.get('collider_type', default_collider)
     obj.bounciness = entry.get('bounciness', 0.0)
 
     # Friction: prefer 'friction', fall back to 'drag' for legacy scenes

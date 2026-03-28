@@ -1,8 +1,8 @@
 import pybullet as p
 import pybullet_data
 import glm
+import numpy as np
 import os
-import struct
 
 FIXED_TIMESTEP = 1.0 / 240.0
 MAX_SUBSTEPS = 10
@@ -89,6 +89,14 @@ class PhysicsSystem:
             shape_id = p.createCollisionShape(
                 p.GEOM_SPHERE, radius=max(sx, sy, sz) * 0.5,
                 physicsClientId=self.client_id)
+        elif col_type == 'capsule':
+            # Capsule: radius from the narrower XZ footprint, cylinder height fills
+            # the remainder so the total height (cylinder + 2 hemispheres) == sy.
+            radius = min(sx, sz) * 0.35
+            cyl_h  = max(sy - radius * 2.0, 0.0)
+            shape_id = p.createCollisionShape(
+                p.GEOM_CAPSULE, radius=radius, height=cyl_h,
+                physicsClientId=self.client_id)
         elif col_type == 'mesh' and getattr(obj, 'model_path', '') and os.path.exists(obj.model_path):
             ext = os.path.splitext(obj.model_path)[1].lower()
             if ext in ('.glb', '.gltf'):
@@ -103,7 +111,7 @@ class PhysicsSystem:
                 # Fallback for other formats (stl, etc.)
                 shape_id = self._create_mesh_collision(obj, sx, sy, sz)
         elif col_type == 'convex_hull':
-            shape_id = self._create_mesh_collision(obj, sx, sy, sz)
+            shape_id = self._create_mesh_collision(obj, sx, sy, sz, force_convex=True)
         else:
             shape_id = p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
@@ -120,11 +128,14 @@ class PhysicsSystem:
             physicsClientId=self.client_id,
         )
 
+        # Lock rotation for capsule/sphere colliders (character controllers).
+        # High angular damping prevents edge contacts from tipping the body.
+        angular_damp = 0.99 if col_type in ('capsule', 'sphere') else 0.05
         p.changeDynamics(body_id, -1,
                          restitution=bounciness,
                          lateralFriction=friction,
                          linearDamping=drag,
-                         angularDamping=0.05,
+                         angularDamping=angular_damp,
                          physicsClientId=self.client_id)
         
         # --- Trigger Support (Ghost Mode) ---
@@ -137,64 +148,71 @@ class PhysicsSystem:
         self.body_scales[obj] = glm.vec3(sx, sy, sz)
         self._cached_dynamics[obj] = self._dynamics_key(obj)
 
-    def _create_mesh_collision(self, obj, sx, sy, sz):
-        """Create a triangle mesh (concave, for static) or convex hull collision shape."""
-        vertices = []
-        indices = []
+    def _create_mesh_collision(self, obj, sx, sy, sz, force_convex=False):
+        """Create a triangle mesh (concave, for static/kinematic) or convex hull collision shape.
+
+        Args:
+            force_convex: If True, always build a convex hull regardless of body type.
+                          Used when collider_type == 'convex_hull' is explicitly requested.
+        """
+        all_positions = []
+        all_indices = []
         vertex_offset = 0
-        
+
         for mesh in obj.meshes:
-            vbo = mesh.vbo
-            if vbo is None:
+            positions = mesh._mesh_data.get('collision_verts')
+
+            if positions is None:
+                # Fallback: derive positions from the interleaved vertex array
+                raw = mesh._mesh_data.get('vertices')
+                if raw is None or len(raw) == 0:
+                    continue
+                floats_per_vert = 16 if mesh._has_skin else 8
+                positions = raw.reshape(-1, floats_per_vert)[:, :3].astype('f4')
+
+            if positions is None or len(positions) == 0:
                 continue
-            
-            try:
-                data = vbo.read()
-                fmt = mesh.get_vertex_data_format()
-                floats_per_vert = sum(int(f[0].replace('f', '')) for f in fmt)
-                pos_stride = floats_per_vert * 4
-                
-                num_verts = len(data) // pos_stride
-                for i in range(num_verts):
-                    offset = i * pos_stride
-                    x = struct.unpack_from('f', data, offset)[0]
-                    y = struct.unpack_from('f', data, offset + 4)[0]
-                    z = struct.unpack_from('f', data, offset + 8)[0]
-                    vertices.append([x * sx, y * sy, z * sz])
-                
-                # Extract indices if available
-                mesh_indices = mesh._mesh_data.get('indices')
-                if mesh_indices is not None:
-                    # Offset indices by the current number of global vertices
-                    indices.extend((mesh_indices + vertex_offset).tolist())
-                else:
-                    # If no indices, we can't easily make a triangle mesh for this sub-mesh
-                    # but we can at least add fake indices if we want true mesh collision
-                    for i in range(0, num_verts, 3):
-                        if i + 2 < num_verts:
-                            indices.extend([vertex_offset + i, vertex_offset + i + 1, vertex_offset + i + 2])
-                
-                vertex_offset += num_verts
-            except Exception as e:
-                print(f"[Physics] Warning: Could not extract mesh data: {e}")
-                continue
-        
-        if not vertices:
+
+            all_positions.append(positions)
+
+            mesh_indices = mesh._mesh_data.get('indices')
+            if mesh_indices is not None:
+                all_indices.append(mesh_indices.astype(np.uint32) + vertex_offset)
+            else:
+                n = len(positions)
+                tri_count = n // 3
+                base = np.arange(tri_count * 3, dtype=np.uint32).reshape(-1, 3) + vertex_offset
+                all_indices.append(base.ravel())
+
+            vertex_offset += len(positions)
+
+        if not all_positions:
             print(f"[Physics] Warning: No vertices found for {obj.name}, using box fallback")
             return p.createCollisionShape(
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
                 physicsClientId=self.client_id)
-        
-        mass = getattr(obj, 'mass', 1.0)
-        # Use GEOM_MESH with indices for concave collision if static (mass=0)
-        # Dynamic objects in PyBullet MUST be convex hulls for stable collision.
-        if mass == 0.0 and indices:
+
+        combined = np.concatenate(all_positions, axis=0)
+        combined_scaled = combined * np.array([sx, sy, sz], dtype='f4')
+
+        # Kinematic objects behave as static for collision purposes — check both flags
+        is_static = getattr(obj, 'is_kinematic', True) or (getattr(obj, 'mass', 1.0) == 0.0)
+        use_concave = is_static and not force_convex and all_indices
+
+        if use_concave:
+            # Concave triangle mesh: accurate for complex static geometry
+            flat_indices = np.concatenate(all_indices).tolist()
             return p.createCollisionShape(
-                p.GEOM_MESH, vertices=vertices, indices=indices,
+                p.GEOM_MESH,
+                vertices=combined_scaled.tolist(),
+                indices=flat_indices,
                 physicsClientId=self.client_id)
         else:
+            # Convex hull: required for dynamic bodies; deduplicate verts for a tighter hull
+            unique_verts = np.unique(combined_scaled, axis=0)
             return p.createCollisionShape(
-                p.GEOM_MESH, vertices=vertices,
+                p.GEOM_MESH,
+                vertices=unique_verts.tolist(),
                 physicsClientId=self.client_id)
 
     def remove_object(self, obj):
@@ -330,25 +348,27 @@ class PhysicsSystem:
 
         return num_steps
 
-    def raycast(self, ray_from, ray_to):
+    def raycast(self, ray_from, ray_to, ignore=None):
         """Raycast using PyBullet's physics engine.
 
         Args:
             ray_from: glm.vec3 or list [x,y,z] - start point
             ray_to: glm.vec3 or list [x,y,z] - end point
+            ignore: optional set/list of SceneObjects to skip
 
         Returns:
             The SceneObject hit, or None if no hit.
         """
-        hit = self.raycast_detailed(ray_from, ray_to)
+        hit = self.raycast_detailed(ray_from, ray_to, ignore=ignore)
         return hit[0] if hit else None
 
-    def raycast_detailed(self, ray_from, ray_to):
+    def raycast_detailed(self, ray_from, ray_to, ignore=None):
         """Detailed raycast using PyBullet's physics engine.
 
         Args:
             ray_from: glm.vec3 or list [x,y,z] - start point
             ray_to: glm.vec3 or list [x,y,z] - end point
+            ignore: optional set/list of SceneObjects to skip (e.g. the player)
 
         Returns:
             Tuple (hit_object, hit_position, hit_fraction, hit_normal) or None if no hit.
@@ -363,38 +383,38 @@ class PhysicsSystem:
             ray_to = [ray_to.x, ray_to.y, ray_to.z]
 
         results = p.rayTest(ray_from, ray_to, physicsClientId=self.client_id)
-
         if not results:
             return None
 
-        closest_hit = results[0]
-        body_id = closest_hit[0]
-
-        if body_id == -1:
-            return None
-
-        hit_obj = self._body_to_obj.get(body_id)
-        if hit_obj is None:
-            return None
-
-        hit_fraction = closest_hit[2]
-        hit_position_world = closest_hit[3]
-        
         ray_dir = glm.vec3(
             ray_to[0] - ray_from[0],
             ray_to[1] - ray_from[1],
             ray_to[2] - ray_from[2],
         )
         ray_length = glm.length(ray_dir)
-        if ray_length > 0.001:
-            ray_dir = glm.normalize(ray_dir)
-        
-        hit_pos = glm.vec3(
-            ray_from[0] + ray_dir.x * ray_length * hit_fraction,
-            ray_from[1] + ray_dir.y * ray_length * hit_fraction,
-            ray_from[2] + ray_dir.z * ray_length * hit_fraction,
-        )
-        
-        hit_normal = glm.vec3(0.0, 1.0, 0.0)
-        
-        return (hit_obj, hit_pos, hit_fraction, hit_normal)
+        ray_dir_n = glm.normalize(ray_dir) if ray_length > 0.001 else ray_dir
+
+        ignore_set = set(ignore) if ignore else set()
+
+        # Scan hits in order (closest first). Skip unregistered bodies (triggers,
+        # ground plane, etc.) and ignored entities rather than bailing on the
+        # first unknown body — that was the main source of camera clip-through.
+        for hit in results:
+            body_id = hit[0]
+            if body_id == -1:
+                continue
+            hit_obj = self._body_to_obj.get(body_id)
+            if hit_obj is None:
+                continue
+            if hit_obj in ignore_set:
+                continue
+
+            hit_fraction = hit[2]
+            raw_pos = hit[3]
+            raw_normal = hit[4]
+
+            hit_pos = glm.vec3(raw_pos[0], raw_pos[1], raw_pos[2])
+            hit_normal = glm.vec3(raw_normal[0], raw_normal[1], raw_normal[2])
+            return (hit_obj, hit_pos, hit_fraction, hit_normal)
+
+        return None

@@ -237,13 +237,16 @@ class DevMode:
             pass
 
         from core.editor_ui import EditorUI
+        from core.model_mesh import ModelMesh
         hex_val = values.get('color', '')
         if hex_val:
             rgb = EditorUI._parse_hex(hex_val)
             if rgb and obj.meshes:
                 color = glm.vec3(rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0)
                 for m in obj.meshes:
-                    if hasattr(m, 'color'):
+                    # GLB model meshes use their own embedded material colours —
+                    # never overwrite them from the editor colour picker.
+                    if hasattr(m, 'color') and not isinstance(m, ModelMesh):
                         m.color = color
                 if obj.is_light:
                     obj.light_color = color
