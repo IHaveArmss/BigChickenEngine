@@ -73,8 +73,15 @@ class InputHandler:
 
         # Dialogue input takes priority during active dialogue
         if eng.dialogue.active:
-            if event.key in (pygame.K_e, pygame.K_RETURN):
-                eng.dialogue.advance()
+            if event.key == pygame.K_UP:
+                eng.dialogue.move_selection(-1)
+            elif event.key == pygame.K_DOWN:
+                eng.dialogue.move_selection(1)
+            elif event.key in (pygame.K_e, pygame.K_RETURN):
+                if eng.dialogue._choices is not None:
+                    eng.dialogue.confirm_selection()
+                else:
+                    eng.dialogue.advance()
             elif event.key == pygame.K_1:
                 eng.dialogue.select_choice(0)
             elif event.key == pygame.K_2:

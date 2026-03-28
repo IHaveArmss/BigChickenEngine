@@ -312,6 +312,26 @@ class DevMode:
             pass
         if 'collider_type' in values:
             obj.collider_type = str(values['collider_type'])
+
+        # Dialogue camera overrides — read separate X/Y/Z fields
+        def _parse_xyz(xk, yk, zk):
+            """Read three separate field values and return a glm.vec3, or None if all blank."""
+            try:
+                xs, ys, zs = values.get(xk, '').strip(), values.get(yk, '').strip(), values.get(zk, '').strip()
+                if xs or ys or zs:
+                    return glm.vec3(float(xs or 0), float(ys or 0), float(zs or 0))
+            except (ValueError, TypeError):
+                pass
+            return None
+
+        obj.dialogue_cam_pos     = _parse_xyz('dlg_cam_pos_x',  'dlg_cam_pos_y',  'dlg_cam_pos_z')
+        obj.dialogue_cam_look_at = _parse_xyz('dlg_cam_look_x', 'dlg_cam_look_y', 'dlg_cam_look_z')
+
+        df_str = values.get('dialogue_facing', '').strip()
+        try:
+            obj.dialogue_facing = float(df_str) if df_str else None
+        except (ValueError, TypeError):
+            pass
             
         obj._physics_dirty = True
 

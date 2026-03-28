@@ -353,6 +353,16 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     obj.is_trigger = bool(entry.get('is_trigger', False))
     obj.dialogue_data = entry.get('dialogue_data', None)
 
+    # Optional dialogue camera overrides (world-space).
+    # dialogue_cam_pos:    [x, y, z]  — exact camera position during dialogue
+    # dialogue_cam_look_at:[x, y, z]  — point the camera looks at (default: NPC face)
+    # dialogue_facing:     float (degrees) — legacy: angle the NPC face points toward
+    raw_dcp = entry.get('dialogue_cam_pos')
+    obj.dialogue_cam_pos = glm.vec3(*raw_dcp) if raw_dcp else None
+    raw_dcl = entry.get('dialogue_cam_look_at')
+    obj.dialogue_cam_look_at = glm.vec3(*raw_dcl) if raw_dcl else None
+    obj.dialogue_facing = entry.get('dialogue_facing', None)
+
     if any(r != 0 for r in rot):
         obj.set_rotation_euler(*rot)
 
