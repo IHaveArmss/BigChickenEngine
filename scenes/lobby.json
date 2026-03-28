@@ -1,0 +1,119 @@
+{
+  "settings": {
+    "gravity": -9.81
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        50.0,
+        0.1,
+        50.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.329,
+        0.329,
+        0.4
+      ]
+    },
+    {
+      "name": "player",
+      "format": "cube",
+      "position": [
+        -2.82,
+        0.68,
+        0.27
+      ],
+      "rotation": [
+        0.0,
+        -84.6,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        3.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "capsule",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "player",
+      "scripts": [
+        "third_person"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.6,
+        1.0
+      ]
+    },
+    {
+      "name": "lobby",
+      "format": "glb",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        3.0,
+        2.0,
+        3.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/lobby.glb"
+    }
+  ]
+}
