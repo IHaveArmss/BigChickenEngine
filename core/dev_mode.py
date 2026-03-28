@@ -211,6 +211,19 @@ class DevMode:
         if editor_ui._current_obj_name != obj.name:
             return
         values = editor_ui.read_property_values()
+        
+        # Name Change
+        if 'object_name' in values:
+            new_name = str(values['object_name']).strip()
+            if new_name and new_name != obj.name:
+                obj.name = new_name
+                editor_ui._current_obj_name = new_name
+        
+        # Folder Change
+        if 'folder' in values:
+            new_folder = str(values['folder']).strip()
+            if new_folder:
+                obj.folder = new_folder
 
         try:
             px = float(values.get('pos_x', obj.position.x))

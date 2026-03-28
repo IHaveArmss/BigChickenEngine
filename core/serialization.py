@@ -36,8 +36,14 @@ def serialize_scene_object(obj):
         "dialogue_data": getattr(obj, 'dialogue_data', None),
     }
 
-    if obj.format not in ('cube', 'triangle', 'light'):
+    if obj.format not in ('cube', 'triangle', 'light', 'sprite'):
         entry["model"] = obj.model_path
+
+    if obj.format == 'sprite' and obj.meshes:
+        sprite_mesh = obj.meshes[0]
+        entry["sprite_path"] = getattr(sprite_mesh, 'image_path', '')
+        entry["billboard"] = getattr(sprite_mesh, 'billboard', True)
+        entry["autocrop"] = getattr(sprite_mesh, 'autocrop', True)
 
     if obj.format in ('cube', 'triangle') and obj.meshes:
         c = obj.meshes[0].color

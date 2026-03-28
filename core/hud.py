@@ -44,9 +44,41 @@ class HUD:
         self.dialogue_manager = None  # set by engine after creation
         self.scene_objects_ref = []  # set each frame by update()
         self._selected_index = -1
+        
+        # --- Image Overlay State ---
+        self._overlay_active = False
+        self._overlay_timer = 0.0
+        self._overlay_surf = None
+        self._overlay_path = None
+        self._overlay_fade = 1.0  # Optional: could add fade in/out later
 
     def toggle_controls(self):
         self.show_controls = not self.show_controls
+
+    def update(self, dt):
+        """Update timers for HUD effects (like image overlays)."""
+        if self._overlay_active:
+            self._overlay_timer -= dt
+            if self._overlay_timer <= 0:
+                self._overlay_active = False
+                # Optionally keep the surface cached but stop drawing it
+
+    def show_image(self, path, duration):
+        """Display a fullscreen image overlay for a set duration."""
+        if not os.path.exists(path):
+            print(f"[HUD] ERROR: Overlay image not found: {path}")
+            return
+            
+        try:
+            # Load and scale to fit the window exactly
+            img = pygame.image.load(path).convert_alpha()
+            self._overlay_surf = pygame.transform.smoothscale(img, self.win_size)
+            self._overlay_path = path
+            self._overlay_timer = duration
+            self._overlay_active = True
+            print(f"[HUD] Showing overlay: {path} for {duration}s")
+        except Exception as e:
+            print(f"[HUD] ERROR loading overlay {path}: {e}")
 
     def render(self):
         """Render the HUD overlay on top of the scene."""
@@ -80,8 +112,13 @@ class HUD:
 
     def _build_surface(self):
         """Create a Pygame surface with the HUD content."""
-        # Always draw crosshair, rest only in dev mode
         surface = pygame.Surface(self.win_size, pygame.SRCALPHA)
+        
+        # --- Fullscreen Image Overlay ---
+        if self._overlay_active and self._overlay_surf:
+            surface.blit(self._overlay_surf, (0, 0))
+
+        # Always draw crosshair, rest only in dev mode
 
         # --- Crosshair (always visible) ---
         cx, cy = self.win_size[0] // 2, self.win_size[1] // 2

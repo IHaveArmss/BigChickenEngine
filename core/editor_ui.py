@@ -736,6 +736,8 @@ class EditorUI:
         color = getattr(obj.meshes[0], 'color', None) if obj.meshes else None
 
         self.prop_inputs = {
+            'object_name': {'label': 'Name', 'value': obj.name, 'field': None},
+            'folder': {'label': 'Folder', 'value': getattr(obj, 'folder', 'Scene'), 'field': None},
             'pos_x': {'label': 'X', 'value': f'{pos.x:.2f}', 'field': None},
             'pos_y': {'label': 'Y', 'value': f'{pos.y:.2f}', 'field': None},
             'pos_z': {'label': 'Z', 'value': f'{pos.z:.2f}', 'field': None},
@@ -1594,6 +1596,30 @@ class EditorUI:
         """Draw position, scale, and color fields. Returns new y."""
         fw = bw - 10
         single_w = fw // 3 - 12
+
+        # Name
+        label_surf = self.font_bold.render("Object Name", True, LABEL_COLOR[:3])
+        surface.blit(label_surf, (bx, y))
+        y += 18
+        if 'object_name' in self.prop_inputs:
+            info = self.prop_inputs['object_name']
+            if info['field'] is None:
+                info['field'] = TextInput(bx, y, bw - 10, INPUT_HEIGHT, "Name", info['value'])
+            info['field'].rect = pygame.Rect(bx, y, bw - 10, INPUT_HEIGHT)
+            info['field'].draw(surface, self.font)
+        y += INPUT_HEIGHT + 14
+
+        # Folder
+        label_surf = self.font_bold.render("Folder", True, LABEL_COLOR[:3])
+        surface.blit(label_surf, (bx, y))
+        y += 18
+        if 'folder' in self.prop_inputs:
+            info = self.prop_inputs['folder']
+            if info['field'] is None:
+                info['field'] = TextInput(bx, y, bw - 10, INPUT_HEIGHT, "Folder", info['value'])
+            info['field'].rect = pygame.Rect(bx, y, bw - 10, INPUT_HEIGHT)
+            info['field'].draw(surface, self.font)
+        y += INPUT_HEIGHT + 14
 
         # Position
         label_surf = self.font_bold.render("Position", True, LABEL_COLOR[:3])

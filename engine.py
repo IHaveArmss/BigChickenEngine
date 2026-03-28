@@ -5,6 +5,7 @@ import os
 import json
 import glm
 import math
+import traceback
 from core.camera import Camera
 from core.texture import TextureLoader
 from core.scene_loader import load_scene, save_scene, spawn_from_entry, SceneObject
@@ -36,12 +37,20 @@ class ShaderCache:
     
     def get(self, name):
         if name not in self._programs:
-            with open(f'shaders/{name}.vert') as f:
-                vs = f.read()
-            with open(f'shaders/{name}.frag') as f:
-                fs = f.read()
-            self._programs[name] = self.ctx.program(vertex_shader=vs, fragment_shader=fs)
-        return self._programs[name]
+            try:
+                with open(f'shaders/{name}.vert') as f:
+                    vs = f.read()
+                with open(f'shaders/{name}.frag') as f:
+                    fs = f.read()
+                self._programs[name] = self.ctx.program(vertex_shader=vs, fragment_shader=fs)
+            except Exception as e:
+                print(f"\n[ShaderCache] ERROR: Failed to compile shader '{name}':")
+                print(e)
+                # Try to return a fallback so the engine doesn't just crash
+                if name != 'phong':
+                    return self.get('phong')
+                return None
+        return self._programs.get(name)
     
     def get_skinned(self):
         if 'phong_skinned' not in self._programs:
@@ -57,7 +66,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/floor.json'
+SCENE_FILE = 'scenes/cutscene_demo.json'
 PLAY_INTRO = False # Set to False to skip the opening video
 # ======================================================================
 
@@ -354,6 +363,9 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
         
+        # Register physics before scripts run
+        for obj in self.scene_objects:
+            self.physics_system.add_object(obj)
         self._rebuild_renderables()
         # Place the light orb roughly along the main light direction so the
         # user can see where the sun is.
@@ -385,6 +397,14 @@ class GraphicsEngine:
         self.all_renderables = list(self.static_objects)
         for obj in self.scene_objects:
             self.all_renderables.extend(obj.meshes)
+
+    # ------------------------------------------------------------------
+    # UI Utils
+    # ------------------------------------------------------------------
+
+    def show_image_overlay(self, path, duration):
+        """Display a full-screen image for the given duration."""
+        self.hud.show_image(path, duration)
 
     # ------------------------------------------------------------------
     # Tag queries
@@ -522,6 +542,11 @@ class GraphicsEngine:
         self.editor_ui.update_gravity_ui(gravity)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
+        
+        # Register physics before scripts run
+        for obj in self.scene_objects:
+            self.physics_system.add_object(obj)
+            
         self._rebuild_renderables()
         self._undo_stack = []
         self._redo_stack = []
@@ -594,6 +619,8 @@ class GraphicsEngine:
                 self.script_manager.dispatch_collisions(self.physics_system.collisions)
             self.script_manager.update_all(dt)
             self.dialogue.update(dt)
+        
+        self.hud.update(dt)
 
         # Cutscene updates in all modes when playing
         if self.cutscenes.is_playing:

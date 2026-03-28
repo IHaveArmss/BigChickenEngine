@@ -185,13 +185,20 @@ class PhysicsSystem:
         mass = getattr(obj, 'mass', 1.0)
         # Use GEOM_MESH with indices for concave collision if static (mass=0)
         # Dynamic objects in PyBullet MUST be convex hulls for stable collision.
-        if mass == 0.0 and indices:
+        try:
+            if mass == 0.0 and indices:
+                return p.createCollisionShape(
+                    p.GEOM_MESH, vertices=vertices, indices=indices,
+                    physicsClientId=self.client_id)
+            else:
+                return p.createCollisionShape(
+                    p.GEOM_MESH, vertices=vertices,
+                    physicsClientId=self.client_id)
+        except Exception as e:
+            print(f"[Physics] ERROR: createCollisionShape failed for {obj.name}: {e}")
+            print(f"[Physics] Falling back to simplified box collision for stability.")
             return p.createCollisionShape(
-                p.GEOM_MESH, vertices=vertices, indices=indices,
-                physicsClientId=self.client_id)
-        else:
-            return p.createCollisionShape(
-                p.GEOM_MESH, vertices=vertices,
+                p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
                 physicsClientId=self.client_id)
 
     def remove_object(self, obj):

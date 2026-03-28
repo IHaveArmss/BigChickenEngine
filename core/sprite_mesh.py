@@ -10,6 +10,7 @@ class SpriteMesh(Mesh):
                  autocrop=True, billboard=False, shader_name='textured'):
         self.image_path = image_path
         self.billboard = billboard
+        self.autocrop = autocrop
         self._shader_name = shader_name
         
         with Image.open(image_path) as img:
@@ -43,6 +44,8 @@ class SpriteMesh(Mesh):
             self._texture.filter = (ctx.LINEAR_MIPMAP_LINEAR, ctx.LINEAR)
             self._texture.build_mipmaps()
             self._texture.anisotropy = 16.0
+            
+            print(f"[SpriteMesh] Created sprite from {image_path} ({self._width}x{self._height})")
 
         self._aspect_ratio = ctx.screen.width / ctx.screen.height if ctx.screen else 1.0
         

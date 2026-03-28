@@ -10,10 +10,11 @@ class Trigger:
         
         # Disable physical collision resolution (no bumping)
         # We set its collision group and mask to 0 so it's ignored by the solver.
-        if hasattr(self.entity, 'pybullet_body_id'):
+        body_id = getattr(self.entity, 'pybullet_body_id', None)
+        if body_id is not None:
             phys = self.engine.physics_system
             p.setCollisionFilterGroupMask(
-                self.entity.pybullet_body_id, -1, 0, 0, 
+                body_id, -1, 0, 0, 
                 physicsClientId=phys.client_id
             )
             
