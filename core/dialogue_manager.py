@@ -63,6 +63,11 @@ class DialogueManager:
         self.talk_sounds = []
         self._talk_sound_idx = 0
 
+        # Typewriter effect
+        self._typewriter_index = 0    # chars revealed so far
+        self._typewriter_speed = 40.0 # chars per second
+        self._typewriter_accum = 0.0  # fractional accumulator
+
         # Camera zoom
         self._saved_cam_pos = glm.vec3(0)
         self._saved_cam_front = glm.vec3(0, 0, -1)
@@ -152,8 +157,14 @@ class DialogueManager:
             self._advance_to(0)
 
     def advance(self):
-        """Move to the next dialogue line (E / Enter)."""
-        if self._choices is not None or self._returning:
+        """Move to the next dialogue line (E / Enter).
+        If typewriter is still running, skip to full text first."""
+        if self._returning:
+            return
+        if not self._typewriter_done():
+            self._typewriter_index = len(self._current_text)
+            return
+        if self._choices is not None:
             return
         
         if self._is_new_format:
@@ -216,6 +227,17 @@ class DialogueManager:
         if not self.active:
             return
 
+        # Typewriter tick
+        if not self._returning and not self._typewriter_done():
+            self._typewriter_accum += dt * self._typewriter_speed
+            chars = int(self._typewriter_accum)
+            if chars > 0:
+                self._typewriter_index = min(
+                    self._typewriter_index + chars,
+                    len(self._current_text)
+                )
+                self._typewriter_accum -= chars
+
         self._zoom_progress = min(1.0, self._zoom_progress + dt * self._zoom_speed)
         t = self._smoothstep(self._zoom_progress)
 
@@ -261,73 +283,96 @@ class DialogueManager:
         if not self.active or not self._current_text:
             return
 
-        cam = self.engine.active_camera
-        anchor = glm.vec3(self._target.position) + glm.vec3(0, 1.0, 0)
-        screen_pos = self._world_to_screen(anchor, cam, win_size)
+        sw, sh = win_size
+        pad        = 20
+        margin     = 40          # left/right screen margin
+        line_h     = 24
+        box_w      = sw - margin * 2
+        text_w     = box_w - pad * 2
+        done       = self._typewriter_done()
 
-        if screen_pos is None:
-            screen_pos = (win_size[0] // 2, win_size[1] // 2)
+        # Only wrap the revealed portion for typewriter, but use full text for
+        # height calculation so the box doesn't resize as text types in.
+        revealed   = self._current_text[:self._typewriter_index]
+        full_lines = self._word_wrap(self._current_text, font_small, text_w)
+        show_lines = self._word_wrap(revealed, font_small, text_w)
 
-        box_w = 480
-        pad = 14
-        line_h = 22
+        speaker_h  = (line_h + 6) if self._speaker else 0
+        body_h     = len(full_lines) * line_h
+        choices_h  = 0
+        if done and self._choices:
+            choices_h = len(self._choices) * line_h + 10
+        hint_h     = line_h + 4
+        box_h      = pad + speaker_h + body_h + choices_h + hint_h + pad
 
-        body_lines = self._word_wrap(self._current_text, font_small, box_w - pad * 2)
+        box_x = margin
+        box_y = sh - box_h - margin
 
-        header_h = 30 if self._speaker else 0
-        body_h = len(body_lines) * line_h
-        choices_h = 0
-        if self._choices:
-            choices_h = len(self._choices) * line_h + 8
-        else:
-            choices_h = line_h + 4
-        box_h = pad + header_h + body_h + choices_h + pad
-
-        box_x = screen_pos[0] + 50
-        box_y = screen_pos[1] - box_h // 2
-        
-        if box_x + box_w > win_size[0] - 10:
-            box_x = screen_pos[0] - box_w - 50
-        box_x = max(10, box_x)
-        box_y = max(10, min(box_y, win_size[1] - box_h - 10))
-
+        # Semi-transparent black background
         bg = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
-        bg.fill((15, 15, 25, 210))
-        pygame.draw.rect(bg, (0, 200, 120, 180), bg.get_rect(), 2, border_radius=6)
+        bg.fill((0, 0, 0, 180))
         surface.blit(bg, (box_x, box_y))
+
+        # Thin white top border
+        pygame.draw.line(surface, (255, 255, 255),
+                         (box_x, box_y), (box_x + box_w, box_y), 1)
 
         y = box_y + pad
 
+        # Speaker name
         if self._speaker:
-            name_surf = font_large.render(self._speaker, True, (0, 220, 120))
+            name_surf = font_large.render(self._speaker, True, (255, 255, 255))
             surface.blit(name_surf, (box_x + pad, y))
-            y += header_h
+            y += line_h + 6
 
-        for line in body_lines:
-            txt = font_small.render(line, True, (230, 230, 230))
+        # Typewritten body text
+        for line in show_lines:
+            txt = font_small.render(line, True, (220, 220, 220))
             surface.blit(txt, (box_x + pad, y))
             y += line_h
 
-        y += 6
+        y = box_y + pad + speaker_h + body_h + choices_h
 
-        if self._choices:
+        # Choices (only after typewriter finishes)
+        if done and self._choices:
+            cy = box_y + pad + speaker_h + body_h + 10
             for i, ch in enumerate(self._choices):
                 if i == self._selected_choice:
-                    color = (255, 255, 100)
+                    color  = (255, 255, 255)
                     prefix = "> "
                 else:
-                    color = (180, 180, 180)
+                    color  = (130, 130, 130)
                     prefix = "  "
                 txt = font_small.render(f"{prefix}{i + 1}. {ch['text']}", True, color)
-                surface.blit(txt, (box_x + pad, y))
-                y += line_h
+                surface.blit(txt, (box_x + pad, cy))
+                cy += line_h
+
+        # Bottom hint (right-aligned)
+        if not done:
+            hint_text = "..."
+            hint_color = (80, 80, 80)
+        elif self._choices:
+            hint_text  = "[ENTER] Confirm  [↑↓] Select"
+            hint_color = (100, 100, 100)
         else:
-            txt = font_small.render("[E] Continue", True, (120, 120, 120))
-            surface.blit(txt, (box_x + pad, y))
+            hint_text  = "[E] Continue"
+            hint_color = (100, 100, 100)
+
+        hint_surf = font_small.render(hint_text, True, hint_color)
+        hint_x    = box_x + box_w - pad - hint_surf.get_width()
+        hint_y    = box_y + box_h - pad - line_h
+        surface.blit(hint_surf, (hint_x, hint_y))
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _reset_typewriter(self):
+        self._typewriter_index = 0
+        self._typewriter_accum = 0.0
+
+    def _typewriter_done(self):
+        return self._typewriter_index >= len(self._current_text)
 
     def _play_next_talk_sound(self):
         if self.talk_sounds:
@@ -345,6 +390,7 @@ class DialogueManager:
         node = self._nodes_dict[node_id]
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
+        self._reset_typewriter()
         if self._speaker and "choices" not in node:
             self._play_next_talk_sound()
         
@@ -379,6 +425,7 @@ class DialogueManager:
         node = self._lines[index]
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
+        self._reset_typewriter()
         if self._speaker and "choices" not in node:
             self._play_next_talk_sound()
         self._choices = None

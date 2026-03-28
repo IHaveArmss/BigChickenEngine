@@ -2,21 +2,29 @@
   "settings": {
     "gravity": -9.81,
     "sun_intensity": 0.0,
-    "ambient_strength": 0.0
+    "sun_azimuth_deg": 45.0,
+    "sun_elevation_deg": -55.0,
+    "ambient_strength": 0.0,
+    "ambient_color_r": 1.0,
+    "ambient_color_g": 1.0,
+    "ambient_color_b": 1.0,
+    "directional_shadows_enabled": true,
+    "directional_shadow_distance": 40.0,
+    "skybox_path": ""
   },
   "objects": [
     {
       "name": "player",
       "format": "cube",
       "position": [
-        0.329,
-        0.706,
-        -0.038
+        2.08,
+        0.71,
+        -0.52
       ],
       "rotation": [
-        180.0,
-        62.804,
-        180.0
+        0.0,
+        -89.599,
+        0.0
       ],
       "scale": [
         1.0,
@@ -604,6 +612,40 @@
       ],
       "light_casts_shadows": true,
       "alpha": 0.0
+    },
+    {
+      "name": "low_poly_computer_desk",
+      "format": "glb",
+      "position": [
+        -116.35,
+        0.15,
+        -0.51
+      ],
+      "rotation": [
+        0.0,
+        -89.98,
+        0.0
+      ],
+      "scale": [
+        0.03,
+        0.03,
+        0.03
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_computer_desk.glb"
     }
   ]
 }

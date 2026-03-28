@@ -370,9 +370,10 @@ class GraphicsEngine:
         self.static_objects.append(self.light_orb)
 
         self.scene_objects, self.model_meshes, settings = load_scene(
-            self.current_scene_file, self.ctx, self.texture_loader, 
+            self.current_scene_file, self.ctx, self.texture_loader,
             resource_manager=self.resource_manager
         )
+        self._apply_scene_settings(settings)
         self.editor_ui.set_prefab_context(self.list_prefab_names())
 
         # Apply marker-based spawn on boot
