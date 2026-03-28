@@ -23,6 +23,7 @@ def serialize_scene_object(obj):
         "scale": [round(scl.x, 4), round(scl.y, 4), round(scl.z, 4)],
         "mass": round(obj.mass, 3),
         "use_gravity": obj.use_gravity,
+        "is_collideable": getattr(obj, "is_collideable", True),
         "is_kinematic": obj.is_kinematic,
         "collider_type": obj.collider_type,
         "bounciness": round(obj.bounciness, 3),

@@ -113,6 +113,10 @@ class ThirdPerson:
             if keys[pygame.K_SPACE] and self.ground_time > 0:
                 vy = self.jump_force
                 self.ground_time = 0.0
+            elif vy > 0 and self.ground_time > 0:
+                # Edge/corner contacts can inject upward velocity into the body.
+                # Discard it when grounded so the player doesn't "jump" on curbs.
+                vy = 0.0
 
             p.resetBaseVelocity(body_id,
                                 [vx, vy, vz], [0, 0, 0],
@@ -159,19 +163,24 @@ class ThirdPerson:
 
         # -------- camera collision detection --------
         target_distance = self.cam_distance
-        
-        ray_from = glm.vec3(focus)
-        ray_to = glm.vec3(ideal)
-        
-        hit_data = self.phys.raycast_detailed(ray_from, ray_to)
-        
+        CAM_MARGIN = 0.25   # keep camera this far in front of any surface
+
+        hit_data = self.phys.raycast_detailed(
+            focus, ideal, ignore={self.entity})
+
         if hit_data:
-            hit_obj, hit_pos, hit_fraction, hit_normal = hit_data
+            _, hit_pos, hit_fraction, _ = hit_data
             if hit_fraction < 1.0:
-                target_distance = self.cam_distance * hit_fraction * 0.9
-        
-        t_dist = min(1.0, dt * self.cam_collision_smoothness)
-        self.current_distance = glm.mix(self.current_distance, target_distance, t_dist)
+                hit_dist = self.cam_distance * hit_fraction
+                target_distance = max(hit_dist - CAM_MARGIN, 0.1)
+
+        # Snap instantly when moving closer — lerping through geometry causes
+        # the visible clip-through. Only smooth the retreat (camera pulling back).
+        if target_distance < self.current_distance:
+            self.current_distance = target_distance
+        else:
+            t_dist = min(1.0, dt * self.cam_collision_smoothness)
+            self.current_distance = glm.mix(self.current_distance, target_distance, t_dist)
         
         current_offset = glm.vec3(
             self.current_distance * glm.cos(rad_pitch) *  glm.sin(rad_yaw),

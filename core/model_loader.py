@@ -177,21 +177,56 @@ def load_gltf(glb_path):
         }
         dtype = dtypes[accessor.componentType]
 
-        if stride and stride != element_size:
-            data = np.zeros((count, num_components), dtype=dtype)
-            for i in range(count):
-                start = offset + i * stride
-                chunk = blob[start:start + element_size]
-                data[i] = np.frombuffer(chunk, dtype=dtype)
-            result = data.flatten()
+        # Load base data. bufferView may be absent for sparse-only accessors
+        # (base is implicitly all zeros per the glTF spec).
+        if accessor.bufferView is not None:
+            buffer_view = gltf.bufferViews[accessor.bufferView]
+            blob = blobs[buffer_view.buffer]
+            offset = (buffer_view.byteOffset or 0) + (accessor.byteOffset or 0)
+            stride = buffer_view.byteStride
+
+            if stride and stride != element_size:
+                data = np.zeros((count, num_components), dtype=dtype)
+                for i in range(count):
+                    start = offset + i * stride
+                    chunk = blob[start:start + element_size]
+                    data[i] = np.frombuffer(chunk, dtype=dtype)
+                result = data.flatten()
+            else:
+                total_bytes = element_size * count
+                raw = blob[offset:offset + total_bytes]
+                result = np.frombuffer(raw, dtype=dtype).copy()
         else:
-            total_bytes = element_size * count
-            raw = blob[offset:offset + total_bytes]
-            result = np.frombuffer(raw, dtype=dtype).copy()
+            result = np.zeros(count * num_components, dtype=dtype)
+
+        # Apply sparse overrides. Some GLBs (e.g. Blender exports with morph
+        # targets, or glTF-compressed assets) encode only the changed elements.
+        if getattr(accessor, 'sparse', None) is not None:
+            sparse = accessor.sparse
+            sc = sparse.count
+
+            idx_bv = gltf.bufferViews[sparse.indices.bufferView]
+            idx_blob = blobs[idx_bv.buffer]
+            idx_offset = (idx_bv.byteOffset or 0) + (sparse.indices.byteOffset or 0)
+            idx_dtypes = {5121: np.uint8, 5123: np.uint16, 5125: np.uint32}
+            idx_dtype = idx_dtypes[sparse.indices.componentType]
+            idx_elem = np.dtype(idx_dtype).itemsize
+            sparse_indices = np.frombuffer(
+                idx_blob[idx_offset:idx_offset + sc * idx_elem], dtype=idx_dtype).copy()
+
+            val_bv = gltf.bufferViews[sparse.values.bufferView]
+            val_blob = blobs[val_bv.buffer]
+            val_offset = (val_bv.byteOffset or 0) + (sparse.values.byteOffset or 0)
+            sparse_values = np.frombuffer(
+                val_blob[val_offset:val_offset + sc * element_size], dtype=dtype
+            ).copy().reshape(sc, num_components)
+
+            result = result.reshape(count, num_components)
+            result[sparse_indices] = sparse_values
+            result = result.flatten()
 
         # glTF normalized integer accessors encode floats as integers:
         # UNSIGNED_BYTE 255 → 1.0, UNSIGNED_SHORT 65535 → 1.0, etc.
-        # Convert to float32 now so callers always get the true numeric values.
         if getattr(accessor, 'normalized', False) and dtype != np.float32:
             _norm_max = {np.int8: 127.0, np.uint8: 255.0,
                          np.int16: 32767.0, np.uint16: 65535.0}
@@ -213,6 +248,49 @@ def load_gltf(glb_path):
             return Image.open(img_path)
         return None
 
+    def _compute_normals(positions, indices):
+        """Compute smooth per-vertex normals by averaging adjacent face normals."""
+        n = len(positions)
+        normals = np.zeros((n, 3), dtype='f4')
+        if indices is not None:
+            tris = indices.reshape(-1, 3)
+            v0 = positions[tris[:, 0]]
+            v1 = positions[tris[:, 1]]
+            v2 = positions[tris[:, 2]]
+            face_n = np.cross(v1 - v0, v2 - v0).astype('f4')
+            np.add.at(normals, tris[:, 0], face_n)
+            np.add.at(normals, tris[:, 1], face_n)
+            np.add.at(normals, tris[:, 2], face_n)
+        else:
+            for i in range(0, n - 2, 3):
+                fn = np.cross(positions[i + 1] - positions[i],
+                              positions[i + 2] - positions[i]).astype('f4')
+                normals[i] = normals[i + 1] = normals[i + 2] = fn
+        lens = np.linalg.norm(normals, axis=1, keepdims=True)
+        return (normals / np.maximum(lens, 1e-8)).astype('f4')
+
+    def _node_local_mat4(node):
+        """Return the node's local transform as a 4x4 row-major numpy float32 array."""
+        if node.matrix:
+            # glTF stores column-major: reshape then transpose → row-major
+            return np.array(node.matrix, dtype='f4').reshape(4, 4).T
+        mat = np.eye(4, dtype='f4')
+        if node.scale:
+            mat[0, 0], mat[1, 1], mat[2, 2] = node.scale
+        if node.rotation:
+            x, y, z, w = node.rotation
+            mat[:4, :4] = np.array([
+                [1-2*(y*y+z*z), 2*(x*y-w*z),   2*(x*z+w*y),   0],
+                [2*(x*y+w*z),   1-2*(x*x+z*z), 2*(y*z-w*x),   0],
+                [2*(x*z-w*y),   2*(y*z+w*x),   1-2*(x*x+y*y), 0],
+                [0,             0,              0,              1],
+            ], dtype='f4') @ mat  # R * S
+        if node.translation:
+            T = np.eye(4, dtype='f4')
+            T[0, 3], T[1, 3], T[2, 3] = node.translation
+            mat = T @ mat  # T * (R * S)
+        return mat
+
     # ---- Build node parent map ----
     parent_map = {}
     for idx, node in enumerate(gltf.nodes):
@@ -220,7 +298,24 @@ def load_gltf(glb_path):
             for child_idx in node.children:
                 parent_map[child_idx] = idx
 
-    # ---- Identify skins per mesh ----
+    # ---- Node world-transform cache (row-major numpy float32) ----
+    _node_world_cache = {}
+
+    def _node_world_mat(node_idx):
+        if node_idx in _node_world_cache:
+            return _node_world_cache[node_idx]
+        node = gltf.nodes[node_idx]
+        local = _node_local_mat4(node)
+        parent_idx = parent_map.get(node_idx)
+        world = (_node_world_mat(parent_idx) @ local) if parent_idx is not None else local
+        _node_world_cache[node_idx] = world
+        return world
+
+    # Warm the cache for all nodes.
+    for _ni in range(len(gltf.nodes)):
+        _node_world_mat(_ni)
+
+    # ---- Identify skins per mesh (fallback when no scene nodes) ----
     mesh_to_skin_idx = {}
     for node in gltf.nodes:
         if node.mesh is not None and node.skin is not None:
@@ -327,27 +422,68 @@ def load_gltf(glb_path):
         return skeleton, animations
 
     # ---- Build meshes ----
+    # Iterate over nodes (not raw meshes) so node-level transforms are captured.
+    # If multiple nodes reference the same mesh (instancing), each gets its own
+    # transformed copy.  Fall back to raw mesh iteration only when the file has
+    # no scene nodes at all.
     meshes = []
 
-    for mesh_idx, mesh in enumerate(gltf.meshes):
-        skin_idx = mesh_to_skin_idx.get(mesh_idx)
+    node_mesh_pairs = [
+        (node_idx, node.mesh, node.skin)
+        for node_idx, node in enumerate(gltf.nodes)
+        if node.mesh is not None
+    ]
+    if not node_mesh_pairs:
+        node_mesh_pairs = [
+            (None, mesh_idx, mesh_to_skin_idx.get(mesh_idx))
+            for mesh_idx in range(len(gltf.meshes))
+        ]
+
+    _identity4 = np.eye(4, dtype='f4')
+
+    for node_idx, mesh_idx, skin_idx in node_mesh_pairs:
+        mesh = gltf.meshes[mesh_idx]
         skeleton = None
         animations = None
         if skin_idx is not None:
             skeleton, animations = _build_skeleton(skin_idx)
 
-        for prim in mesh.primitives:
-            pos_data = _get_accessor_data(prim.attributes.POSITION)
-            positions = pos_data.reshape(-1, 3)
+        # Bake this node's world transform into vertex positions/normals so the
+        # existing per-object transform pipeline doesn't need to change.
+        if node_idx is not None:
+            world_np = _node_world_mat(node_idx)
+            has_node_xform = not np.allclose(world_np, _identity4, atol=1e-6)
+        else:
+            world_np = _identity4
+            has_node_xform = False
 
+        for prim in mesh.primitives:
+            positions = _get_accessor_data(prim.attributes.POSITION).reshape(-1, 3).astype('f4')
+
+            # Load or compute normals.
             if prim.attributes.NORMAL is not None:
-                normals_arr = _get_accessor_data(prim.attributes.NORMAL).reshape(-1, 3)
+                normals_arr = _get_accessor_data(prim.attributes.NORMAL).reshape(-1, 3).astype('f4')
             else:
-                normals_arr = np.zeros_like(positions)
-                normals_arr[:, 1] = 1.0
+                # Compute smooth normals from geometry rather than defaulting to (0,1,0).
+                raw_idx = None
+                if prim.indices is not None:
+                    raw_idx = _get_accessor_data(prim.indices).astype(np.uint32)
+                normals_arr = _compute_normals(positions, raw_idx)
+
+            # Apply the node's world transform into vertex data.
+            if has_node_xform:
+                M33 = world_np[:3, :3]
+                pos_h = np.hstack([positions, np.ones((len(positions), 1), dtype='f4')])
+                positions = (pos_h @ world_np.T)[:, :3].astype('f4')
+                try:
+                    normals_arr = (normals_arr @ np.linalg.inv(M33)).astype('f4')
+                    lens = np.linalg.norm(normals_arr, axis=1, keepdims=True)
+                    normals_arr = normals_arr / np.maximum(lens, 1e-8)
+                except np.linalg.LinAlgError:
+                    pass
 
             if prim.attributes.TEXCOORD_0 is not None:
-                uvs = _get_accessor_data(prim.attributes.TEXCOORD_0).reshape(-1, 2)
+                uvs = _get_accessor_data(prim.attributes.TEXCOORD_0).reshape(-1, 2).astype('f4')
             else:
                 uvs = np.zeros((len(positions), 2), dtype='f4')
 
@@ -365,18 +501,14 @@ def load_gltf(glb_path):
 
             if has_skin:
                 vertex_data = np.hstack([
-                    positions.astype('f4'),
-                    normals_arr.astype('f4'),
-                    uvs.astype('f4'),
+                    positions,
+                    normals_arr,
+                    uvs,
                     joints_arr,
                     weights_arr,
                 ]).flatten()
             else:
-                vertex_data = np.hstack([
-                    positions.astype('f4'),
-                    normals_arr.astype('f4'),
-                    uvs.astype('f4'),
-                ]).flatten()
+                vertex_data = np.hstack([positions, normals_arr, uvs]).flatten()
 
             indices = None
             if prim.indices is not None:
@@ -402,6 +534,7 @@ def load_gltf(glb_path):
 
             md = {
                 'vertices': vertex_data,
+                'collision_verts': positions,
                 'indices': indices,
                 'color': color,
                 'texture_image': texture_image,

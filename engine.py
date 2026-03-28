@@ -282,6 +282,7 @@ class GraphicsEngine:
         self.editor_ui.available_cutscenes = self.cutscenes.list_cutscenes()
 
         # Keep Dev UI in sync with runtime settings (initial defaults)
+        self.editor_ui.play_intro_enabled = self.engine_config.get('play_intro', True)
         self.editor_ui.ps2_enabled = self.render_settings.ps2_enabled
         self.editor_ui.postprocess_enabled = self.render_settings.postprocess_enabled
         self.editor_ui.quantize_enabled = self.render_settings.quantize_enabled
@@ -542,11 +543,11 @@ class GraphicsEngine:
         self.editor_ui.update_gravity_ui(gravity)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
-        
+
         # Register physics before scripts run
         for obj in self.scene_objects:
             self.physics_system.add_object(obj)
-            
+
         self._rebuild_renderables()
         self._undo_stack = []
         self._redo_stack = []
@@ -601,6 +602,12 @@ class GraphicsEngine:
                 self.scene_objects, self.selected_index, self.editor_ui
             )
 
+        # Ensure Play Intro config matches UI
+        if hasattr(self.editor_ui, 'play_intro_enabled'):
+            if self.engine_config.get('play_intro', True) != self.editor_ui.play_intro_enabled:
+                self.engine_config['play_intro'] = self.editor_ui.play_intro_enabled
+                self.save_engine_config()
+
         # Autosave
         if self.autosave_enabled and self.dev_mode:
             self.autosave_timer += dt
@@ -619,7 +626,7 @@ class GraphicsEngine:
                 self.script_manager.dispatch_collisions(self.physics_system.collisions)
             self.script_manager.update_all(dt)
             self.dialogue.update(dt)
-        
+
         self.hud.update(dt)
 
         # Cutscene updates in all modes when playing

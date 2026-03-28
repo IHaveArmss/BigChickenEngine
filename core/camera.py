@@ -12,7 +12,7 @@ class Camera:
 
         self.fov = 60.0       # vertical FOV in degrees
         self.near = 0.1
-        self.far = 100.0
+        self.far = 1000.0
         self.speed = 5.0      # units per second
         self.sensitivity = 0.1  # degrees per pixel of mouse movement
 

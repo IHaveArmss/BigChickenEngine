@@ -410,14 +410,26 @@ class Renderer:
             sel = scene_objects[selected_index]
             self.ctx.wireframe = True
             for mesh in sel.meshes:
-                mesh.set_uniforms(
-                    camera, lights=lights,
-                    object_color=glm.vec3(0.0, 1.0, 0.4),
-                    render_settings=render_settings,
-                    viewport=viewport,
-                    dir_light_vp=self._dir_light_vp if dir_shadows else None,
-                    receives_shadows=True,
-                )
+                # ModelMesh instances own their material colours and textures —
+                # passing object_color would overwrite them and drop the texture.
+                # Let them render with their natural material in wireframe mode.
+                if isinstance(mesh, ModelMesh):
+                    mesh.set_uniforms(
+                        camera, lights=lights,
+                        render_settings=render_settings,
+                        viewport=viewport,
+                        dir_light_vp=self._dir_light_vp if dir_shadows else None,
+                        receives_shadows=True,
+                    )
+                else:
+                    mesh.set_uniforms(
+                        camera, lights=lights,
+                        object_color=glm.vec3(0.0, 1.0, 0.4),
+                        render_settings=render_settings,
+                        viewport=viewport,
+                        dir_light_vp=self._dir_light_vp if dir_shadows else None,
+                        receives_shadows=True,
+                    )
                 mesh.render()
             self.ctx.wireframe = False
 

@@ -784,6 +784,9 @@ class EditorUI:
         self.prop_inputs['use_gravity'] = {
             'label': 'Use Grvy', 'value': getattr(obj, 'use_gravity', False), 'field': 'toggle',
         }
+        self.prop_inputs['is_collideable'] = {
+            'label': 'collideable', 'value': getattr(obj, 'is_collideable', True), 'field': 'toggle',
+        }
         self.prop_inputs['is_kinematic'] = {
             'label': 'Anchored', 'value': getattr(obj, 'is_kinematic', True), 'field': 'toggle',
         }
@@ -993,6 +996,11 @@ class EditorUI:
                 self.autosave_enabled = not self.autosave_enabled
                 return {'action': 'autosave_toggle', 'enabled': self.autosave_enabled}
 
+            # Play Intro toggle
+            if hasattr(self, 'play_intro_toggle_rect') and self.play_intro_toggle_rect.collidepoint(mouse_pos):
+                self.play_intro_enabled = not getattr(self, 'play_intro_enabled', True)
+                return None
+
             # Retro toggles (no immediate engine action; engine reads values each frame)
             for key in (
                 'ps2_toggle_rect',
@@ -1153,7 +1161,7 @@ class EditorUI:
         # Prop inputs processing
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Handle toggles
-            for key in ['use_gravity', 'is_kinematic', 'is_trigger', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
+            for key in ['is_collideable', 'use_gravity', 'is_kinematic', 'is_trigger', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
                 if key in self.prop_inputs and 'toggle_rect' in self.prop_inputs[key]:
                     if self.prop_inputs[key]['toggle_rect'].collidepoint(mouse_pos):
                         self.prop_inputs[key]['value'] = not self.prop_inputs[key]['value']
@@ -1267,6 +1275,10 @@ class EditorUI:
         if 'is_trigger' in self.prop_inputs:
             self.prop_inputs['is_trigger']['value'] = bool(
                 getattr(obj, 'is_trigger', False)
+            )
+        if 'is_collideable' in self.prop_inputs:
+            self.prop_inputs['is_collideable']['value'] = bool(
+                getattr(obj, 'is_collideable', True)
             )
         cfg = getattr(obj, 'anim_state_config', None)
         if isinstance(cfg, dict):
@@ -1498,6 +1510,18 @@ class EditorUI:
             bg_c = TOGGLE_ON if self.autosave_enabled else TOGGLE_OFF
             pygame.draw.rect(surface, bg_c, self.autosave_toggle_rect, border_radius=11)
             knob_x = toggle_x + 20 if self.autosave_enabled else toggle_x + 2
+            pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
+            y += 30
+
+            # Play Engine Intro toggle
+            label = self.font.render("Play Engine Intro", True, LABEL_COLOR[:3])
+            surface.blit(label, (bx, y + 2))
+
+            toggle_x = bx + bw - 44
+            self.play_intro_toggle_rect = pygame.Rect(toggle_x, y, 40, 22)
+            bg_c = TOGGLE_ON if getattr(self, 'play_intro_enabled', True) else TOGGLE_OFF
+            pygame.draw.rect(surface, bg_c, self.play_intro_toggle_rect, border_radius=11)
+            knob_x = toggle_x + 20 if getattr(self, 'play_intro_enabled', True) else toggle_x + 2
             pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 11), 8)
             y += 30
 
@@ -1756,7 +1780,7 @@ class EditorUI:
             y += INPUT_HEIGHT + 10
 
         # Toggle Physics fields side by side
-        tog_keys = ['is_kinematic', 'use_gravity', 'is_trigger', 'casts_shadows', 'receives_shadows']
+        tog_keys = ['is_collideable', 'is_kinematic', 'use_gravity', 'is_trigger', 'casts_shadows', 'receives_shadows']
         if all(k in self.prop_inputs for k in tog_keys):
             x = bx
             for key in tog_keys:

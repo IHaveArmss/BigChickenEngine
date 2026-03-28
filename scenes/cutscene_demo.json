@@ -24,7 +24,8 @@
       "mass": 1.0,
       "use_gravity": true,
       "is_kinematic": false,
-      "collider_type": "sphere",
+      "is_collideable": true,
+      "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.0,
@@ -64,6 +65,7 @@
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
+      "is_collideable": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -101,6 +103,7 @@
       "mass": 0.0,
       "use_gravity": false,
       "is_kinematic": true,
+      "is_collideable": true,
       "collider_type": "convex_hull",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -113,6 +116,7 @@
       "dialogue_data": null,
       "model": "assets/models/world.glb"
     },
+
     {
       "name": "light_1_EI",
       "format": "light",
@@ -174,12 +178,15 @@
       "mass": 1.0,
       "use_gravity": false,
       "is_kinematic": true,
+      "is_collideable": true,
       "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
       "tag": "",
-      "scripts": [],
+      "scripts": [
+        "cutscene_camera"
+      ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
