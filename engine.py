@@ -67,7 +67,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/bosshallway.json'
+SCENE_FILE = 'scenes/cutscene_demo.json'
 PLAY_INTRO = False # Set to False to skip the opening video
 # ======================================================================
 
@@ -373,10 +373,19 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
 
+        # Match player spawn overrides (marker or legacy fallback)
+        self._apply_spawn_overrides(self.current_scene_file)
+
         # Register physics before scripts run
         for obj in self.scene_objects:
             self.physics_system.add_object(obj)
         self._rebuild_renderables()
+
+        # If starting in Play Mode (shipping mode), load scripts immediately
+        # so the camera and player controller are active on frame 1.
+        if not self.dev_mode:
+            self.script_manager.load_scripts(self, self.scene_objects)
+
         # Place the light orb roughly along the main light direction so the
         # user can see where the sun is.
         sun_pos = glm.vec3(self.editor_camera.position) - self.main_light_dir * 20.0
@@ -579,6 +588,39 @@ class GraphicsEngine:
             rs.directional_shadow_distance = float(settings['directional_shadow_distance'])
             self.editor_ui.directional_shadow_distance_input.text = f"{rs.directional_shadow_distance:.1f}"
 
+    def _apply_spawn_overrides(self, scene_path, spawn_pos=None, spawn_rot=None):
+        """Unified logic for finding markers and teleporting the player."""
+        # 1. Look for a 'player_spawn' marker object in the scene (new visual way to set spawn)
+        # 2. Fallback to hardcoded defaults for cutscene_demo to prevent save-corruption
+        if spawn_pos is None:
+            marker = None
+            for o in self.scene_objects:
+                name_clean = o.name.lower().strip()
+                if name_clean == 'player_spawn' or o.tag == 'spawn_point':
+                    marker = o
+                    break
+
+            if marker:
+                spawn_pos = [marker.position.x, marker.position.y, marker.position.z]
+                spawn_rot = [marker.rotation_euler.x, marker.rotation_euler.y, marker.rotation_euler.z]
+                # Hide the marker so it's not visible during gameplay
+                marker.alpha = 0.0
+                print(f"[Engine] FOUND SPAWN MARKER '{marker.name}' at {spawn_pos}")
+            elif "cutscene_demo.json" in scene_path.lower():
+                # Legacy hardcoded fallback for first boot
+                spawn_pos = [-18.0, 6.13, -22.0]
+                spawn_rot = [0.0, 0.0, 0.0]
+                print(f"[Engine] NO MARKER FOUND. Using legacy cutscene fallback: {spawn_pos}")
+
+        # Override player spawn if provided by marker, transition, or fallback
+        if spawn_pos is not None or spawn_rot is not None:
+            player = self.find_one_by_tag('player')
+            if player:
+                if spawn_pos is not None:
+                    player.position = glm.vec3(spawn_pos[0], spawn_pos[1], spawn_pos[2])
+                if spawn_rot is not None:
+                    player.set_rotation_euler(spawn_rot[0], spawn_rot[1], spawn_rot[2])
+
     def load_scene(self, scene_path, spawn_pos=None, spawn_rot=None):
         """Tear down the current scene and load a new one.
         Can be called from scripts to switch levels. Optional spawn point overrides."""
@@ -603,23 +645,8 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
 
-        # Hardcoded Boot Default: if loading cutscene_demo with NO explicit spawn_pos
-        # (meaning we booted the game fresh, not transitioning from a door), force the position.
-        # This prevents the Save Scene editor button from permanently corrupting the start state.
-        if spawn_pos is None and "cutscene_demo.json" in scene_path.lower():
-            spawn_pos = [27.32, 5.86, -23.68]
-            spawn_rot = [0.0, -90.0, 0.0]
-
-        # Override player spawn if provided by the transition or hardcode
-        if spawn_pos is not None or spawn_rot is not None:
-            player = self.find_one_by_tag('player')
-            if player:
-                if spawn_pos is not None:
-                    # spawn_pos is likely a list [x,y,z], we cast to glm.vec3
-                    # or unpack if it's a tuple.
-                    player.position = glm.vec3(spawn_pos[0], spawn_pos[1], spawn_pos[2])
-                if spawn_rot is not None:
-                    player.set_rotation_euler(spawn_rot[0], spawn_rot[1], spawn_rot[2])
+        # Match player spawn overrides (marker or transition or fallback)
+        self._apply_spawn_overrides(scene_path, spawn_pos, spawn_rot)
 
         # Register physics before scripts run
         for obj in self.scene_objects:

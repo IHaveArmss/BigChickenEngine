@@ -7,10 +7,16 @@ class Weapon:
         self.weapon_drawn = False
         self.last_f_pressed = False
         self.markers = [] # list of (obj, time_remaining)
+        self.tp_timer = 0.0 # Timer for narrative teleport
+        self.fire_cooldown = 0.0 # Timer for firing delay
         print(f"[Weapon] Initialized on {self.entity.name}. Press 'F' to draw/holster.")
 
     def update(self, dt):
-        # Skip logic if in Dev Mode
+        # 1. Update Cooldown Timer (Always)
+        if self.fire_cooldown > 0:
+            self.fire_cooldown -= dt
+
+        # Skip rest if in Dev Mode
         if self.engine.dev_mode:
             return
 
@@ -25,22 +31,26 @@ class Weapon:
             controller = getattr(self.entity, 'anim_state_controller', None)
             if controller:
                 if self.weapon_drawn:
-                    # Switch to pistol set
                     controller.idle_clip = "pistol_Idle"
                     controller.run_clip = "pistol_run"
                     controller.jump_clip = "pistol_jump"
                 else:
-                    # Return to standard set
                     controller.idle_clip = "Idle"
                     controller.run_clip = "Running"
                     controller.jump_clip = "Jump"
                 
-                # Update the mapping and force an animation update
                 controller.refresh()
                 clip_name = controller._resolved.get(controller._current_state)
                 if clip_name:
                     controller.animator.crossfade(clip_name, duration=0.15)
         self.last_f_pressed = keys[pygame.K_f]
+
+        # Handle Narrative Teleport Timer
+        if self.tp_timer > 0:
+            self.tp_timer -= dt
+            if self.tp_timer <= 0:
+                print("[Weapon] Narrative teleport triggered!")
+                self.engine.load_scene('scenes/pizza.json')
 
         # Cleanup markers
         expired = []
@@ -59,21 +69,30 @@ class Weapon:
         if not self.weapon_drawn or self.engine.dev_mode or button != 1:
             return
 
+        # 2. Check Cooldown
+        if self.fire_cooldown > 0:
+            return
+            
+        # Reset Cooldown (0.5s)
+        self.fire_cooldown = 0.5
+        
+        # 3. Play Gunshot SFX
+        self.engine.audio.play_sfx('assets/sounds/gunshot.mp3')
+
         # Fire Raycast
         cam = self.engine.active_camera
-        ray_from = cam.position
-        ray_to = cam.position + cam.front * 200.0
+        # Start from player head height to prevent self-hitting or weird angles
+        ray_from = self.entity.position + glm.vec3(0, 1.5, 0)
+        ray_to = ray_from + cam.front * 200.0
 
         print("[Weapon] FIRE!")
         
-        # Detailed raycast to get position and object
         hit_data = self.engine.physics_system.raycast_detailed(ray_from, ray_to, ignore=[self.entity])
         
         if hit_data:
             hit_obj, hit_pos, _, _ = hit_data
             
-            # 1. Spawn a marker cube at hit point
-            # No physics, small scale, red color
+            # Spawn bullet marker
             marker = self.engine.spawn(
                 'cube', 
                 name='bullet_marker',
@@ -82,11 +101,19 @@ class Weapon:
                 color=[1, 0, 0],
                 is_collideable=False
             )
-            self.markers.append((marker, 1.0)) # 1 second lifetime
+            self.markers.append((marker, 1.0))
 
-            # 2. Check for NPC hit
+            # Check for NPC hit
             if getattr(hit_obj, 'tag', '') == 'npc':
-                print(f"[Weapon] ELIMINATED: {hit_obj.name}")
-                self.engine.destroy(hit_obj)
+                if hit_obj.alpha > 0.5:
+                    print(f"[Weapon] HIT NPC: {hit_obj.name}")
+                    hit_obj.alpha = 0.5
+                    
+                    self.engine.audio.play_sfx('assets/sounds/bloodGushing.mp3')
+                    self.engine.show_image_overlay('assets/transitions/act2.jpg', 3.0)
+                    self.engine.global_flags['thief_shot'] = True
+                    self.tp_timer = 3.0
+                else:
+                    print(f"[Weapon] ALREADY DEAD: {hit_obj.name}")
         else:
             print("[Weapon] Miss...")

@@ -11,6 +11,33 @@ class Tony:
         self._has_spoken = False
 
     def on_interact(self):
+        # NARRATIVE BRANCH: After the Thief is shot
+        if self.engine.global_flags.get('thief_shot'):
+            return {
+                "start_node": "postBossPizza",
+                "nodes": {
+                    "postBossPizza": {
+                        "speaker": "Tony Esprano",
+                        "text": "Sorry buddy pizza's 6$ now, ever since that missing [PLACEHOLDER], the big guy put the whole city under martial law, until they find the killer.",
+                        "next": "postBossPizzaChoices"
+                    },
+                    "postBossPizzaChoices": {
+                        "speaker": "Tony Esprano",
+                        "text": "...",
+                        "choices": [
+                            {"text": "Yea who would do such a thing...", "next": "postBossPizzaResponse"},
+                            {"text": "Who would do such a thing?", "next": "postBossPizzaResponse"}
+                        ]
+                    },
+                    "postBossPizzaResponse": {
+                        "speaker": "Tony Esprano",
+                        "text": "Yea buddy lifes been hard on us the prices skyrocketed and we have this curfew, i got interrogated the first week, i suggest you watch out.",
+                        "next": "exit"
+                    },
+                    "exit": { "text": "" }
+                }
+            }
+
         if self._has_spoken:
             self.engine.dialogue.talk_sounds = [
                 "assets/sounds/talkingpizza1.mp3",

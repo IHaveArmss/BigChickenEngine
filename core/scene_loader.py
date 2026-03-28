@@ -440,7 +440,8 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
         'is_collideable', 'is_kinematic', 'collider_type', 'bounciness', 'friction',
         'drag_linear', 'tag', 'scripts', 'casts_shadows', 'receives_shadows', 'is_trigger',
         'dialogue_data', 'color', 'model', 'animation_source', 'use_anim_state_controller',
-        'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha'
+        'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha',
+        'dialogue_cam_pos', 'dialogue_cam_look_at', 'dialogue_facing'
     }
     for key, value in entry.items():
         if key not in standard_keys:

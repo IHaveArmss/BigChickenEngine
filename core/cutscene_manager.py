@@ -18,6 +18,7 @@ class CutsceneManager:
         self._saved_camera_pos = None
         self._saved_camera_yaw = None
         self._saved_camera_pitch = None
+        self._saved_play_camera = None
         self._play_camera = None
 
     def add_waypoint(self):
@@ -48,6 +49,10 @@ class CutsceneManager:
         self._saved_camera_pos = glm.vec3(cam.position)
         self._saved_camera_yaw = cam.yaw
         self._saved_camera_pitch = cam.pitch
+        
+        # Capture the current gameplay camera (e.g. ThirdPersonCamera) so we can restore it
+        self._saved_play_camera = self.engine.play_camera
+        
         self._play_camera = _CutsceneCamera()
         self.playback_index = 0
         self.playback_progress = 0.0
@@ -59,8 +64,12 @@ class CutsceneManager:
         if not self.is_playing:
             return
         self.is_playing = False
-        self.engine.set_play_camera(None)
+        
+        # Restore the previous gameplay camera instead of clearing it to None
+        self.engine.set_play_camera(self._saved_play_camera)
+        
         self._play_camera = None
+        self._saved_play_camera = None
         if self._saved_camera_pos is not None:
             cam = self.engine.active_camera
             cam.position = self._saved_camera_pos
@@ -97,8 +106,9 @@ class CutsceneManager:
                     self.playback_index = 0
                 else:
                     self.is_playing = False
-                    self.engine.set_play_camera(None)
+                    self.engine.set_play_camera(self._saved_play_camera)
                     self._play_camera = None
+                    self._saved_play_camera = None
                     return
         t = self._smoothstep(self.playback_progress)
         self._play_camera.position = glm.vec3(
