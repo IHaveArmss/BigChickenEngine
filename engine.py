@@ -330,7 +330,7 @@ class GraphicsEngine:
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
         self._record_history_snapshot(force=True)
-        
+
         # Synchronize play-mode state on startup so camera snaps correctly without F1
         self.dev_mode = True
         self.toggle_dev_mode() # This sets dev_mode to False and primes scripts/input/cursor
@@ -374,7 +374,7 @@ class GraphicsEngine:
             resource_manager=self.resource_manager
         )
         self.editor_ui.set_prefab_context(self.list_prefab_names())
-        
+
         # Apply marker-based spawn on boot
         self._apply_spawn_logic()
 
@@ -456,7 +456,7 @@ class GraphicsEngine:
                 if tag == 'player_spawn' or name == 'player_spawn':
                     marker = obj
                     break
-            
+
             if marker:
                 final_pos = glm.vec3(marker.position)
                 # Extract Euler from the marker's rotation
@@ -474,7 +474,7 @@ class GraphicsEngine:
             player.position = final_pos
         if final_rot is not None:
             player.set_rotation_euler(final_rot[0], final_rot[1], final_rot[2])
-        
+
         # Ensure physics is synced immediately
         player._physics_dirty = True
 
@@ -658,7 +658,6 @@ class GraphicsEngine:
         self.scene_objects, self.model_meshes, settings = load_scene(
             scene_path, self.ctx, self.texture_loader, resource_manager=self.resource_manager
         )
-        # Sync UI and settings
         self._apply_scene_settings(settings)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())

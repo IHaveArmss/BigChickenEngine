@@ -53,21 +53,21 @@
     },
     {
       "name": "player",
-      "format": "glb",
+      "format": "cube",
       "position": [
         -4.59,
         0.674,
         0.129
       ],
       "rotation": [
-        180.0,
-        89.62,
-        180.0
+        -4.669,
+        87.808,
+        -4.672
       ],
       "scale": [
-        3.162,
-        3.162,
-        3.162
+        1.0,
+        1.496,
+        1.0
       ],
       "mass": 1.0,
       "use_gravity": true,
@@ -76,26 +76,20 @@
       "collider_type": "capsule",
       "bounciness": 0.0,
       "friction": 0.5,
-      "drag_linear": 0.0,
+      "drag_linear": 0.02,
       "tag": "player",
       "scripts": [
-        "third_person",
-        "weapon"
+        "third_person"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/playerModel/CataHobov1.glb",
-      "use_anim_state_controller": true,
-      "anim_state": {
-        "idle": "Idle",
-        "run": "Running",
-        "jump": "Jump",
-        "fall": "Falling",
-        "move_threshold": 0.1,
-        "vertical_threshold": 0.15
-      }
+      "color": [
+        0.2,
+        0.6,
+        1.0
+      ]
     },
     {
       "name": "lobby",
@@ -135,7 +129,7 @@
       "name": "low_poly_computer",
       "format": "glb",
       "position": [
-        6.086,
+        6.09,
         1.86,
         -5.36
       ],
@@ -462,14 +456,7 @@
       "model": "assets/models/lobbyman.glb",
       "interactable": true,
       "use_view_interaction": true,
-      "interaction_distance": 7.0,
-      "dialogue_cam_pos": [
-        4.0,
-        2.5,
-        -3.0
-      ],
-      "dialogue_cam_yaw": -60.0,
-      "dialogue_cam_pitch": 0.0
+      "interaction_distance": 6.0
     },
     {
       "name": "lobbyman",
@@ -509,9 +496,9 @@
       "name": "elevator_left_door",
       "format": "glb",
       "position": [
-        11.5,
-        0.33,
-        -0.96
+        11.62,
+        -0.16,
+        -1.01
       ],
       "rotation": [
         0.0,
@@ -543,9 +530,9 @@
       "name": "elevator_right_door",
       "format": "glb",
       "position": [
-        11.5,
-        0.03,
-        -0.93
+        11.62,
+        -0.16,
+        -0.9
       ],
       "rotation": [
         0.0,
@@ -644,12 +631,97 @@
       "color": [
         0.2,
         0.8,
-        0.698
+        0.69
       ],
       "alpha": 0.05,
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 3.0
+    },
+    {
+      "name": "Interactable_Button_1",
+      "format": "cube",
+      "position": [
+        9.58,
+        2.39,
+        -0.89
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.334,
+        4.255,
+        4.797
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "interactable",
+      "scripts": [
+        "elevator_button"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.2,
+        0.8,
+        0.694
+      ],
+      "alpha": 0.05,
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 3.0
+    },
+    {
+      "name": "Trigger_Entity",
+      "format": "cube",
+      "position": [
+        11.64,
+        2.77,
+        -0.88
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.196,
+        5.804,
+        7.014
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "elevator_close_trigger"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.8,
+        0.2,
+        1.0
+      ],
+      "alpha": 0.0
     }
   ]
 }
