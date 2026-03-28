@@ -273,6 +273,7 @@ class GraphicsEngine:
         self.hud.scene_hierarchy = self.scene_hierarchy
         self.input_handler = InputHandler(self)
         self.renderer = Renderer(self.ctx)
+        self.renderer._init_skybox(self.texture_loader)
         self.dev_tools = DevMode()
         self.physics_system = PhysicsSystem()
         self.script_manager = ScriptManager()

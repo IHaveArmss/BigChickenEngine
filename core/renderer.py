@@ -58,6 +58,11 @@ class Renderer:
         self._dir_shadow_res = 0
         self._dir_light_vp = glm.mat4(1.0)
 
+        # Skybox
+        self._skybox_program = None
+        self._skybox_vao = None
+        self._skybox_texture = None
+
         # Multi-point-shadow system: up to MAX_POINT_SHADOWS lights
         self._point_shadow_program = None
         self._point_shadow_texs = [None] * 4
@@ -226,6 +231,25 @@ class Renderer:
         self._scene_fbo = self.ctx.framebuffer(color_attachments=[self._scene_tex], depth_attachment=self._depth_rb)
         self._fbo_size = (w, h)
 
+    def _init_skybox(self, texture_loader):
+        sky_paths = ['assets/sky.png', 'assets/sky.jpg']
+        sky_path = None
+        for p in sky_paths:
+            if os.path.exists(p):
+                sky_path = p
+                break
+        if sky_path is None:
+            print("[Renderer] No sky texture found at assets/sky.png or assets/sky.jpg — skybox disabled")
+            return
+        with open('shaders/screen.vert') as f:
+            vs = f.read()
+        with open('shaders/skybox.frag') as f:
+            fs = f.read()
+        self._skybox_program = self.ctx.program(vertex_shader=vs, fragment_shader=fs)
+        self._skybox_vao = self.ctx.vertex_array(self._skybox_program, [])
+        self._skybox_texture = texture_loader.load(sky_path)
+        print(f"[Renderer] Skybox loaded from {sky_path}")
+
     def collect_lights(self, scene_objects, orbiting_light_pos, orbiting_light_color):
         """Gather all lights into a list of (position, color) tuples."""
         lights = [(orbiting_light_pos, orbiting_light_color)]
@@ -320,6 +344,20 @@ class Renderer:
 
         aspect = self.ctx.screen.width / self.ctx.screen.height
         vp = camera.projection_matrix(aspect) * camera.view_matrix()
+
+        # ── Skybox ──
+        if self._skybox_program is not None and self._skybox_texture is not None:
+            self.ctx.disable(moderngl.DEPTH_TEST)
+            self._skybox_texture.use(location=0)
+            self._skybox_program['u_sky_texture'].value = 0
+            self._skybox_program['u_cam_forward'].value = tuple(camera.front)
+            self._skybox_program['u_cam_right'].value = tuple(camera.right)
+            self._skybox_program['u_cam_up'].value = tuple(camera.up)
+            self._skybox_program['u_half_tan_fov'].value = math.tan(math.radians(camera.fov) * 0.5)
+            self._skybox_program['u_aspect'].value = aspect
+            self._skybox_vao.render(moderngl.TRIANGLE_STRIP, vertices=4)
+            self.ctx.enable(moderngl.DEPTH_TEST)
+
         frustum = _extract_frustum_planes(vp)
 
         opaque = []
