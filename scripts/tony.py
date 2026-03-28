@@ -12,6 +12,11 @@ class Tony:
 
     def on_interact(self):
         if self._has_spoken:
+            self.engine.dialogue.talk_sounds = [
+                "assets/sounds/talkingpizza1.mp3",
+                "assets/sounds/talkingpizza2.mp3",
+                "assets/sounds/talkingpizza3.mp3",
+            ]
             return {
                 "start_node": "repeat",
                 "nodes": {
@@ -27,6 +32,11 @@ class Tony:
             }
         
         self._has_spoken = True
+        self.engine.dialogue.talk_sounds = [
+            "assets/sounds/talkingpizza1.mp3",
+            "assets/sounds/talkingpizza2.mp3",
+            "assets/sounds/talkingpizza3.mp3",
+        ]
         player = self.engine.interaction_manager._get_player()
         target_pos = player.position if player else self.engine.active_camera.position
         

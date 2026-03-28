@@ -59,6 +59,10 @@ class DialogueManager:
         self._choices = None
         self._selected_choice = 0
 
+        # Talking sounds — scripts can set this before dialogue starts
+        self.talk_sounds = []
+        self._talk_sound_idx = 0
+
         # Camera zoom
         self._saved_cam_pos = glm.vec3(0)
         self._saved_cam_front = glm.vec3(0, 0, -1)
@@ -92,6 +96,7 @@ class DialogueManager:
         self._target = target
         self._returning = False
         self._zoom_progress = 0.0
+        self._talk_sound_idx = 0
 
         # Check which format we're using
         if isinstance(dialogue_data, dict) and "nodes" in dialogue_data:
@@ -350,16 +355,24 @@ class DialogueManager:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def _play_next_talk_sound(self):
+        if self.talk_sounds:
+            path = self.talk_sounds[self._talk_sound_idx % len(self.talk_sounds)]
+            self._talk_sound_idx += 1
+            self.engine.audio.play_sfx(path)
+
     def _advance_to_node(self, node_id):
         """Advance to a node by string ID (new format)."""
         if node_id == "exit" or node_id not in self._nodes_dict:
             self._begin_end()
             return
-        
+
         self._current_node_id = node_id
         node = self._nodes_dict[node_id]
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
+        if self._speaker and "choices" not in node:
+            self._play_next_talk_sound()
         
         # Reset choices first
         self._choices = None
@@ -392,6 +405,8 @@ class DialogueManager:
         node = self._lines[index]
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
+        if self._speaker and "choices" not in node:
+            self._play_next_talk_sound()
         self._choices = None
         if "choices" in node:
             self._choices = node["choices"]
@@ -413,6 +428,8 @@ class DialogueManager:
         self._lines = []
         self._nodes_dict = None
         self._current_node_id = None
+        self.talk_sounds = []
+        self._talk_sound_idx = 0
 
     @staticmethod
     def _world_to_screen(world_pos, camera, win_size):
