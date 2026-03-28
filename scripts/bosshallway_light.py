@@ -23,7 +23,7 @@ class BosshallwayLight:
     def _set_light(self, name):
         light = next((o for o in self.engine.scene_objects if o.name == name), None)
         if light is not None:
-            light.light_intensity = 0.3
+            light.light_intensity = 0.06
             light.alpha = 1.0
         else:
             print(f'[BosshallwayLight] WARNING: {name} not found')
