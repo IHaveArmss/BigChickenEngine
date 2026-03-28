@@ -326,7 +326,17 @@
       "model": "assets/models/pizzamanboss.glb",
       "interactable": true,
       "use_view_interaction": true,
-      "interaction_distance": 8.0
+      "interaction_distance": 8.0,
+      "dialogue_cam_pos": [
+        -1.0,
+        4.0,
+        0.6
+      ],
+      "dialogue_cam_look_at": [
+        -6.0,
+        3.5,
+        0.5
+      ]
     },
     {
       "name": "cube_1",
@@ -361,7 +371,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.325,
+        0.322,
         0.318,
         0.318
       ]
@@ -518,9 +528,6 @@
       "scripts": [
         "scene_trigger"
       ],
-      "scene_path": "scenes/cutscene_demo.json",
-      "target_position": [-18.0, 6.13, -22.0],
-      "target_rotation": [0.0, 0.0, 0.0],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -533,7 +540,18 @@
       "alpha": 0.05,
       "interactable": true,
       "use_view_interaction": false,
-      "interaction_distance": 3.0
+      "interaction_distance": 3.0,
+      "scene_path": "scenes/cutscene_demo.json",
+      "target_position": [
+        -18.0,
+        6.13,
+        -22.0
+      ],
+      "target_rotation": [
+        0.0,
+        0.0,
+        0.0
+      ]
     }
   ]
 }

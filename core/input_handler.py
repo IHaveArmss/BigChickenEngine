@@ -128,11 +128,11 @@ class InputHandler:
                 eng.current_scene_file, eng.scene_objects, eng.selected_index
             )
             save_scene(eng.current_scene_file, eng.scene_objects,
-                       settings={'gravity': eng.physics_system.gravity})
+                       settings=eng._build_scene_settings())
 
         elif event.key == pygame.K_s and (pygame.key.get_mods() & pygame.KMOD_CTRL):
             if eng.dev_mode:
-                save_scene(eng.current_scene_file, eng.scene_objects)
+                save_scene(eng.current_scene_file, eng.scene_objects, settings=eng._build_scene_settings())
         elif event.key == pygame.K_z and (pygame.key.get_mods() & pygame.KMOD_CTRL):
             if eng.dev_mode:
                 eng.undo()
@@ -167,7 +167,7 @@ class InputHandler:
                     if action['action'] == 'save_as':
                         eng._save_as(action['filename'])
                     elif action['action'] == 'save_current_scene':
-                        save_scene(eng.current_scene_file, eng.scene_objects, settings={'gravity': eng.physics_system.gravity})
+                        save_scene(eng.current_scene_file, eng.scene_objects, settings=eng._build_scene_settings())
                         print(f"[DevMode] Scene saved: {eng.current_scene_file}")
                     elif action['action'] == 'load_scene':
                         raw = (action.get('scene') or '').strip().replace('\\', '/')

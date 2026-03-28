@@ -71,7 +71,7 @@ class Renderer:
         self._point_shadow_vps = [glm.mat4(1.0)] * 4
         self._point_shadow_count = 0
         # Maps light index (in the lights[] array) → shadow slot (0..3), or -1
-        self._light_shadow_slots = [-1] * 8
+        self._light_shadow_slots = [-1] * 16
 
         self._init_postprocess()
         self._init_shadow_programs()
@@ -301,7 +301,7 @@ class Renderer:
             self.ctx.clear(0.08, 0.08, 0.12)
 
         # ── Multi-point-light shadows ──
-        self._light_shadow_slots = [-1] * 8
+        self._light_shadow_slots = [-1] * 16
         self._point_shadow_count = 0
         max_point = int(getattr(rs, 'max_shadowed_spot_lights', 4))
         if bool(getattr(rs, 'spot_shadows_enabled', False)) and max_point > 0:

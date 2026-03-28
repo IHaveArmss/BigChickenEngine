@@ -6,7 +6,7 @@ in vec2 v_texcoord;
 in vec4 v_dir_light_space_pos;
 
 // Change this number to support more or fewer lights
-#define MAX_LIGHTS 8
+#define MAX_LIGHTS 16
 #define MAX_POINT_SHADOWS 4
 
 uniform int u_num_lights;

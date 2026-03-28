@@ -806,13 +806,19 @@ class EditorUI:
 
         # Dialogue camera overrides — separate X/Y/Z fields
         dcp = getattr(obj, 'dialogue_cam_pos', None)
-        self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp.x:.2f}' if dcp else '', 'field': None}
-        self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp.y:.2f}' if dcp else '', 'field': None}
-        self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp.z:.2f}' if dcp else '', 'field': None}
+        dcp_x = (dcp[0] if isinstance(dcp, (list, tuple)) else dcp.x) if dcp is not None else None
+        dcp_y = (dcp[1] if isinstance(dcp, (list, tuple)) else dcp.y) if dcp is not None else None
+        dcp_z = (dcp[2] if isinstance(dcp, (list, tuple)) else dcp.z) if dcp is not None else None
+        self.prop_inputs['dlg_cam_pos_x'] = {'label': 'X', 'value': f'{dcp_x:.2f}' if dcp_x is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_y'] = {'label': 'Y', 'value': f'{dcp_y:.2f}' if dcp_y is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_pos_z'] = {'label': 'Z', 'value': f'{dcp_z:.2f}' if dcp_z is not None else '', 'field': None}
         dcl = getattr(obj, 'dialogue_cam_look_at', None)
-        self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': f'{dcl.x:.2f}' if dcl else '', 'field': None}
-        self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': f'{dcl.y:.2f}' if dcl else '', 'field': None}
-        self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': f'{dcl.z:.2f}' if dcl else '', 'field': None}
+        dcl_x = (dcl[0] if isinstance(dcl, (list, tuple)) else dcl.x) if dcl is not None else None
+        dcl_y = (dcl[1] if isinstance(dcl, (list, tuple)) else dcl.y) if dcl is not None else None
+        dcl_z = (dcl[2] if isinstance(dcl, (list, tuple)) else dcl.z) if dcl is not None else None
+        self.prop_inputs['dlg_cam_look_x'] = {'label': 'X', 'value': f'{dcl_x:.2f}' if dcl_x is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_look_y'] = {'label': 'Y', 'value': f'{dcl_y:.2f}' if dcl_y is not None else '', 'field': None}
+        self.prop_inputs['dlg_cam_look_z'] = {'label': 'Z', 'value': f'{dcl_z:.2f}' if dcl_z is not None else '', 'field': None}
         df = getattr(obj, 'dialogue_facing', None)
         self.prop_inputs['dialogue_facing'] = {'label': 'Face Angle', 'value': f'{df:.1f}' if df is not None else '', 'field': None}
         self.prop_inputs['is_trigger'] = {

@@ -107,7 +107,7 @@ class Mesh:
 
         # Multi-light uniforms — moderngl requires setting ALL array
         # elements at once, so we pad unused slots with zeros
-        MAX_LIGHTS = 8
+        MAX_LIGHTS = 16
         _ZERO3 = (0.0, 0.0, 0.0)
         if lights:
             num = min(len(lights), MAX_LIGHTS)
