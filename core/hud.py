@@ -25,8 +25,8 @@ class HUD:
 
         # Pygame font
         pygame.font.init()
-        self.font_large = pygame.font.SysFont('Consolas', 28, bold=True)
-        self.font_small = pygame.font.SysFont('Consolas', 22)
+        self.font_large = pygame.font.SysFont('Consolas', 30, bold=True)
+        self.font_small = pygame.font.SysFont('Consolas', 24)
 
         # HUD texture (persistent, updated via .write())
         self._texture = None
