@@ -10,6 +10,7 @@ class ElevatorCloseTrigger:
 
     def start(self):
         self._triggered = False
+        self._done      = False
         self._moving    = False
         self._left      = None
         self._right     = None
@@ -34,8 +35,21 @@ class ElevatorCloseTrigger:
                 self._right    = obj
                 self._origin_r = glm.vec3(obj.position)
 
+    def _doors_fully_open(self):
+        """Returns True only after the ElevatorButton script has finished opening."""
+        for script in self.engine.script_manager.active_scripts:
+            if script.__class__.__name__ == 'ElevatorButton':
+                return getattr(script, '_phase', 0) == 3
+        return False
+
+    def _begin_close(self):
+        self._start_l = glm.vec3(self._left.position)
+        self._start_r = glm.vec3(self._right.position)
+        self._t       = 0.0
+        self._moving  = True
+
     def update(self, dt):
-        if self._triggered and not self._moving:
+        if self._done:
             return
 
         if not self._triggered:
@@ -51,13 +65,16 @@ class ElevatorCloseTrigger:
             if not points:
                 return
 
+            # Player entered — mark as triggered regardless of door state
             self._triggered = True
+
+        # Wait for doors to finish opening before closing
+        if not self._moving:
+            if not self._doors_fully_open():
+                return
             if self._left is None or self._right is None:
                 return
-            self._start_l = glm.vec3(self._left.position)
-            self._start_r = glm.vec3(self._right.position)
-            self._t       = 0.0
-            self._moving  = True
+            self._begin_close()
 
         if self._moving:
             dist = max(
@@ -73,3 +90,4 @@ class ElevatorCloseTrigger:
 
             if self._t >= 1.0:
                 self._moving = False
+                self._done   = True

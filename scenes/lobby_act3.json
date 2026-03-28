@@ -767,6 +767,48 @@
         1.0
       ],
       "alpha": 0.0
+    },
+    {
+      "name": "Trigger_Entity_1",
+      "format": "cube",
+      "position": [
+        14.38,
+        2.66,
+        -0.89
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        6.794,
+        4.763,
+        5.195
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "scene_trigger_auto"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "scene_path": "scenes/bosshallway.json",
+      "color": [
+        0.8,
+        0.2,
+        1.0
+      ],
+      "alpha": 0.0
     }
   ]
 }
