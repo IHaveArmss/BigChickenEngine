@@ -17,13 +17,13 @@
       "name": "player",
       "format": "glb",
       "position": [
-        -6.57,
-        5.46,
-        40.28
+        31.65,
+        6.03,
+        -23.96
       ],
       "rotation": [
         0.0,
-        -0.0,
+        -89.98,
         0.0
       ],
       "scale": [
@@ -444,7 +444,7 @@
       "color": [
         0.2,
         0.8,
-        0.686
+        0.682
       ],
       "alpha": 0.1,
       "interactable": true,
@@ -565,7 +565,7 @@
       ],
       "rotation": [
         90.0,
-        -89.98,
+        -89.966,
         0.0
       ],
       "scale": [
@@ -892,7 +892,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.478,
+        0.475,
         0.475,
         1.0
       ],
@@ -965,11 +965,50 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
       "alpha": 0.5
+    },
+    {
+      "name": "spawn_from_pizza",
+      "format": "cube",
+      "position": [
+        -18.09,
+        6.95,
+        -21.43
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ],
+      "alpha": 0.0
     }
   ]
 }

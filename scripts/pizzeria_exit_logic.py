@@ -19,7 +19,7 @@ class PizzeriaExitLogic:
             self.engine.load_scene("scenes/act2.json", target_marker="spawn_player_act2")
         else:
             print("[PizzeriaExit] Default branch: Thief alive. Loading Town...")
-            # Fallback to the original scene (legacy behavior)
-            self.engine.load_scene("scenes/cutscene_demo.json")
+            # Use the specific spawn_from_pizza marker requested
+            self.engine.load_scene("scenes/cutscene_demo.json", target_marker="spawn_from_pizza")
             
         return None
