@@ -17,13 +17,13 @@
       "name": "player",
       "format": "glb",
       "position": [
-        31.65,
-        6.03,
-        -23.96
+        -6.57,
+        5.46,
+        40.28
       ],
       "rotation": [
         0.0,
-        -89.98,
+        -0.0,
         0.0
       ],
       "scale": [
@@ -565,7 +565,7 @@
       ],
       "rotation": [
         90.0,
-        -89.972,
+        -89.98,
         0.0
       ],
       "scale": [
@@ -713,7 +713,7 @@
         }
       },
       "color": [
-        0.89,
+        0.886,
         0.4,
         0.8
       ],
@@ -726,7 +726,7 @@
         6.0,
         38.4
       ],
-      "dialogue_cam_yaw": 0.0,
+      "dialogue_cam_yaw": 150.0,
       "dialogue_cam_pitch": 0.0,
       "scene_path": "scenes/lobby.json",
       "target_position": [
@@ -931,6 +931,45 @@
       "is_trigger": false,
       "dialogue_data": null,
       "model": "assets/models/hopeburg.glb"
+    },
+    {
+      "name": "spawn_from_lobby",
+      "format": "cube",
+      "position": [
+        -6.57,
+        5.46,
+        40.28
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.482,
+        0.475,
+        1.0
+      ],
+      "alpha": 0.5
     }
   ]
 }

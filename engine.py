@@ -67,7 +67,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/cutscene_demo.json'
+SCENE_FILE = 'scenes/act2.json'
 PLAY_INTRO = False # Set to False to skip the opening video
 # ======================================================================
 
@@ -430,9 +430,9 @@ class GraphicsEngine:
         """Return a list of all SceneObjects with the given tag."""
         return [o for o in self.scene_objects if getattr(o, 'tag', '') == tag]
 
-    def _apply_spawn_logic(self, override_pos=None, override_rot=None):
+    def _apply_spawn_logic(self, override_pos=None, override_rot=None, marker_name='player_spawn'):
         """Finds the player and snaps them to the correct starting point.
-        Hierarchy: 1. Manual Overrides (Transitions) > 2. Scene 'player_spawn' Marker > 3. Default JSON pos.
+        Hierarchy: 1. Manual Overrides (Transitions) > 2. Target Marker > 3. Default JSON pos.
         """
         player = self.find_one_by_tag('player')
         if not player:
@@ -448,13 +448,14 @@ class GraphicsEngine:
         if override_rot is not None:
             final_rot = override_rot
 
-        # 2. Scene Marker (an object tagged or named 'player_spawn')
+        # 2. Scene Marker (an object tagged or named marker_name)
         if final_pos is None:
             marker = None
+            search = marker_name.lower()
             for obj in self.scene_objects:
                 tag = getattr(obj, 'tag', '').lower()
                 name = getattr(obj, 'name', '').lower()
-                if tag == 'player_spawn' or name == 'player_spawn':
+                if tag == search or name == search:
                     marker = obj
                     break
 
@@ -639,9 +640,10 @@ class GraphicsEngine:
             self.renderer.set_skybox(rs.skybox_path, self.texture_loader)
             self.editor_ui.skybox_path_input.text = rs.skybox_path
 
-    def load_scene(self, scene_path, spawn_pos=None, spawn_rot=None):
-        """Tear down the current scene and load a new one.
-        Can be called from scripts to switch levels. Optional spawn point overrides."""
+    def load_scene(self, scene_path, target_position=None, target_rotation=None, 
+                   spawn_pos=None, spawn_rot=None, target_marker='player_spawn'):
+        """Unloads current scene and loads a new JSON file."""
+        print(f"\n[Engine] Loading Scene: {scene_path}...")
         self.script_manager.stop_all()
         self.physics_system.reset()
 
@@ -664,7 +666,8 @@ class GraphicsEngine:
         self.editor_ui.set_prefab_context(self.list_prefab_names())
 
         # Apply spawn logic (marker-based or manual override)
-        self._apply_spawn_logic(spawn_pos, spawn_rot)
+        final_marker = target_marker or 'player_spawn'
+        self._apply_spawn_logic(spawn_pos, spawn_rot, marker_name=final_marker)
 
         # Register physics before scripts run
         for obj in self.scene_objects:

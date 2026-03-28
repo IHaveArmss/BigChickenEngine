@@ -1,0 +1,396 @@
+{
+  "settings": {
+    "gravity": -9.81,
+    "sun_intensity": 1.0,
+    "sun_azimuth_deg": 45.0,
+    "sun_elevation_deg": -55.0,
+    "ambient_strength": 0.15,
+    "ambient_color_r": 1.0,
+    "ambient_color_g": 1.0,
+    "ambient_color_b": 1.0,
+    "directional_shadows_enabled": true,
+    "directional_shadow_distance": 40.0,
+    "skybox_path": ""
+  },
+  "objects": [
+    {
+      "name": "player",
+      "format": "glb",
+      "position": [
+        -3.33,
+        7.12,
+        -20.48
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        3.162,
+        3.162,
+        3.162
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "capsule",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.0,
+      "tag": "player",
+      "scripts": [
+        "third_person",
+        "weapon"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/playerModel/CataHobov1.glb",
+      "use_anim_state_controller": true,
+      "anim_state": {
+        "idle": "Idle",
+        "run": "Running",
+        "jump": "Jump",
+        "fall": "Falling",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
+      "name": "world_ruin_blank",
+      "format": "glb",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        5.386,
+        5.386,
+        5.386
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "environment",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/world_ruin_blank.glb"
+    },
+    {
+      "name": "main_light",
+      "format": "light",
+      "position": [
+        0.0,
+        50.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "light",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.5,
+      "color": [
+        1.0,
+        1.0,
+        0.9
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "spawn_player_act2",
+      "format": "cube",
+      "position": [
+        -3.33,
+        7.12,
+        -20.48
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": false,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.482,
+        0.475,
+        1.0
+      ],
+      "alpha": 0.0
+    },
+    {
+      "name": "Thug1",
+      "format": "cube",
+      "position": [
+        1.06,
+        5.26,
+        -17.66
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug2",
+      "format": "cube",
+      "position": [
+        2.3,
+        5.39,
+        -20.72
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug3",
+      "format": "cube",
+      "position": [
+        2.39,
+        5.0,
+        -23.28
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug4",
+      "format": "cube",
+      "position": [
+        -12.14,
+        5.56,
+        -26.74
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug5",
+      "format": "cube",
+      "position": [
+        -16.26,
+        5.35,
+        -26.64
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "npc"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.898,
+        0.4,
+        0.8
+      ],
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    }
+  ]
+}
