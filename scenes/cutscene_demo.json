@@ -109,6 +109,7 @@
       "receives_shadows": true,
       "model": "assets/models/world.glb"
     },
+
     {
       "name": "cutscene_trigger",
       "format": "cube",

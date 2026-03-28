@@ -297,6 +297,55 @@ class DevMode:
             
         obj._physics_dirty = True
 
+        # Dialogue Packaging
+        if any(k.startswith('diag_') for k in values):
+            speaker = str(values.get('diag_speaker', obj.name)).strip() or obj.name
+            
+            # Extract all lines in order
+            lines = []
+            for i in range(1, 21):
+                key = f'diag_line{i}'
+                if key in values:
+                    txt = str(values[key]).strip()
+                    if txt: lines.append(txt)
+                else:
+                    break
+            
+            c1_t = str(values.get('diag_opt1_text', '')).strip()
+            c1_r = str(values.get('diag_opt1_reply', '')).strip()
+            c2_t = str(values.get('diag_opt2_text', '')).strip()
+            c2_r = str(values.get('diag_opt2_reply', '')).strip()
+            
+            nodes = {}
+            if lines:
+                for i, text in enumerate(lines):
+                    node_id = f"line_{i}"
+                    if i < len(lines) - 1:
+                        nxt = f"line_{i+1}"
+                    elif c1_t:
+                        nxt = "choices"
+                    else:
+                        nxt = "exit"
+                    nodes[node_id] = {"speaker": speaker, "text": text, "next": nxt}
+                start_node = "line_0"
+            elif c1_t:
+                start_node = "choices"
+            else:
+                start_node = "exit"
+            
+            if c1_t:
+                choices_list = [{"text": c1_t, "next": "response_a"}]
+                nodes["response_a"] = {"speaker": speaker, "text": c1_r or "OK.", "next": "exit"}
+                if c2_t:
+                    choices_list.append({"text": c2_t, "next": "response_b"})
+                    nodes["response_b"] = {"speaker": speaker, "text": c2_r or "Understood.", "next": "exit"}
+                nodes["choices"] = {"speaker": speaker, "text": "What would you like to do?", "choices": choices_list}
+
+            if nodes:
+                obj.dialogue_data = {"start_node": start_node, "nodes": nodes}
+            else:
+                obj.dialogue_data = None
+
         # Animation state controller options (for skinned/animated objects)
         if getattr(obj, 'animator', None) is not None:
             cfg = getattr(obj, 'anim_state_config', {})

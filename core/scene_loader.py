@@ -40,6 +40,7 @@ class SceneObject:
         self.receives_shadows = True
 
         self.is_trigger = False
+        self.dialogue_data = None
         
         # Physics Properties
         self.pybullet_body_id = None
@@ -311,6 +312,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None):
     obj.receives_shadows = bool(entry.get('receives_shadows', True))
     obj.light_casts_shadows = bool(entry.get('light_casts_shadows', obj.is_light))
     obj.is_trigger = bool(entry.get('is_trigger', False))
+    obj.dialogue_data = entry.get('dialogue_data', None)
 
     if any(r != 0 for r in rot):
         obj.set_rotation_euler(*rot)

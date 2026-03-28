@@ -33,6 +33,7 @@ def serialize_scene_object(obj):
         "casts_shadows": bool(getattr(obj, 'casts_shadows', True)),
         "receives_shadows": bool(getattr(obj, 'receives_shadows', True)),
         "is_trigger": bool(getattr(obj, 'is_trigger', False)),
+        "dialogue_data": getattr(obj, 'dialogue_data', None),
     }
 
     if obj.format not in ('cube', 'triangle', 'light'):

@@ -71,7 +71,7 @@ class CollapsibleSection:
 
 
 class DropdownSelect:
-    """A simple dropdown selector for model/file selection."""
+    """A simple dropdown selector for model/file selection with scrolling support."""
     
     def __init__(self, x, y, width, items, default_index=0):
         self.rect = pygame.Rect(x, y, width, 26)
@@ -79,6 +79,8 @@ class DropdownSelect:
         self.selected_index = default_index if default_index < len(items) else 0
         self.open = False
         self.option_rects = []
+        self.scroll_index = 0
+        self.max_visible = 12 # Show up to 12 items
     
     @property
     def selected(self):
@@ -90,16 +92,29 @@ class DropdownSelect:
         self.items = list(items)
         if self.selected_index >= len(items):
             self.selected_index = 0
+        # Reset scroll if items change
+        self.scroll_index = 0
     
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 self.open = not self.open
+                if self.open: self.scroll_index = max(0, min(self.selected_index - 5, len(self.items) - self.max_visible))
                 return True
             elif self.open:
+                # Catch scroll wheel
+                if event.button == 4: # Scroll Up
+                    self.scroll_index = max(0, self.scroll_index - 1)
+                    return True
+                if event.button == 5: # Scroll Down
+                    self.scroll_index = min(max(0, len(self.items) - self.max_visible), self.scroll_index + 1)
+                    return True
+
+                # Catch clicks on options
                 for i, opt_rect in enumerate(self.option_rects):
                     if opt_rect.collidepoint(event.pos):
-                        self.selected_index = i
+                        # i is relative to scroll_index
+                        self.selected_index = self.scroll_index + i
                         self.open = False
                         return True
                 self.open = False
@@ -114,8 +129,12 @@ class DropdownSelect:
         pygame.draw.rect(surface, border_color, self.rect, 1, border_radius=4)
         
         selected_text = self.items[self.selected_index] if self.items else "(none)"
-        text_surf = font.render(selected_text[:30], True, (220, 220, 220))
+        # Use more room for text
+        text_surf = font.render(selected_text, True, (220, 220, 220))
+        clip = pygame.Rect(self.rect.x + 4, self.rect.y, self.rect.width - 24, self.rect.height)
+        surface.set_clip(clip)
         surface.blit(text_surf, (self.rect.x + 8, self.rect.y + 5))
+        surface.set_clip(None)
         
         arrow = "▼" if self.open else "▲"
         arrow_surf = font.render(arrow, True, (150, 150, 180))
@@ -123,20 +142,43 @@ class DropdownSelect:
         
         self.option_rects = []
         if self.open and self.items:
-            for i, item in enumerate(self.items):
+            # Determine window
+            start = self.scroll_index
+            count = min(len(self.items) - start, self.max_visible)
+            
+            for i in range(count):
+                idx = start + i
+                item = self.items[idx]
                 opt_rect = pygame.Rect(self.rect.x, self.rect.y + 26 + i * 24, self.rect.width, 24)
                 self.option_rects.append(opt_rect)
                 
                 hover = opt_rect.collidepoint(pygame.mouse.get_pos())
                 opt_bg = DROPDOWN_HOVER if hover else DROPDOWN_BG
+                if idx == self.selected_index: opt_bg = (30, 80, 150) # Highlight selected
+                
                 pygame.draw.rect(surface, opt_bg, opt_rect)
                 pygame.draw.rect(surface, DROPDOWN_BORDER, opt_rect, 1)
                 
-                opt_text = font.render(item[:30], True, (220, 220, 220))
+                # Render text with clipping
+                opt_text = font.render(item, True, (255, 255, 255) if idx == self.selected_index else (220, 220, 220))
+                clip_opt = pygame.Rect(opt_rect.x + 4, opt_rect.y, opt_rect.width - 8, opt_rect.height)
+                surface.set_clip(clip_opt)
                 surface.blit(opt_text, (opt_rect.x + 8, opt_rect.y + 4))
-        
+                surface.set_clip(None)
+                
+            # Scroll indicator
+            if len(self.items) > self.max_visible:
+                indicator_y = self.rect.y + 28
+                indicator_h = count * 24 - 4
+                pygame.draw.rect(surface, (60, 60, 80), (self.rect.right - 6, indicator_y, 4, indicator_h), border_radius=2)
+                # handle position
+                handle_h = max(10, indicator_h * self.max_visible // len(self.items))
+                handle_y = indicator_y + (indicator_h - handle_h) * self.scroll_index // (len(self.items) - self.max_visible)
+                pygame.draw.rect(surface, (0, 200, 120), (self.rect.right - 6, handle_y, 4, handle_h), border_radius=2)
+
         if self.open and self.items:
-            return y + 32 + (len(self.items) * 24)
+            visible_count = min(len(self.items), self.max_visible)
+            return y + 32 + (visible_count * 24)
         return y + 32
 PANEL_PADDING = 12
 ROW_HEIGHT = 28
@@ -275,7 +317,7 @@ class EditorUI:
         # Model selection for spawning imported models
         self.available_models = []
         self.model_dropdown = DropdownSelect(bx, 0, bw, ["(select model)"])
-        self.model_path_input = TextInput(bx, 0, bw - 70, INPUT_HEIGHT, 'path', 'models/')
+        self.model_path_input = TextInput(bx, 0, bw - 70, INPUT_HEIGHT, 'path', 'assets/models/')
         self.model_spawn_btn = Button(bx + bw - 64, 0, 64, INPUT_HEIGHT, "Spawn")
         self.model_refresh_btn = Button(bx, 0, 70, INPUT_HEIGHT, "Refresh")
 
@@ -394,18 +436,28 @@ class EditorUI:
         self.sprite_billboard_rect = pygame.Rect(0, 0, 40, 22)
         self.sprite_autocrop = True
         self.sprite_autocrop_rect = pygame.Rect(0, 0, 40, 22)
+        
+        self.section_dialogue = CollapsibleSection("── NPC Dialogue ──", default_expanded=False)
+        self._diag_line_count = 1  # Standard start
 
     def update_gravity_ui(self, gravity):
         if not self.global_gravity_input.active:
             self.global_gravity_input.text = f"{gravity:.2f}"
 
-    def refresh_models(self, base_path="models"):
-        """Scan for available model files (.obj, .glb, .gltf)."""
+    def refresh_models(self, base_path="assets/models"):
+        """Scan for available model files (.obj, .glb, .gltf, .fbx) recursively."""
         self.available_models = []
         if os.path.isdir(base_path):
-            for f in os.listdir(base_path):
-                if f.lower().endswith(('.obj', '.glb', '.gltf')):
-                    self.available_models.append(f)
+            for root, dirs, files in os.walk(base_path):
+                for f in files:
+                    if f.lower().endswith(('.obj', '.glb', '.gltf', '.fbx')):
+                        # Get relative path from base_path
+                        rel_dir = os.path.relpath(root, base_path)
+                        if rel_dir == ".":
+                            self.available_models.append(f)
+                        else:
+                            self.available_models.append(os.path.join(rel_dir, f).replace("\\", "/"))
+        
         self.available_models.sort()
         if self.available_models:
             self.model_dropdown.set_items(self.available_models)
@@ -794,6 +846,48 @@ class EditorUI:
                 'clips': obj.animator.clip_names,
             }
 
+        # NPC Dialogue Fields (Flattened for UI simplicity)
+        diag = getattr(obj, 'dialogue_data', {})
+        if not isinstance(diag, dict): diag = {}
+        nodes = diag.get('nodes', {})
+        
+        # Deconstruct for the Editor UI
+        # First, find how many lines actually exist in the data
+        existing_lines = []
+        for i in range(20): # up to 20 lines
+            key = f"line_{i}"
+            if key in nodes:
+                existing_lines.append(nodes[key].get('text', ''))
+            else:
+                break
+        
+        # UI count should be at least as many as existing, but respect the session count
+        self._diag_line_count = max(self._diag_line_count, len(existing_lines), 1)
+
+        choices_node = nodes.get('choices', {})
+        c_list = choices_node.get('choices', [])
+        c1_t = c_list[0].get('text', '') if len(c_list) > 0 else ''
+        c1_r = nodes.get('response_a', {}).get('text', '')
+        c2_t = c_list[1].get('text', '') if len(c_list) > 1 else ''
+        c2_r = nodes.get('response_b', {}).get('text', '')
+        
+        speaker = nodes.get('line_0', {}).get('speaker', obj.name)
+
+        self.prop_inputs['diag_speaker'] = {
+            'label': 'Speaker', 'value': speaker, 'field': None,
+            'add_line_btn': Button(0, 0, 30, 20, "+"), 
+            'remove_line_btn': Button(0, 0, 30, 20, "-")
+        }
+        
+        for i in range(self._diag_line_count):
+            val = existing_lines[i] if i < len(existing_lines) else ""
+            self.prop_inputs[f'diag_line{i+1}'] = {'label': f'Line {i+1}', 'value': val, 'field': None}
+
+        self.prop_inputs['diag_opt1_text'] = {'label': 'Opt1 Label', 'value': c1_t, 'field': None}
+        self.prop_inputs['diag_opt1_reply'] = {'label': 'Opt1 Reply', 'value': c1_r, 'field': None}
+        self.prop_inputs['diag_opt2_text'] = {'label': 'Opt2 Label', 'value': c2_t, 'field': None}
+        self.prop_inputs['diag_opt2_reply'] = {'label': 'Opt2 Reply', 'value': c2_r, 'field': None}
+
     def handle_event(self, event, mouse_pos):
         """Handle events. Returns action dict or None."""
         if not self.visible:
@@ -981,6 +1075,35 @@ class EditorUI:
         # Sprite section toggle
         if self.section_sprite.toggle(mouse_pos):
             return None
+        
+        # Dialogue section toggle
+        if self.section_dialogue.toggle(mouse_pos):
+            return None
+
+        # Dialogue dynamic line buttons (only when expanded)
+        if self.section_dialogue.expanded and self.prop_inputs:
+            info = self.prop_inputs.get('diag_speaker')
+            if info:
+                add_btn = info.get('add_line_btn')
+                if add_btn and add_btn.check_click(mouse_pos):
+                    # Find high count
+                    max_line = 0
+                    for k in self.prop_inputs:
+                        if k.startswith('diag_line'):
+                            try: max_line = max(max_line, int(k[9:]))
+                            except ValueError: pass
+                    self._diag_line_count = max_line + 2 # add one more
+                    return {'action': 'refresh_ui'} # signal engine to re-build UI
+                
+                rem_btn = info.get('remove_line_btn')
+                if rem_btn and rem_btn.check_click(mouse_pos):
+                    max_line = 0
+                    for k in self.prop_inputs:
+                        if k.startswith('diag_line'):
+                            try: max_line = max(max_line, int(k[9:]))
+                            except ValueError: pass
+                    self._diag_line_count = max(1, max_line) # remove last one
+                    return {'action': 'refresh_ui'}
 
         # Sprite controls (only when expanded)
         if self.section_sprite.expanded:
@@ -1795,6 +1918,88 @@ class EditorUI:
             y += 4
 
         y = self._draw_animation_section(surface, y, bx, bw)
+        y = self._draw_dialogue_section(surface, y, bx, bw)
+        return y
+
+    def _draw_dialogue_section(self, surface, y, bx, bw):
+        """Draw dialogue editing fields. Returns new y."""
+        # Find all diag keys in prop_inputs
+        all_keys = sorted(self.prop_inputs.keys())
+        diag_keys = [k for k in all_keys if k.startswith('diag_')]
+        
+        if not diag_keys:
+            return y
+
+        y = self.section_dialogue.draw(surface, self.font_bold, bx, y)
+        if not self.section_dialogue.expanded:
+            return y + 4
+
+        # Group keys logically
+        line_keys = sorted([k for k in diag_keys if 'line' in k and k != 'diag_line_count'], 
+                           key=lambda x: int(x[9:]) if x[9:].isdigit() else 0)
+        opt_keys = [k for k in diag_keys if 'opt' in k]
+        
+        # Draw Speaker first
+        speaker_info = self.prop_inputs.get('diag_speaker')
+        if speaker_info:
+            if speaker_info['field'] is None:
+                speaker_info['field'] = TextInput(0, 0, 0, 0, "Name", speaker_info['value'])
+            lbl = self.font_bold.render("NPC Speaker Name", True, (0, 220, 120))
+            surface.blit(lbl, (bx, y + 4))
+            y += 24
+            y = self._draw_labeled_input(surface, "Name", speaker_info['field'], y)
+            y += 8
+
+        # Draw Lines header with [+] and [-] buttons
+        lbl = self.font_bold.render("Sequential Lines", True, (100, 200, 255))
+        surface.blit(lbl, (bx, y + 2))
+        
+        if speaker_info:
+            add_btn = speaker_info.get('add_line_btn')
+            rem_btn = speaker_info.get('remove_line_btn')
+            if add_btn and rem_btn:
+                btn_x = bx + bw - 70
+                add_btn.rect = pygame.Rect(btn_x, y, 30, 22)
+                rem_btn.rect = pygame.Rect(btn_x + 35, y, 30, 22)
+                add_btn.draw(surface, self.font_bold)
+                rem_btn.draw(surface, self.font_bold)
+        y += 30
+
+        # Draw all dynamic lines
+        for key in line_keys:
+            info = self.prop_inputs[key]
+            if info['field'] is None:
+                info['field'] = TextInput(0, 0, 0, 0, info['label'], info['value'])
+            y = self._draw_labeled_input(surface, info['label'], info['field'], y)
+        
+        y += 10
+
+        # Draw Choice A
+        opt1_t = self.prop_inputs.get('diag_opt1_text')
+        opt1_r = self.prop_inputs.get('diag_opt1_reply')
+        if opt1_t and opt1_r:
+            if opt1_t['field'] is None: opt1_t['field'] = TextInput(0, 0, 0, 0, "Label", opt1_t['value'])
+            if opt1_r['field'] is None: opt1_r['field'] = TextInput(0, 0, 0, 0, "Reply", opt1_r['value'])
+            lbl = self.font_bold.render("Choice A", True, (255, 200, 100))
+            surface.blit(lbl, (bx, y + 2))
+            y += 24
+            y = self._draw_labeled_input(surface, "Label", opt1_t['field'], y)
+            y = self._draw_labeled_input(surface, "Reply", opt1_r['field'], y)
+            y += 10
+
+        # Draw Choice B
+        opt2_t = self.prop_inputs.get('diag_opt2_text')
+        opt2_r = self.prop_inputs.get('diag_opt2_reply')
+        if opt2_t and opt2_r:
+            if opt2_t['field'] is None: opt2_t['field'] = TextInput(0, 0, 0, 0, "Label", opt2_t['value'])
+            if opt2_r['field'] is None: opt2_r['field'] = TextInput(0, 0, 0, 0, "Reply", opt2_r['value'])
+            lbl = self.font_bold.render("Choice B", True, (255, 200, 100))
+            surface.blit(lbl, (bx, y + 2))
+            y += 24
+            y = self._draw_labeled_input(surface, "Label", opt2_t['field'], y)
+            y = self._draw_labeled_input(surface, "Reply", opt2_r['field'], y)
+            y += 10
+
         return y
 
     def _draw_animation_section(self, surface, y, bx, bw):
