@@ -271,7 +271,7 @@
       ],
       "mass": 1.0,
       "use_gravity": false,
-      "is_collideable": true,
+      "is_collideable": false,
       "is_kinematic": true,
       "collider_type": "mesh",
       "bounciness": 0.0,
@@ -321,17 +321,7 @@
       "model": "assets/models/pizzamanboss.glb",
       "interactable": true,
       "use_view_interaction": true,
-      "interaction_distance": 8.0,
-      "dialogue_cam_pos": [
-        -2.5,
-        4.0,
-        0.58
-      ],
-      "dialogue_cam_look_at": [
-        -7.0,
-        1.5,
-        0.58
-      ]
+      "interaction_distance": 8.0
     },
     {
       "name": "cube_1",

@@ -8,7 +8,7 @@
       "format": "cube",
       "position": [
         0.0,
-        -0.05,
+        0.27,
         0.0
       ],
       "rotation": [
@@ -36,8 +36,8 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.329,
-        0.329,
+        0.322,
+        0.322,
         0.4
       ]
     },
@@ -45,18 +45,18 @@
       "name": "player",
       "format": "cube",
       "position": [
-        -2.82,
-        0.68,
-        0.27
+        -4.59,
+        0.674,
+        0.95
       ],
       "rotation": [
-        0.0,
-        -84.6,
-        0.0
+        -0.366,
+        87.801,
+        -0.366
       ],
       "scale": [
         1.0,
-        3.0,
+        1.496,
         1.0
       ],
       "mass": 1.0,
@@ -114,6 +114,436 @@
       "is_trigger": false,
       "dialogue_data": null,
       "model": "assets/models/lobby.glb"
+    },
+    {
+      "name": "low_poly_computer",
+      "format": "glb",
+      "position": [
+        7.45,
+        1.86,
+        -5.36
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_computer.glb"
+    },
+    {
+      "name": "low_poly_plant_in_a_pot",
+      "format": "glb",
+      "position": [
+        -8.01,
+        0.22,
+        -7.94
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_plant_in_a_pot.glb"
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        -0.1,
+        7.03,
+        -0.59
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        20.648,
+        0.1,
+        23.886
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.102,
+        0.035,
+        0.02
+      ]
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        -0.46,
+        7.09,
+        6.47
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.2,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_2",
+      "format": "light",
+      "position": [
+        12.61,
+        4.95,
+        -0.84
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.0,
+      "color": [
+        1.0,
+        1.0,
+        0.894
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_3",
+      "format": "light",
+      "position": [
+        -1.15,
+        7.14,
+        -3.04
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.2,
+      "color": [
+        1.0,
+        1.0,
+        0.894
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "low_poly_computer",
+      "format": "glb",
+      "position": [
+        2.0,
+        1.86,
+        -5.36
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/low_poly_computer.glb"
+    },
+    {
+      "name": "reception",
+      "format": "glb",
+      "position": [
+        2.81,
+        4.97,
+        -9.89
+      ],
+      "rotation": [
+        0.0,
+        -89.98,
+        0.0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/reception.glb"
+    },
+    {
+      "name": "lobbyman",
+      "format": "glb",
+      "position": [
+        9.54,
+        -0.31,
+        -7.49
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        250.0,
+        250.0,
+        250.0
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/lobbyman.glb"
+    },
+    {
+      "name": "lobbyman",
+      "format": "glb",
+      "position": [
+        2.73,
+        -0.26,
+        -7.54
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        250.0,
+        250.0,
+        250.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/lobbyman.glb"
+    },
+    {
+      "name": "elevator_left_door",
+      "format": "glb",
+      "position": [
+        11.5,
+        0.33,
+        -0.96
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        3.241,
+        2.293,
+        1.833
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/elevator_left_door.glb"
+    },
+    {
+      "name": "elevator_right_door",
+      "format": "glb",
+      "position": [
+        11.5,
+        0.03,
+        -0.93
+      ],
+      "rotation": [
+        0.0,
+        89.98,
+        0.0
+      ],
+      "scale": [
+        3.241,
+        2.293,
+        1.833
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/elevator_right_door.glb"
     }
   ]
 }
