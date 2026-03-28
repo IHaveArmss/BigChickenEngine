@@ -279,6 +279,9 @@ class Renderer:
         self.ctx.clear(0.08, 0.08, 0.12)
 
         rs = render_settings
+        # ── Pre-compute shadow casters once (shared by directional + point) ──
+        _casters = None
+
         dir_shadows = bool(getattr(rs, 'directional_shadows_enabled', False))
         if dir_shadows:
             self._ensure_directional_shadow_resources(int(getattr(rs, 'directional_shadow_resolution', 1024)))
@@ -291,8 +294,9 @@ class Renderer:
             self.ctx.clear(depth=1.0)
             self.ctx.disable(moderngl.BLEND)
             self.ctx.enable(moderngl.DEPTH_TEST)
-            casters = [r for r in all_renderables if getattr(getattr(r, 'owner_obj', None), 'casts_shadows', True)]
-            self._render_shadow_meshes(casters, self._dir_shadow_program, self._dir_light_vp)
+            if _casters is None:
+                _casters = [r for r in all_renderables if getattr(getattr(r, 'owner_obj', None), 'casts_shadows', True)]
+            self._render_shadow_meshes(_casters, self._dir_shadow_program, self._dir_light_vp)
             target.use()
             self.ctx.clear(0.08, 0.08, 0.12)
 
@@ -315,8 +319,9 @@ class Renderer:
                     int(getattr(rs, 'spot_shadow_resolution', 512)),
                     len(shadow_lights),
                 )
-                casters = [r for r in all_renderables
-                           if getattr(getattr(r, 'owner_obj', None), 'casts_shadows', True)]
+                if _casters is None:
+                    _casters = [r for r in all_renderables
+                               if getattr(getattr(r, 'owner_obj', None), 'casts_shadows', True)]
                 for slot, (li, so) in enumerate(shadow_lights):
                     vp = self._build_point_light_vp(so.position)
                     self._point_shadow_vps[slot] = vp
@@ -326,7 +331,7 @@ class Renderer:
                     self.ctx.clear(depth=1.0)
                     self.ctx.disable(moderngl.BLEND)
                     self.ctx.enable(moderngl.DEPTH_TEST)
-                    self._render_shadow_meshes(casters, self._point_shadow_program, vp)
+                    self._render_shadow_meshes(_casters, self._point_shadow_program, vp)
 
                 self._point_shadow_count = len(shadow_lights)
                 target.use()

@@ -70,7 +70,7 @@ class InteractionManager:
             is_currently_hovered = (obj is self.hovered_object)
             
             if is_view_mode:
-                # Modern camera-view gaze check (relative to camera origin for better picking)
+                # Modern camera-view gaze check
                 threshold = 0.5 if is_currently_hovered else 0.7
                 delta_cam = obj.position - cam.position
                 if glm.length(delta_cam) > 0.001:
@@ -79,15 +79,8 @@ class InteractionManager:
                     if dot < threshold:
                         continue
             else:
-                # Classic character-facing check (horizontal)
-                threshold = 0.5 if is_currently_hovered else 0.6
-                player_fwd = self._player_forward(player)
-                player_fwd_xz = glm.normalize(glm.vec3(player_fwd.x, 0.0, player_fwd.z))
-                
-                delta_xz = glm.normalize(glm.vec3(delta.x, 0.0, delta.z))
-                dot = glm.dot(player_fwd_xz, delta_xz)
-                if dot < threshold:
-                    continue
+                # Classic proximity-only mode (Reverting to "what used to work")
+                pass
 
             if dist_to_origin < best_dist:
                 best_dist = dist_to_origin

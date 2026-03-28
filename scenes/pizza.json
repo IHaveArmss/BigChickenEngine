@@ -77,21 +77,21 @@
     },
     {
       "name": "player",
-      "format": "cube",
+      "format": "glb",
       "position": [
-        2.82,
-        0.99,
-        1.86
+        5.04,
+        1.99,
+        1.28
       ],
       "rotation": [
         0.0,
-        84.8,
+        -89.98,
         0.0
       ],
       "scale": [
-        1.0,
-        4.707,
-        1.0
+        3.162,
+        3.162,
+        3.162
       ],
       "mass": 1.0,
       "use_gravity": true,
@@ -109,11 +109,16 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.2,
-        0.6,
-        1.0
-      ]
+      "model": "assets/playerModel/CataHobov1.glb",
+      "use_anim_state_controller": true,
+      "anim_state": {
+        "idle": "Idle",
+        "run": "Running",
+        "jump": "Jump",
+        "fall": "Falling",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "pizzadesk",
@@ -484,7 +489,7 @@
       "alpha": 0.0
     },
     {
-      "name": "Interactable_Button",
+      "name": "pizza_exit",
       "format": "cube",
       "position": [
         7.12,
@@ -492,9 +497,9 @@
         1.34
       ],
       "rotation": [
-        0.0,
+        180.0,
         -0.0,
-        0.0
+        180.0
       ],
       "scale": [
         0.095,
@@ -511,8 +516,11 @@
       "drag_linear": 0.02,
       "tag": "interactable",
       "scripts": [
-        "interactable_button"
+        "scene_trigger"
       ],
+      "scene_path": "scenes/cutscene_demo.json",
+      "target_position": [-18.0, 6.13, -22.0],
+      "target_rotation": [0.0, 0.0, 0.0],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -520,8 +528,9 @@
       "color": [
         0.2,
         0.8,
-        0.698
+        0.694
       ],
+      "alpha": 0.05,
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 3.0

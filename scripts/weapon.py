@@ -20,6 +20,26 @@ class Weapon:
             self.weapon_drawn = not self.weapon_drawn
             status = "DRAWN" if self.weapon_drawn else "HOLSTERED"
             print(f"[Weapon] {status}")
+
+            # Swap our animation set if we have a state controller
+            controller = getattr(self.entity, 'anim_state_controller', None)
+            if controller:
+                if self.weapon_drawn:
+                    # Switch to pistol set
+                    controller.idle_clip = "pistol_Idle"
+                    controller.run_clip = "pistol_run"
+                    controller.jump_clip = "pistol_jump"
+                else:
+                    # Return to standard set
+                    controller.idle_clip = "Idle"
+                    controller.run_clip = "Running"
+                    controller.jump_clip = "Jump"
+                
+                # Update the mapping and force an animation update
+                controller.refresh()
+                clip_name = controller._resolved.get(controller._current_state)
+                if clip_name:
+                    controller.animator.crossfade(clip_name, duration=0.15)
         self.last_f_pressed = keys[pygame.K_f]
 
         # Cleanup markers

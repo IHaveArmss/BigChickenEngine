@@ -43,6 +43,12 @@ class ModelMesh(Mesh):
             )
 
     def _load_program(self, shader_name):
+        # Use the cached shader if a shader_cache is available
+        if self._shader_cache is not None:
+            if self._has_skin:
+                return self._shader_cache.get_skinned()
+            return self._shader_cache.get(shader_name)
+        # Fallback: load from disk
         if self._has_skin:
             with open('shaders/phong_skinned.vert') as f:
                 vs = f.read()

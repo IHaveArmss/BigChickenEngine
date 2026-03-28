@@ -26,6 +26,7 @@ from core.cutscene_manager import CutsceneManager
 from core.prefab_manager import save_prefab, load_prefab, list_prefabs
 from core.render_settings import RenderSettings
 from core.serialization import serialize_scene_object
+from core.resource_manager import ResourceManager
 
 
 class ShaderCache:
@@ -281,6 +282,12 @@ class GraphicsEngine:
         self.dialogue = DialogueManager(self)
         self.hud.dialogue_manager = self.dialogue
         self.audio = AudioManager()
+        self.resource_manager = ResourceManager(self.ctx, self.texture_loader)
+        
+        # Hyper-Load: Pre-load assets from all scenes to ensure smooth transitions
+        scene_files = self.list_scene_files()
+        self.resource_manager.pre_load_scenes(scene_files)
+
         self.cutscenes = CutsceneManager(self)
         self.editor_ui.available_cutscenes = self.cutscenes.list_cutscenes()
 
@@ -359,7 +366,8 @@ class GraphicsEngine:
         self.static_objects.append(self.light_orb)
 
         self.scene_objects, self.model_meshes, settings = load_scene(
-            self.current_scene_file, self.ctx, self.texture_loader
+            self.current_scene_file, self.ctx, self.texture_loader, 
+            resource_manager=self.resource_manager
         )
         self._apply_scene_settings(settings)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
@@ -443,7 +451,8 @@ class GraphicsEngine:
         for k, v in physics_kwargs.items():
             entry[k] = v
 
-        obj = spawn_from_entry(entry, self.ctx, self.texture_loader, self.shader_cache)
+        obj = spawn_from_entry(entry, self.ctx, self.texture_loader, 
+                              shader_cache=self.shader_cache, resource_manager=self.resource_manager)
         if obj is None:
             return None
         self._pending_spawns.append(obj)
@@ -474,7 +483,8 @@ class GraphicsEngine:
         else:
             data['name'] = self._ensure_unique_name(data.get('name', 'prefab'))
 
-        obj = spawn_from_entry(data, self.ctx, self.texture_loader, self.shader_cache)
+        obj = spawn_from_entry(data, self.ctx, self.texture_loader, 
+                              shader_cache=self.shader_cache, resource_manager=self.resource_manager)
         if obj is None:
             return None
         self._pending_spawns.append(obj)
@@ -569,9 +579,9 @@ class GraphicsEngine:
             rs.directional_shadow_distance = float(settings['directional_shadow_distance'])
             self.editor_ui.directional_shadow_distance_input.text = f"{rs.directional_shadow_distance:.1f}"
 
-    def load_scene(self, scene_path):
+    def load_scene(self, scene_path, spawn_pos=None, spawn_rot=None):
         """Tear down the current scene and load a new one.
-        Can be called from scripts to switch levels."""
+        Can be called from scripts to switch levels. Optional spawn point overrides."""
         self.script_manager.stop_all()
         self.physics_system.reset()
 
@@ -587,11 +597,29 @@ class GraphicsEngine:
 
         self.current_scene_file = scene_path
         self.scene_objects, self.model_meshes, settings = load_scene(
-            scene_path, self.ctx, self.texture_loader
+            scene_path, self.ctx, self.texture_loader, resource_manager=self.resource_manager
         )
         self._apply_scene_settings(settings)
         self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
         self.editor_ui.set_prefab_context(self.list_prefab_names())
+
+        # Hardcoded Boot Default: if loading cutscene_demo with NO explicit spawn_pos
+        # (meaning we booted the game fresh, not transitioning from a door), force the position.
+        # This prevents the Save Scene editor button from permanently corrupting the start state.
+        if spawn_pos is None and "cutscene_demo.json" in scene_path.lower():
+            spawn_pos = [27.32, 5.86, -23.68]
+            spawn_rot = [0.0, -90.0, 0.0]
+
+        # Override player spawn if provided by the transition or hardcode
+        if spawn_pos is not None or spawn_rot is not None:
+            player = self.find_one_by_tag('player')
+            if player:
+                if spawn_pos is not None:
+                    # spawn_pos is likely a list [x,y,z], we cast to glm.vec3
+                    # or unpack if it's a tuple.
+                    player.position = glm.vec3(spawn_pos[0], spawn_pos[1], spawn_pos[2])
+                if spawn_rot is not None:
+                    player.set_rotation_euler(spawn_rot[0], spawn_rot[1], spawn_rot[2])
 
         # Register physics before scripts run
         for obj in self.scene_objects:
@@ -769,8 +797,8 @@ class GraphicsEngine:
             sun_pos = -self.main_light_dir * radius
             self.light_orb.transform.position = sun_pos
                 
-        self.editor_ui.set_scene_context(self.current_scene_file, self.list_scene_files())
-        self.editor_ui.set_prefab_context(self.list_prefab_names())
+        # Only refresh context when scene list could have changed (not every frame)
+        # The UI context is already set during scene loading and save operations.
         self.editor_ui.update(dt, pygame.mouse.get_pos(), sel_obj)
         if sel_obj:
             self.editor_ui.refresh_values(sel_obj)

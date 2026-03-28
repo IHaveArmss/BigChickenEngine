@@ -12,6 +12,13 @@ import os
 import numpy as np
 
 
+# Global cache to avoid redundant disk reads and GLTF parsing across the engine
+_MODEL_CACHE = {}
+
+def clear_model_cache():
+    _MODEL_CACHE.clear()
+
+
 # ======================================================================
 # OBJ Loader
 # ======================================================================
@@ -19,8 +26,11 @@ import numpy as np
 def load_obj(obj_path):
     """Parse a Wavefront .obj file and its .mtl materials.
     Returns a list of MeshData dicts (one per material group)."""
+    abs_path = os.path.abspath(obj_path)
+    if abs_path in _MODEL_CACHE:
+        return _MODEL_CACHE[abs_path]
 
-    base_dir = os.path.dirname(os.path.abspath(obj_path))
+    base_dir = os.path.dirname(abs_path)
 
     positions = []
     normals = []
@@ -86,6 +96,7 @@ def load_obj(obj_path):
             'texture_path': mat.get('map_Kd', None),
         })
 
+    _MODEL_CACHE[abs_path] = meshes
     return meshes
 
 
@@ -143,8 +154,12 @@ def load_gltf(glb_path):
     import glm as _glm
     from core.animator import Skeleton, AnimationClip, Channel
 
-    base_dir = os.path.dirname(os.path.abspath(glb_path))
-    gltf = GLTF2().load(glb_path)
+    abs_path = os.path.abspath(glb_path)
+    if abs_path in _MODEL_CACHE:
+        return _MODEL_CACHE[abs_path]
+
+    base_dir = os.path.dirname(abs_path)
+    gltf = GLTF2().load(abs_path)
 
     blobs = []
     for buf in gltf.buffers:
@@ -552,4 +567,5 @@ def load_gltf(glb_path):
 
             meshes.append(md)
 
+    _MODEL_CACHE[abs_path] = meshes
     return meshes
