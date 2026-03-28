@@ -51,7 +51,7 @@ class LobbyNpc:
             "nodes": {
                 "line_0": {
                     "speaker": "Jane Juliet",
-                    "text": "Welcome to Evil Inc. How can i help you today?",
+                    "text": "Welcome to Evil Inc. How can I help you today?",
                     "next": "choices1"
                 },
                 "response_a": {
