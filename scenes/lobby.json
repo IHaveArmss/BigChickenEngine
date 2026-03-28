@@ -1,6 +1,15 @@
 {
   "settings": {
-    "gravity": -9.81
+    "gravity": -9.81,
+    "sun_intensity": 1.0,
+    "sun_azimuth_deg": 45.0,
+    "sun_elevation_deg": -55.0,
+    "ambient_strength": 0.15,
+    "ambient_color_r": 1.0,
+    "ambient_color_g": 1.0,
+    "ambient_color_b": 1.0,
+    "directional_shadows_enabled": true,
+    "directional_shadow_distance": 40.0
   },
   "objects": [
     {
@@ -46,13 +55,13 @@
       "format": "cube",
       "position": [
         -4.59,
-        0.67,
-        0.13
+        0.674,
+        0.129
       ],
       "rotation": [
-        -0.4,
-        87.8,
-        -0.4
+        -4.826,
+        87.802,
+        -4.829
       ],
       "scale": [
         1.0,
@@ -119,7 +128,7 @@
       "name": "low_poly_computer",
       "format": "glb",
       "position": [
-        7.45,
+        6.086,
         1.86,
         -5.36
       ],
@@ -217,7 +226,7 @@
       "dialogue_data": null,
       "color": [
         0.102,
-        0.035,
+        0.031,
         0.02
       ]
     },
@@ -345,7 +354,7 @@
       "name": "low_poly_computer",
       "format": "glb",
       "position": [
-        2.0,
+        -0.218,
         1.86,
         -5.36
       ],
@@ -410,10 +419,10 @@
       "model": "assets/models/reception.glb"
     },
     {
-      "name": "lobbyman",
+      "name": "lobbyman_npc",
       "format": "glb",
       "position": [
-        9.54,
+        6.58,
         -0.31,
         -7.49
       ],
@@ -436,18 +445,30 @@
       "friction": 0.5,
       "drag_linear": 0.02,
       "tag": "",
-      "scripts": [],
+      "scripts": [
+        "lobby_npc"
+      ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/models/lobbyman.glb"
+      "model": "assets/models/lobbyman.glb",
+      "interactable": true,
+      "use_view_interaction": true,
+      "interaction_distance": 7.0,
+      "dialogue_cam_pos": [
+        4.0,
+        2.5,
+        -3.0
+      ],
+      "dialogue_cam_yaw": -60.0,
+      "dialogue_cam_pitch": 0.0
     },
     {
       "name": "lobbyman",
       "format": "glb",
       "position": [
-        2.73,
+        0.52,
         -0.26,
         -7.54
       ],

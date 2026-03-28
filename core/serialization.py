@@ -78,13 +78,12 @@ def serialize_scene_object(obj):
     dcp = getattr(obj, 'dialogue_cam_pos', None)
     if dcp is not None:
         entry["dialogue_cam_pos"] = _serialize_vec3(dcp)
-    dcl = getattr(obj, 'dialogue_cam_look_at', None)
-    if dcl is not None:
-        entry["dialogue_cam_look_at"] = _serialize_vec3(dcl)
-    df = getattr(obj, 'dialogue_facing', None)
-    if df is not None:
-        entry["dialogue_facing"] = round(float(df), 2)
-
+    dcy = getattr(obj, 'dialogue_cam_yaw', None)
+    if dcy is not None:
+        entry["dialogue_cam_yaw"] = round(float(dcy), 2)
+    dcp2 = getattr(obj, 'dialogue_cam_pitch', None)
+    if dcp2 is not None:
+        entry["dialogue_cam_pitch"] = round(float(dcp2), 2)
     if getattr(obj, 'animator', None) is not None:
         entry["use_anim_state_controller"] = bool(getattr(obj, 'use_anim_state_controller', False))
         cfg = getattr(obj, 'anim_state_config', {})

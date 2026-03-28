@@ -1,0 +1,80 @@
+{
+  "settings": {
+    "gravity": -9.81,
+    "skybox_path": "assets/darksky.png"
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "format": "cube",
+      "position": [
+        0.0,
+        -0.05,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        5.386,
+        5.386,
+        5.386
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.25,
+        0.22,
+        0.18
+      ]
+    },
+    {
+      "name": "world_ruin",
+      "format": "glb",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        5.386,
+        5.386,
+        5.386
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/world_ruin_blank.glb"
+    }
+  ]
+}

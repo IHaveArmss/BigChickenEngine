@@ -43,3 +43,6 @@ class RenderSettings:
     sun_elevation_deg: float = -55.0
     sun_intensity: float = 1.0   # 0.0 = no sun (indoor), 1.0 = full sun
 
+    # Skybox
+    skybox_path: str = ''  # path to equirectangular sky image, empty = no skybox
+

@@ -77,7 +77,10 @@ class InputHandler:
                 eng.dialogue.move_selection(-1)
             elif event.key == pygame.K_DOWN:
                 eng.dialogue.move_selection(1)
-            elif event.key in (pygame.K_e, pygame.K_RETURN):
+            elif event.key == pygame.K_e:
+                if eng.dialogue._choices is None:
+                    eng.dialogue.advance()
+            elif event.key == pygame.K_RETURN:
                 if eng.dialogue._choices is not None:
                     eng.dialogue.confirm_selection()
                 else:
