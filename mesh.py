@@ -116,6 +116,8 @@ class Mesh:
                    normal_matrix[2][0], normal_matrix[2][1], normal_matrix[2][2]]
         _set('u_normal_matrix', nm_list)
 
+        _set('u_alpha', self.alpha)
+
         # Multi-light uniforms — moderngl requires setting ALL array
         # elements at once, so we pad unused slots with zeros
         MAX_LIGHTS = 16

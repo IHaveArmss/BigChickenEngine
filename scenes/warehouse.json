@@ -14,6 +14,52 @@
   },
   "objects": [
     {
+      "name": "player",
+      "format": "glb",
+      "position": [
+        1.66,
+        0.946,
+        -18.76
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        2.3,
+        2.3,
+        2.3
+      ],
+      "mass": 10.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "capsule",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "player",
+      "scripts": [
+        "third_person",
+        "weapon"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/playerModel/CataHobov1.glb",
+      "use_anim_state_controller": true,
+      "anim_state": {
+        "idle": "Idle",
+        "run": "Running",
+        "jump": "Jump",
+        "fall": "Falling",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
       "name": "floor",
       "format": "cube",
       "position": [
@@ -89,9 +135,9 @@
       "name": "Thug1",
       "format": "cube",
       "position": [
-        3.55,
-        1.5,
-        -10.24
+        8.58,
+        17.106,
+        -1.018
       ],
       "rotation": [
         0.0,
@@ -103,7 +149,7 @@
         2.0,
         1.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
@@ -113,17 +159,18 @@
       "drag_linear": 0.02,
       "tag": "npc",
       "scripts": [
-        "npc"
+        "enemy"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.89,
+        0.886,
         0.4,
         0.8
       ],
+      "alpha": 0.0,
       "folder": "T",
       "interactable": true,
       "use_view_interaction": false,
@@ -133,9 +180,9 @@
       "name": "Thug2",
       "format": "cube",
       "position": [
-        1.96,
+        5.352,
         1.95,
-        -7.11
+        2.044
       ],
       "rotation": [
         0.0,
@@ -147,7 +194,7 @@
         2.0,
         1.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
@@ -157,7 +204,7 @@
       "drag_linear": 0.02,
       "tag": "npc",
       "scripts": [
-        "npc"
+        "enemy"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -168,6 +215,7 @@
         0.4,
         0.8
       ],
+      "alpha": 0.0,
       "folder": "T",
       "interactable": true,
       "use_view_interaction": false,
@@ -177,9 +225,9 @@
       "name": "Thug3",
       "format": "cube",
       "position": [
-        1.78,
+        -5.6,
         2.32,
-        -8.718
+        2.08
       ],
       "rotation": [
         0.0,
@@ -191,7 +239,7 @@
         2.0,
         1.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
@@ -201,17 +249,18 @@
       "drag_linear": 0.02,
       "tag": "npc",
       "scripts": [
-        "npc"
+        "enemy"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.894,
+        0.886,
         0.4,
         0.8
       ],
+      "alpha": 0.0,
       "folder": "T",
       "interactable": true,
       "use_view_interaction": false,
@@ -221,9 +270,9 @@
       "name": "Thug4",
       "format": "cube",
       "position": [
-        1.58,
+        -0.72,
         1.69,
-        -9.21
+        8.45
       ],
       "rotation": [
         0.0,
@@ -235,7 +284,7 @@
         2.0,
         1.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
@@ -245,7 +294,52 @@
       "drag_linear": 0.02,
       "tag": "npc",
       "scripts": [
-        "npc"
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.886,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug5",
+      "format": "cube",
+      "position": [
+        -8.962,
+        6.372,
+        -1.198
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -256,6 +350,232 @@
         0.4,
         0.8
       ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug6",
+      "format": "cube",
+      "position": [
+        -3.418,
+        12.45,
+        -7.63
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.89,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug_upstairs1",
+      "format": "cube",
+      "position": [
+        12.01,
+        19.94,
+        -15.67
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.886,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug8",
+      "format": "cube",
+      "position": [
+        -4.5,
+        1.438,
+        -2.342
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.89,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug_upstairs2",
+      "format": "cube",
+      "position": [
+        4.84,
+        19.72,
+        -29.37
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.886,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
+      "folder": "T",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
+    },
+    {
+      "name": "Thug10",
+      "format": "cube",
+      "position": [
+        5.5,
+        12.692,
+        -4.588
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "mass": 50.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "npc",
+      "scripts": [
+        "enemy"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.89,
+        0.4,
+        0.8
+      ],
+      "alpha": 0.0,
       "folder": "T",
       "interactable": true,
       "use_view_interaction": false,
@@ -275,11 +595,11 @@
         0.0
       ],
       "scale": [
-        220.0,
-        220.0,
-        220.0
+        230.0,
+        230.0,
+        230.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": false,
       "is_collideable": true,
       "is_kinematic": true,
@@ -313,7 +633,7 @@
         0.111,
         13.874
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": false,
       "is_collideable": true,
       "is_kinematic": true,
@@ -328,18 +648,18 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.18,
+        0.173,
         0.173,
         0.173
       ]
     },
     {
-      "name": "osuit",
-      "format": "glb",
+      "name": "light_1",
+      "format": "light",
       "position": [
-        28.08,
-        0.5,
-        -64.64
+        2.62,
+        5.04,
+        -19.2
       ],
       "rotation": [
         0.0,
@@ -351,11 +671,11 @@
         1.0,
         1.0
       ],
-      "mass": 1.0,
+      "mass": 50.0,
       "use_gravity": false,
       "is_collideable": true,
       "is_kinematic": true,
-      "collider_type": "mesh",
+      "collider_type": "box",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -365,7 +685,250 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/models/osuit.glb"
+      "intensity": 0.2,
+      "color": [
+        0.973,
+        0.745,
+        0.251
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "Trigger_Entity",
+      "format": "cube",
+      "position": [
+        1.49,
+        1.55,
+        -10.09
+      ],
+      "rotation": [
+        0.0,
+        -9.0,
+        0.0
+      ],
+      "scale": [
+        2.897,
+        3.329,
+        1.787
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "trigger"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.8,
+        0.2,
+        1.0
+      ],
+      "alpha": 0.4
+    },
+    {
+      "name": "Trigger_Entity_1",
+      "format": "cube",
+      "position": [
+        7.78,
+        17.66,
+        -5.79
+      ],
+      "rotation": [
+        0.0,
+        30.0,
+        0.0
+      ],
+      "scale": [
+        5.196,
+        2.165,
+        1.632
+      ],
+      "mass": 0.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.0,
+      "drag_linear": 0.0,
+      "tag": "trigger",
+      "scripts": [
+        "trigger"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": true,
+      "dialogue_data": null,
+      "color": [
+        0.8,
+        0.2,
+        1.0
+      ],
+      "alpha": 0.4
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        10.56,
+        25.57,
+        -21.19
+      ],
+      "rotation": [
+        0.0,
+        -24.0,
+        0.0
+      ],
+      "scale": [
+        27.904,
+        0.405,
+        29.919
+      ],
+      "mass": 50.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.173,
+        0.173,
+        0.173
+      ]
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        10.81,
+        25.56,
+        -21.75
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.555,
+        1.555,
+        1.555
+      ],
+      "mass": 50.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.2,
+      "color": [
+        0.973,
+        0.745,
+        0.251
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "cube_2",
+      "format": "cube",
+      "position": [
+        -5.5,
+        24.08,
+        -0.56
+      ],
+      "rotation": [
+        0.0,
+        -25.0,
+        0.0
+      ],
+      "scale": [
+        36.091,
+        0.315,
+        27.099
+      ],
+      "mass": 50.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.173,
+        0.173,
+        0.173
+      ]
+    },
+    {
+      "name": "suit_spin",
+      "format": "glb",
+      "position": [
+        13.04,
+        20.57,
+        -27.95
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        0.801,
+        0.801,
+        0.801
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [
+        "suit_spinner"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/Meshy_AI_Navy_Suit_with_Red_Ti_0329013621_texture.glb",
+      "interactable": true,
+      "use_view_interaction": false,
+      "interaction_distance": 4.0
     }
   ]
 }

@@ -210,15 +210,21 @@ class Weapon:
             angle = math.acos(max(-1.0, min(1.0, cos_angle)))
 
             if angle <= CONE_ANGLE_RAD / 2.0:
-                # HIT!
-                if obj.alpha > 0.5:
+                # HIT! Only hit one enemy per shot
+                hit_any = True
+                if getattr(obj, 'is_enemy', False):
+                    # Warehouse enemy — find its script and call die()
+                    print(f"[Weapon] ENEMY HIT: {obj.name}")
+                    for script in self.engine.script_manager.active_scripts:
+                        if script.entity is obj and hasattr(script, 'die'):
+                            script.die()
+                            break
+                    break  # Only hit one enemy per shot
+                elif obj.alpha > 0.5:
+                    # Story NPC — existing behaviour
                     print(f"[Weapon] CONE HIT NPC: {obj.name}")
                     obj.alpha = 0.5
                     self.engine.audio.play_sfx('assets/sounds/bloodGushing.mp3')
-                    hit_any = True
-                    
-                    # Special Story Trigger (matches original behavior)
-                    # We trigger this if ANY npc in the cone is "dying" and haven't already
                     if not self.engine.global_flags.get('thief_shot'):
                         self.engine.hud.set_task("A cruel realisation", "Talk to Tony")
                         self.engine.show_image_overlay('assets/transitions/act2.jpg', 3.0)
