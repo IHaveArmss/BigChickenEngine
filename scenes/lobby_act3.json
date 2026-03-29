@@ -33,6 +33,25 @@
       ],
       "mass": 0.0,
       "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.298,
+        0.298,
+        0.349
+      ]
+    },
+    { "name": "player",
       "format": "glb",
       "position": [
         5.92,
