@@ -723,6 +723,7 @@
       "scripts": [
         "trigger"
       ],
+      "trigger_enemies": "Thug1, Thug2, Thug3, Thug4, Thug5, Thug6, Thug8, Thug10, Thug_upstairs1, Thug_upstairs2",
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -764,6 +765,7 @@
       "scripts": [
         "trigger"
       ],
+      "trigger_enemies": "Thug1, Thug2, Thug3, Thug4, Thug5, Thug6, Thug8, Thug10, Thug_upstairs1, Thug_upstairs2",
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,

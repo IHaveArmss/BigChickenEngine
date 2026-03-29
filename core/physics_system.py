@@ -101,6 +101,21 @@ class PhysicsSystem:
                 getattr(obj, 'drag', 0.02),
                 getattr(obj, 'use_gravity', False))
 
+    def _safe_extent(self, value):
+        try:
+            return max(abs(float(value)), 1e-4)
+        except Exception:
+            return 1e-4
+
+    def _create_box_shape(self, sx, sy, sz):
+        return p.createCollisionShape(
+            p.GEOM_BOX,
+            halfExtents=[self._safe_extent(sx) * 0.5,
+                         self._safe_extent(sy) * 0.5,
+                         self._safe_extent(sz) * 0.5],
+            physicsClientId=self.client_id,
+        )
+
     def add_object(self, obj):
         """Register a SceneObject into the PyBullet world."""
         if not getattr(obj, 'is_collideable', True):
@@ -117,19 +132,29 @@ class PhysicsSystem:
 
         shape_ids = []
         if col_type == 'box':
-            shape_ids.append(p.createCollisionShape(
-                p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id))
+            try:
+                shape_ids.append(self._create_box_shape(sx, sy, sz))
+            except Exception as e:
+                print(f"[Physics] WARNING: Box collider failed for {obj.name}, falling back to unit box: {e}")
+                shape_ids.append(self._create_box_shape(1.0, 1.0, 1.0))
         elif col_type == 'sphere':
-            shape_ids.append(p.createCollisionShape(
-                p.GEOM_SPHERE, radius=max(sx, sy, sz) * 0.5,
-                physicsClientId=self.client_id))
+            try:
+                shape_ids.append(p.createCollisionShape(
+                    p.GEOM_SPHERE, radius=max(self._safe_extent(sx), self._safe_extent(sy), self._safe_extent(sz)) * 0.5,
+                    physicsClientId=self.client_id))
+            except Exception as e:
+                print(f"[Physics] WARNING: Sphere collider failed for {obj.name}, falling back to unit box: {e}")
+                shape_ids.append(self._create_box_shape(1.0, 1.0, 1.0))
         elif col_type == 'capsule':
-            radius = min(sx, sz) * 0.35
-            cyl_h  = max(sy - radius * 2.0, 0.0)
-            shape_ids.append(p.createCollisionShape(
-                p.GEOM_CAPSULE, radius=radius, height=cyl_h,
-                physicsClientId=self.client_id))
+            radius = max(min(self._safe_extent(sx), self._safe_extent(sz)) * 0.35, 1e-4)
+            cyl_h  = max(self._safe_extent(sy) - radius * 2.0, 1e-4)
+            try:
+                shape_ids.append(p.createCollisionShape(
+                    p.GEOM_CAPSULE, radius=radius, height=cyl_h,
+                    physicsClientId=self.client_id))
+            except Exception as e:
+                print(f"[Physics] WARNING: Capsule collider failed for {obj.name}, falling back to unit box: {e}")
+                shape_ids.append(self._create_box_shape(1.0, 1.0, 1.0))
         elif col_type == 'mesh' and getattr(obj, 'model_path', '') and os.path.exists(obj.model_path):
             ext = os.path.splitext(obj.model_path)[1].lower()
             if ext in ('.glb', '.gltf'):
@@ -143,9 +168,11 @@ class PhysicsSystem:
         elif col_type == 'convex_hull':
             shape_ids = self._create_mesh_collision(obj, sx, sy, sz, force_convex=True)
         else:
-            shape_ids.append(p.createCollisionShape(
-                p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
-                physicsClientId=self.client_id))
+            try:
+                shape_ids.append(self._create_box_shape(sx, sy, sz))
+            except Exception as e:
+                print(f"[Physics] WARNING: Default collider failed for {obj.name}, falling back to unit box: {e}")
+                shape_ids.append(self._create_box_shape(1.0, 1.0, 1.0))
 
         body_pos = glm.vec3(obj.position) + self._offset_world(obj)
         pos = [body_pos.x, body_pos.y, body_pos.z]

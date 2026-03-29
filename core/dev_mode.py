@@ -327,9 +327,14 @@ class DevMode:
 
         def _parse_vec3(prefix):
             try:
-                x = float(values.get(f'{prefix}_x', '').strip() or 0.0)
-                y = float(values.get(f'{prefix}_y', '').strip() or 0.0)
-                z = float(values.get(f'{prefix}_z', '').strip() or 0.0)
+                raw_x = values.get(f'{prefix}_x', '').strip()
+                raw_y = values.get(f'{prefix}_y', '').strip()
+                raw_z = values.get(f'{prefix}_z', '').strip()
+                if not raw_x and not raw_y and not raw_z:
+                    return None
+                x = float(raw_x or 0.0)
+                y = float(raw_y or 0.0)
+                z = float(raw_z or 0.0)
                 return glm.vec3(x, y, z)
             except (ValueError, TypeError):
                 return None

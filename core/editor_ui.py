@@ -756,11 +756,15 @@ class EditorUI:
 
         collider_scale = getattr(obj, 'collider_scale', None)
         if collider_scale is None:
-            collider_scale = scl
-        col_scl_x, col_scl_y, col_scl_z = _vec3_values(collider_scale, (scl.x, scl.y, scl.z))
+            col_scl_x = col_scl_y = col_scl_z = None
+        else:
+            col_scl_x, col_scl_y, col_scl_z = _vec3_values(collider_scale, (None, None, None))
 
         collider_offset = getattr(obj, 'collider_offset', None)
-        col_off_x, col_off_y, col_off_z = _vec3_values(collider_offset, (0.0, 0.0, 0.0))
+        if collider_offset is None:
+            col_off_x = col_off_y = col_off_z = None
+        else:
+            col_off_x, col_off_y, col_off_z = _vec3_values(collider_offset, (None, None, None))
 
         self.prop_inputs = {
             'object_name': {'label': 'Name', 'value': obj.name, 'field': None},
@@ -777,15 +781,15 @@ class EditorUI:
             'alpha': {'label': 'Alpha', 'value': f'{getattr(obj, "alpha", 1.0):.2f}', 'field': None},
             'collider_box': {
                 'label': 'Box Collider',
-                'value': bool(getattr(obj, 'collider_box', getattr(obj, 'collider_type', 'box') == 'box')),
+                'value': bool(getattr(obj, 'collider_box', False)),
                 'field': 'toggle',
             },
-            'col_scl_x': {'label': 'X', 'value': f'{col_scl_x:.3f}', 'field': None},
-            'col_scl_y': {'label': 'Y', 'value': f'{col_scl_y:.3f}', 'field': None},
-            'col_scl_z': {'label': 'Z', 'value': f'{col_scl_z:.3f}', 'field': None},
-            'col_off_x': {'label': 'X', 'value': f'{col_off_x:.3f}', 'field': None},
-            'col_off_y': {'label': 'Y', 'value': f'{col_off_y:.3f}', 'field': None},
-            'col_off_z': {'label': 'Z', 'value': f'{col_off_z:.3f}', 'field': None},
+            'col_scl_x': {'label': 'X', 'value': '' if col_scl_x is None else f'{col_scl_x:.3f}', 'field': None},
+            'col_scl_y': {'label': 'Y', 'value': '' if col_scl_y is None else f'{col_scl_y:.3f}', 'field': None},
+            'col_scl_z': {'label': 'Z', 'value': '' if col_scl_z is None else f'{col_scl_z:.3f}', 'field': None},
+            'col_off_x': {'label': 'X', 'value': '' if col_off_x is None else f'{col_off_x:.3f}', 'field': None},
+            'col_off_y': {'label': 'Y', 'value': '' if col_off_y is None else f'{col_off_y:.3f}', 'field': None},
+            'col_off_z': {'label': 'Z', 'value': '' if col_off_z is None else f'{col_off_z:.3f}', 'field': None},
         }
 
         if color is not None:
@@ -1339,14 +1343,16 @@ class EditorUI:
             )
         if 'collider_box' in self.prop_inputs:
             self.prop_inputs['collider_box']['value'] = bool(
-                getattr(obj, 'collider_box', getattr(obj, 'collider_type', 'box') == 'box')
+                getattr(obj, 'collider_box', False)
             )
 
         collider_scale = getattr(obj, 'collider_scale', None)
         if collider_scale is None:
-            collider_scale = obj.scale
+            empty_scale = ['', '', '']
+        else:
+            empty_scale = None
         if 'col_scl_x' in self.prop_inputs:
-            scale_vals = [
+            scale_vals = empty_scale if empty_scale is not None else [
                 f'{float(collider_scale.x if hasattr(collider_scale, "x") else collider_scale[0]):.3f}',
                 f'{float(collider_scale.y if hasattr(collider_scale, "y") else collider_scale[1]):.3f}',
                 f'{float(collider_scale.z if hasattr(collider_scale, "z") else collider_scale[2]):.3f}',
@@ -1358,9 +1364,11 @@ class EditorUI:
 
         collider_offset = getattr(obj, 'collider_offset', None)
         if collider_offset is None:
-            collider_offset = (0.0, 0.0, 0.0)
+            empty_offset = ['', '', '']
+        else:
+            empty_offset = None
         if 'col_off_x' in self.prop_inputs:
-            offset_vals = [
+            offset_vals = empty_offset if empty_offset is not None else [
                 f'{float(collider_offset.x if hasattr(collider_offset, "x") else collider_offset[0]):.3f}',
                 f'{float(collider_offset.y if hasattr(collider_offset, "y") else collider_offset[1]):.3f}',
                 f'{float(collider_offset.z if hasattr(collider_offset, "z") else collider_offset[2]):.3f}',

@@ -53,7 +53,7 @@ class SceneObject:
         self.collider_type = 'box'
         self.collider_scale = None  # If set, used for physics instead of visual scale
         self.collider_offset = None  # Local-space collider offset relative to the object origin
-        self.collider_box = True
+        self.collider_box = False
         self._non_box_collider_type = None
         self.bounciness = 0.0
         self.friction = 0.5
@@ -401,7 +401,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     obj.is_kinematic = entry.get('is_kinematic', True)
     default_collider = 'mesh' if fmt in ('glb', 'gltf') else 'box'
     obj.collider_type = entry.get('collider_type', default_collider)
-    obj.collider_box = bool(entry.get('collider_box', obj.collider_type == 'box'))
+    obj.collider_box = bool(entry.get('collider_box', False))
     if obj.collider_type != 'box':
         obj._non_box_collider_type = obj.collider_type
     obj.bounciness = entry.get('bounciness', 0.0)
