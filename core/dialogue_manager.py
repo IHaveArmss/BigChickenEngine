@@ -399,6 +399,11 @@ class DialogueManager:
         if action and self._target:
             self.engine.script_manager.dispatch_dialogue_action(self._target, action)
 
+        # Play a one-shot sound defined on this node (e.g. phone ring)
+        node_sound = node.get("sound")
+        if node_sound:
+            self.engine.audio.play_sfx(node_sound)
+
         # Reset choices first
         self._choices = None
         
