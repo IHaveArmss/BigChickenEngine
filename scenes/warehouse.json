@@ -134,7 +134,7 @@
     },
     {
       "name": "Thug1",
-      "format": "cube",
+      "format": "glb",
       "position": [
         8.58,
         17.106,
@@ -147,7 +147,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -166,19 +166,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.886,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug2",
-      "format": "cube",
+      "format": "glb",
       "position": [
         5.352,
         1.95,
@@ -191,7 +193,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -210,19 +212,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.89,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug3",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -5.6,
         2.32,
@@ -235,7 +239,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -254,19 +258,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.886,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug4",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -0.72,
         1.69,
@@ -279,7 +285,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -298,19 +304,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.886,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug5",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -8.962,
         6.372,
@@ -323,7 +331,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -342,19 +350,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.89,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug6",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -3.418,
         12.45,
@@ -367,7 +377,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -386,19 +396,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.89,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug_upstairs1",
-      "format": "cube",
+      "format": "glb",
       "position": [
         12.01,
         19.94,
@@ -411,7 +423,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -430,19 +442,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.886,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug8",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -4.5,
         1.438,
@@ -455,7 +469,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -474,19 +488,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.89,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug_upstairs2",
-      "format": "cube",
+      "format": "glb",
       "position": [
         4.84,
         19.72,
@@ -499,7 +515,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -518,19 +534,21 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.886,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "Thug10",
-      "format": "cube",
+      "format": "glb",
       "position": [
         5.5,
         12.692,
@@ -543,7 +561,7 @@
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 50.0,
@@ -562,15 +580,17 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "color": [
-        0.89,
-        0.4,
-        0.8
-      ],
       "alpha": 0.0,
       "folder": "T",
       "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "interaction_distance": 4.0,
+      "model": "assets/models/thief_running.glb",
+      "visual_rotation": [
+        90,
+        0,
+        0
+      ],
+      "use_anim_state_controller": false
     },
     {
       "name": "legat",

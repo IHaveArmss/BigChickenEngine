@@ -1,9 +1,12 @@
 import pybullet as p
 import glm
 import math
+import random
 
-MOVE_SPEED   = 3.0   # units per second toward player
-ATTACK_RANGE = 1.5   # stop moving when this close
+MOVE_SPEED_BASE = 3.0   # reference speed for animation scaling
+MOVE_SPEED_MIN = 3.0    # 50% variance in speeds — makes the horde less uniform
+MOVE_SPEED_MAX = 5.0
+ATTACK_RANGE = 1.5      # stop moving when this close
 
 
 class Enemy:
@@ -11,6 +14,12 @@ class Enemy:
     Killed by the weapon via die() — called from weapon.py when shot."""
 
     def start(self):
+        self.move_speed = random.uniform(MOVE_SPEED_MIN, MOVE_SPEED_MAX)
+        
+        # Scale animation speed to match movement speed if animator exists
+        if getattr(self.entity, 'animator', None) is not None:
+            self.entity.animator.speed = self.move_speed / MOVE_SPEED_BASE
+
         self.entity.is_enemy = True
         self._dead = False
         self._enabled = False
@@ -63,12 +72,12 @@ class Enemy:
             direction = glm.normalize(flat)
             p.resetBaseVelocity(
                 body_id,
-                [direction.x * MOVE_SPEED, cur_vel[1], direction.z * MOVE_SPEED],
+                [direction.x * self.move_speed, cur_vel[1], direction.z * self.move_speed],
                 [0, 0, 0],
                 physicsClientId=phys_id,
             )
-            # Face player
-            angle = math.atan2(-flat.x, -flat.z)
+            # Face player — use positive flat components so the mesh front points toward the player
+            angle = math.atan2(flat.x, flat.z)
             self.entity.set_rotation_euler(0, math.degrees(angle), 0)
         else:
             # Stop horizontal movement when close

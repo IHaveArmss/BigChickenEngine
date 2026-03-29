@@ -736,11 +736,13 @@
           },
           "phone_ending": {
             "text": "*phone ringing*",
+            "sound": "assets/ring.mp3",
             "next": "phone_ending_2"
           },
           "phone_ending_2": {
             "speaker": "Tony",
             "text": "The pizza you ordered is here!",
+            "sound": "assets/sounds/talkingpizza1.mp3",
             "next": "exit"
           }
         }

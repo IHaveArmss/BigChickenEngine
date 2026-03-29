@@ -67,8 +67,8 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/cutscene_demo.json'
-PLAY_INTRO = True # Set to False to skip the opening cinematic
+SCENE_FILE = 'scenes/warehouse.json'
+PLAY_INTRO = False # Set to False to skip the opening cinematic
 # ======================================================================
 
 AUTOSAVE_INTERVAL = 30.0  # seconds
