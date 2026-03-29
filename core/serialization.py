@@ -32,6 +32,7 @@ def serialize_scene_object(obj):
         "is_collideable": bool(getattr(obj, "is_collideable", True)),
         "is_kinematic": bool(obj.is_kinematic),
         "collider_type": str(obj.collider_type),
+        "collider_box": bool(getattr(obj, "collider_box", str(obj.collider_type) == "box")),
         # collider_scale written below (only when explicitly set)
         "bounciness": round(float(obj.bounciness), 3),
         "friction": round(float(obj.friction), 3),
@@ -120,5 +121,14 @@ def serialize_scene_object(obj):
             entry["collider_scale"] = [round(float(cs.x), 4),
                                        round(float(cs.y), 4),
                                        round(float(cs.z), 4)]
+
+    co = getattr(obj, 'collider_offset', None)
+    if co is not None:
+        if isinstance(co, (list, tuple)):
+            entry["collider_offset"] = [round(float(v), 4) for v in co]
+        else:
+            entry["collider_offset"] = [round(float(co.x), 4),
+                                         round(float(co.y), 4),
+                                         round(float(co.z), 4)]
 
     return entry

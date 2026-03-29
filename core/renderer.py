@@ -5,6 +5,7 @@ import math
 import moderngl
 import os
 from core.model_mesh import ModelMesh
+from scene import Cube
 
 
 def _extract_frustum_planes(vp):
@@ -72,6 +73,8 @@ class Renderer:
         self._point_shadow_count = 0
         # Maps light index (in the lights[] array) → shadow slot (0..3), or -1
         self._light_shadow_slots = [-1] * 16
+
+        self._debug_collider_cube = Cube(self.ctx, color=glm.vec3(0.0, 1.0, 0.35))
 
         self._init_postprocess()
         self._init_shadow_programs()
@@ -486,6 +489,41 @@ class Renderer:
                         receives_shadows=True,
                     )
                 mesh.render()
+
+                if getattr(sel, 'collider_box', False) and getattr(sel, 'is_collideable', True):
+                    collider_scale = getattr(sel, 'collider_scale', None)
+                    if collider_scale is None:
+                        collider_scale = sel.scale
+                    if isinstance(collider_scale, (list, tuple)):
+                        collider_scale = glm.vec3(float(collider_scale[0]), float(collider_scale[1]), float(collider_scale[2]))
+                    else:
+                        collider_scale = glm.vec3(collider_scale)
+
+                    collider_offset = getattr(sel, 'collider_offset', None)
+                    if collider_offset is None:
+                        collider_offset = glm.vec3(0.0)
+                    elif isinstance(collider_offset, (list, tuple)):
+                        collider_offset = glm.vec3(float(collider_offset[0]), float(collider_offset[1]), float(collider_offset[2]))
+                    else:
+                        collider_offset = glm.vec3(collider_offset)
+
+                    rotation = sel.rotation
+                    collider_pos = glm.vec3(sel.position) + rotation * collider_offset
+
+                    self._debug_collider_cube.transform.position = collider_pos
+                    self._debug_collider_cube.transform.rotation = rotation
+                    self._debug_collider_cube.transform.scale = collider_scale
+                    self._debug_collider_cube.set_uniforms(
+                        camera,
+                        lights=lights,
+                        object_color=glm.vec3(0.0, 1.0, 0.35),
+                        render_settings=render_settings,
+                        viewport=viewport,
+                        dir_light_vp=self._dir_light_vp if dir_shadows else None,
+                        receives_shadows=False,
+                        highlight_strength=0.0,
+                    )
+                    self._debug_collider_cube.render()
             self.ctx.wireframe = False
 
         # Postprocess to screen

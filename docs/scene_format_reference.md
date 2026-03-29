@@ -25,6 +25,9 @@ Common fields:
 - `use_gravity` (bool)
 - `is_kinematic` (bool)
 - `collider_type` (string: usually `box`; `sphere` and `mesh` are supported by physics)
+- `collider_box` (bool): whether the object should use a box collider when supported
+- `collider_scale` ([x, y, z]): optional physics-only size override
+- `collider_offset` ([x, y, z]): local-space offset of the collider relative to the object origin
 - `bounciness` (float)
 - `friction` (float)
 - `drag_linear` (float)

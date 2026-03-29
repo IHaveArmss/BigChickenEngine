@@ -743,6 +743,25 @@ class EditorUI:
         rot = obj.rotation_euler
         color = getattr(obj.meshes[0], 'color', None) if obj.meshes else None
 
+        def _vec3_values(value, fallback=(0.0, 0.0, 0.0)):
+            if value is None:
+                return fallback
+            if isinstance(value, (list, tuple)):
+                if len(value) >= 3:
+                    return float(value[0]), float(value[1]), float(value[2])
+                return fallback
+            if hasattr(value, 'x'):
+                return float(value.x), float(value.y), float(value.z)
+            return fallback
+
+        collider_scale = getattr(obj, 'collider_scale', None)
+        if collider_scale is None:
+            collider_scale = scl
+        col_scl_x, col_scl_y, col_scl_z = _vec3_values(collider_scale, (scl.x, scl.y, scl.z))
+
+        collider_offset = getattr(obj, 'collider_offset', None)
+        col_off_x, col_off_y, col_off_z = _vec3_values(collider_offset, (0.0, 0.0, 0.0))
+
         self.prop_inputs = {
             'object_name': {'label': 'Name', 'value': obj.name, 'field': None},
             'folder': {'label': 'Folder', 'value': getattr(obj, 'folder', 'Scene'), 'field': None},
@@ -756,6 +775,17 @@ class EditorUI:
             'scl_y': {'label': 'Y', 'value': f'{scl.y:.3f}', 'field': None},
             'scl_z': {'label': 'Z', 'value': f'{scl.z:.3f}', 'field': None},
             'alpha': {'label': 'Alpha', 'value': f'{getattr(obj, "alpha", 1.0):.2f}', 'field': None},
+            'collider_box': {
+                'label': 'Box Collider',
+                'value': bool(getattr(obj, 'collider_box', getattr(obj, 'collider_type', 'box') == 'box')),
+                'field': 'toggle',
+            },
+            'col_scl_x': {'label': 'X', 'value': f'{col_scl_x:.3f}', 'field': None},
+            'col_scl_y': {'label': 'Y', 'value': f'{col_scl_y:.3f}', 'field': None},
+            'col_scl_z': {'label': 'Z', 'value': f'{col_scl_z:.3f}', 'field': None},
+            'col_off_x': {'label': 'X', 'value': f'{col_off_x:.3f}', 'field': None},
+            'col_off_y': {'label': 'Y', 'value': f'{col_off_y:.3f}', 'field': None},
+            'col_off_z': {'label': 'Z', 'value': f'{col_off_z:.3f}', 'field': None},
         }
 
         if color is not None:
@@ -1187,7 +1217,7 @@ class EditorUI:
         # Prop inputs processing
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Handle toggles
-            for key in ['is_collideable', 'use_gravity', 'is_kinematic', 'is_trigger', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable']:
+            for key in ['is_collideable', 'use_gravity', 'is_kinematic', 'is_trigger', 'use_anim_state_controller', 'casts_shadows', 'receives_shadows', 'light_casts_shadows', 'interactable', 'collider_box']:
                 if key in self.prop_inputs and 'toggle_rect' in self.prop_inputs[key]:
                     if self.prop_inputs[key]['toggle_rect'].collidepoint(mouse_pos):
                         self.prop_inputs[key]['value'] = not self.prop_inputs[key]['value']
@@ -1307,6 +1337,38 @@ class EditorUI:
             self.prop_inputs['is_collideable']['value'] = bool(
                 getattr(obj, 'is_collideable', True)
             )
+        if 'collider_box' in self.prop_inputs:
+            self.prop_inputs['collider_box']['value'] = bool(
+                getattr(obj, 'collider_box', getattr(obj, 'collider_type', 'box') == 'box')
+            )
+
+        collider_scale = getattr(obj, 'collider_scale', None)
+        if collider_scale is None:
+            collider_scale = obj.scale
+        if 'col_scl_x' in self.prop_inputs:
+            scale_vals = [
+                f'{float(collider_scale.x if hasattr(collider_scale, "x") else collider_scale[0]):.3f}',
+                f'{float(collider_scale.y if hasattr(collider_scale, "y") else collider_scale[1]):.3f}',
+                f'{float(collider_scale.z if hasattr(collider_scale, "z") else collider_scale[2]):.3f}',
+            ]
+            for key, val in zip(['col_scl_x', 'col_scl_y', 'col_scl_z'], scale_vals):
+                info = self.prop_inputs[key]
+                if info['field'] and not info['field'].active:
+                    info['field'].text = val
+
+        collider_offset = getattr(obj, 'collider_offset', None)
+        if collider_offset is None:
+            collider_offset = (0.0, 0.0, 0.0)
+        if 'col_off_x' in self.prop_inputs:
+            offset_vals = [
+                f'{float(collider_offset.x if hasattr(collider_offset, "x") else collider_offset[0]):.3f}',
+                f'{float(collider_offset.y if hasattr(collider_offset, "y") else collider_offset[1]):.3f}',
+                f'{float(collider_offset.z if hasattr(collider_offset, "z") else collider_offset[2]):.3f}',
+            ]
+            for key, val in zip(['col_off_x', 'col_off_y', 'col_off_z'], offset_vals):
+                info = self.prop_inputs[key]
+                if info['field'] and not info['field'].active:
+                    info['field'].text = val
         cfg = getattr(obj, 'anim_state_config', None)
         if isinstance(cfg, dict):
             map_keys = {
@@ -1731,6 +1793,63 @@ class EditorUI:
                 info['field'].draw(surface, self.font)
                 x += single_w + 24
         y += INPUT_HEIGHT + 10
+
+        # Collider
+        label_surf = self.font_bold.render("Collider", True, (255, 170, 80))
+        surface.blit(label_surf, (bx, y))
+        y += 18
+
+        if 'collider_box' in self.prop_inputs:
+            info = self.prop_inputs['collider_box']
+            lbl = self.font_bold.render("Box Collider", True, (255, 170, 80))
+            surface.blit(lbl, (bx, y + 2))
+            toggle_x = bx + 125
+            toggle_rect = pygame.Rect(toggle_x, y, 36, 18)
+            info['toggle_rect'] = toggle_rect
+            is_on = info['value']
+            bg_c = TOGGLE_ON if is_on else TOGGLE_OFF
+            pygame.draw.rect(surface, bg_c, toggle_rect, border_radius=9)
+            knob_x = toggle_x + 18 if is_on else toggle_x + 2
+            pygame.draw.circle(surface, (255, 255, 255), (knob_x + 9, y + 9), 6)
+            y += 24
+
+        if all(k in self.prop_inputs for k in ['col_scl_x', 'col_scl_y', 'col_scl_z']):
+            label_surf = self.font_bold.render("Collider Scale", True, (255, 170, 80))
+            surface.blit(label_surf, (bx, y))
+            y += 18
+
+            x = bx
+            for key in ['col_scl_x', 'col_scl_y', 'col_scl_z']:
+                info = self.prop_inputs[key]
+                lbl_c = {'col_scl_x': (255, 80, 80), 'col_scl_y': (80, 255, 80), 'col_scl_z': (80, 80, 255)}
+                lbl = self.font_bold.render(info['label'], True, lbl_c[key])
+                surface.blit(lbl, (x, y + 3))
+                if info['field'] is None:
+                    info['field'] = TextInput(x + 16, y, single_w, INPUT_HEIGHT,
+                                              info['label'], info['value'])
+                info['field'].rect = pygame.Rect(x + 16, y, single_w, INPUT_HEIGHT)
+                info['field'].draw(surface, self.font)
+                x += single_w + 24
+            y += INPUT_HEIGHT + 10
+
+        if all(k in self.prop_inputs for k in ['col_off_x', 'col_off_y', 'col_off_z']):
+            label_surf = self.font_bold.render("Collider Offset", True, (255, 170, 80))
+            surface.blit(label_surf, (bx, y))
+            y += 18
+
+            x = bx
+            for key in ['col_off_x', 'col_off_y', 'col_off_z']:
+                info = self.prop_inputs[key]
+                lbl_c = {'col_off_x': (255, 80, 80), 'col_off_y': (80, 255, 80), 'col_off_z': (80, 80, 255)}
+                lbl = self.font_bold.render(info['label'], True, lbl_c[key])
+                surface.blit(lbl, (x, y + 3))
+                if info['field'] is None:
+                    info['field'] = TextInput(x + 16, y, single_w, INPUT_HEIGHT,
+                                              info['label'], info['value'])
+                info['field'].rect = pygame.Rect(x + 16, y, single_w, INPUT_HEIGHT)
+                info['field'].draw(surface, self.font)
+                x += single_w + 24
+            y += INPUT_HEIGHT + 10
 
         # Color (hex)
         if 'color' in self.prop_inputs:

@@ -295,6 +295,18 @@ class DevMode:
             obj.is_collideable = (values['is_collideable'] == True)
         if 'is_kinematic' in values:
             obj.is_kinematic = (values['is_kinematic'] == True)
+        if 'collider_box' in values:
+            obj.collider_box = (values['collider_box'] == True)
+            if obj.collider_box:
+                if getattr(obj, 'collider_type', 'box') != 'box':
+                    obj._non_box_collider_type = obj.collider_type
+                obj.collider_type = 'box'
+            else:
+                prev_type = getattr(obj, '_non_box_collider_type', None)
+                if prev_type:
+                    obj.collider_type = prev_type
+                else:
+                    obj.collider_type = 'mesh' if obj.format in ('glb', 'gltf') else 'box'
         if 'casts_shadows' in values:
             obj.casts_shadows = (values['casts_shadows'] is True)
         if 'receives_shadows' in values:
@@ -312,6 +324,23 @@ class DevMode:
             pass
         if 'collider_type' in values:
             obj.collider_type = str(values['collider_type'])
+
+        def _parse_vec3(prefix):
+            try:
+                x = float(values.get(f'{prefix}_x', '').strip() or 0.0)
+                y = float(values.get(f'{prefix}_y', '').strip() or 0.0)
+                z = float(values.get(f'{prefix}_z', '').strip() or 0.0)
+                return glm.vec3(x, y, z)
+            except (ValueError, TypeError):
+                return None
+
+        collider_scale = _parse_vec3('col_scl')
+        if collider_scale is not None:
+            obj.collider_scale = collider_scale
+
+        collider_offset = _parse_vec3('col_off')
+        if collider_offset is not None:
+            obj.collider_offset = collider_offset
 
         # Dialogue camera overrides — read separate X/Y/Z fields
         def _parse_xyz(xk, yk, zk):

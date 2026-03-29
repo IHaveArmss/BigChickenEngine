@@ -67,6 +67,30 @@ class PhysicsSystem:
                 s.y if hasattr(s, 'y') else s[1],
                 s.z if hasattr(s, 'z') else s[2])
 
+    def _extract_offset(self, obj):
+        """Return the local-space collider offset as a glm.vec3."""
+        co = getattr(obj, 'collider_offset', None)
+        if co is None:
+            return glm.vec3(0.0)
+        if isinstance(co, (list, tuple)):
+            if len(co) >= 3:
+                return glm.vec3(float(co[0]), float(co[1]), float(co[2]))
+            return glm.vec3(0.0)
+        if hasattr(co, 'x'):
+            return glm.vec3(float(co.x), float(co.y), float(co.z))
+        return glm.vec3(0.0)
+
+    def _offset_world(self, obj, quat=None):
+        """Rotate the collider offset into world space."""
+        offset = self._extract_offset(obj)
+        if glm.length(offset) < 1e-8:
+            return glm.vec3(0.0)
+        if quat is None:
+            rotation = obj.rotation
+        else:
+            rotation = glm.quat(quat[3], quat[0], quat[1], quat[2])
+        return rotation * offset
+
     def _dynamics_key(self, obj):
         """Return a hashable snapshot of the physics-relevant properties."""
         is_kin = getattr(obj, 'is_kinematic', True)
@@ -123,7 +147,8 @@ class PhysicsSystem:
                 p.GEOM_BOX, halfExtents=[sx * 0.5, sy * 0.5, sz * 0.5],
                 physicsClientId=self.client_id))
 
-        pos = [obj.position.x, obj.position.y, obj.position.z]
+        body_pos = glm.vec3(obj.position) + self._offset_world(obj)
+        pos = [body_pos.x, body_pos.y, body_pos.z]
         quat = [obj.rotation.x, obj.rotation.y, obj.rotation.z, obj.rotation.w]
 
         # Register one or more bodies (chunks) for this object
@@ -300,7 +325,8 @@ class PhysicsSystem:
 
             is_kinematic = getattr(obj, 'is_kinematic', True)
             if is_kinematic or getattr(obj, 'mass', 1.0) == 0.0 or getattr(obj, '_physics_dirty', False):
-                pos = [obj.position.x, obj.position.y, obj.position.z]
+                body_pos = glm.vec3(obj.position) + self._offset_world(obj)
+                pos = [body_pos.x, body_pos.y, body_pos.z]
                 quat = [obj.rotation.x, obj.rotation.y, obj.rotation.z, obj.rotation.w]
                 
                 # Update all chunks of the body
@@ -400,7 +426,7 @@ class PhysicsSystem:
 
             pos, quat = p.getBasePositionAndOrientation(body_id,
                                                         physicsClientId=self.client_id)
-            obj.update_transform(pos, quat)
+            obj.update_transform(pos, quat, collider_offset=self._extract_offset(obj))
 
         return num_steps
 

@@ -52,6 +52,9 @@ class SceneObject:
         self.is_kinematic = True
         self.collider_type = 'box'
         self.collider_scale = None  # If set, used for physics instead of visual scale
+        self.collider_offset = None  # Local-space collider offset relative to the object origin
+        self.collider_box = True
+        self._non_box_collider_type = None
         self.bounciness = 0.0
         self.friction = 0.5
         self.drag = 0.02
@@ -130,10 +133,17 @@ class SceneObject:
                 glm.radians(pitch), glm.radians(yaw), glm.radians(roll)
             ))
 
-    def update_transform(self, pos, quat):
+    def update_transform(self, pos, quat, collider_offset=None):
         """Internal sync from physics engine — does NOT mark physics as dirty."""
+        if collider_offset is not None:
+            offset = glm.vec3(collider_offset)
+            rotation = glm.quat(quat[3], quat[0], quat[1], quat[2])
+            rotated_offset = rotation * offset
+            pos = glm.vec3(pos) - rotated_offset
+        else:
+            pos = glm.vec3(pos)
         for m in self.meshes:
-            m.transform.position = glm.vec3(pos)
+            m.transform.position = pos
             # PyBullet (x,y,z,w) -> GLM (w,x,y,z)
             m.transform.rotation = glm.quat(quat[3], quat[0], quat[1], quat[2])
 
@@ -391,11 +401,17 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     obj.is_kinematic = entry.get('is_kinematic', True)
     default_collider = 'mesh' if fmt in ('glb', 'gltf') else 'box'
     obj.collider_type = entry.get('collider_type', default_collider)
+    obj.collider_box = bool(entry.get('collider_box', obj.collider_type == 'box'))
+    if obj.collider_type != 'box':
+        obj._non_box_collider_type = obj.collider_type
     obj.bounciness = entry.get('bounciness', 0.0)
 
     # Optional physics-only scale override (decouples visual scale from collider size)
     raw_cs = entry.get('collider_scale', None)
     obj.collider_scale = raw_cs  # stored as list or None; physics system handles it
+
+    raw_co = entry.get('collider_offset', None)
+    obj.collider_offset = raw_co
 
     # Friction: prefer 'friction', fall back to 'drag' for legacy scenes
     if 'friction' in entry:
@@ -472,13 +488,13 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     # Pass all other generic properties to the object so scripts can access them
     standard_keys = {
         'name', 'format', 'position', 'rotation', 'scale', 'mass', 'use_gravity',
-        'is_collideable', 'is_kinematic', 'collider_type', 'collider_scale', 'bounciness', 'friction',
+        'is_collideable', 'is_kinematic', 'collider_type', 'collider_box', 'collider_scale', 'collider_offset', 'bounciness', 'friction',
         'drag_linear', 'tag', 'scripts', 'casts_shadows', 'receives_shadows', 'is_trigger',
         'dialogue_data', 'color', 'model', 'animation_source', 'use_anim_state_controller',
         'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha'
     }
     for key, value in entry.items():
-        if key not in standard_keys:
+        if key not in standard_keys and not key.startswith('_'):
             setattr(obj, key, value)
 
     return obj

@@ -23,7 +23,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -36,6 +36,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -56,7 +57,7 @@
       "format": "glb",
       "position": [
         5.92,
-        0.64,
+        2.03,
         7.22
       ],
       "rotation": [
@@ -73,10 +74,8 @@
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
-      "visual_offset": [0, 1, 0],
-      "visual_rotation": [90, 0, 0],
-      "collider_type": "capsule",
-      "collider_scale": [2.3, 2.3, 2.3],
+      "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.0,
@@ -98,7 +97,17 @@
         "fall": "fall",
         "move_threshold": 0.1,
         "vertical_threshold": 0.15
-      }
+      },
+      "collider_scale": [
+        1.4,
+        2.8,
+        1.0
+      ],
+      "collider_offset": [
+        0.0,
+        1.5,
+        0.0
+      ]
     },
     {
       "name": "player_spawn",
@@ -123,6 +132,7 @@
       "is_collideable": false,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -149,7 +159,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -162,6 +172,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -196,6 +207,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -217,7 +229,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -230,6 +242,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -251,7 +264,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -264,6 +277,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -289,7 +303,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -302,6 +316,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -329,7 +344,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -342,6 +357,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -369,7 +385,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -382,6 +398,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -422,6 +439,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -456,6 +474,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -477,7 +496,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -490,6 +509,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -516,7 +536,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -529,6 +549,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -563,6 +584,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -597,6 +619,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -631,6 +654,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "mesh",
+      "collider_box": false,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -652,7 +676,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -665,6 +689,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -696,7 +721,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -709,6 +734,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -740,7 +766,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -753,6 +779,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.0,
       "drag_linear": 0.0,
@@ -781,7 +808,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -794,6 +821,7 @@
       "is_collideable": true,
       "is_kinematic": true,
       "collider_type": "box",
+      "collider_box": true,
       "bounciness": 0.0,
       "friction": 0.0,
       "drag_linear": 0.0,
