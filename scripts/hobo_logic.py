@@ -6,36 +6,46 @@ class HoboLogic:
     the 'reset' works even if the scene is saved in the editor.
     """
     def start(self):
-        # Hardcoded 'Appear' State
-        self.dest_pos = glm.vec3(-21.87, 4.55, -2.48)
-        self.dest_rot = glm.vec3(0.0, -9.0, 0.0)
-        self.dest_alpha = 1.0
-        
-        # Force initial 'Hidden' State every time game boots
-        self.hide()
+        # Determine if we should start hidden
+        if not self.engine.global_flags.get('hobo_found', False):
+            self.hide()
+        else:
+            self.appear()
 
     def hide(self):
-        self.entity.position.y = -500.0
         self.entity.alpha = 0.0
         self.entity.is_collideable = False
-        self.entity._physics_dirty = True
-        print(f"[HoboLogic] {self.entity.name} is now hidden.")
+        print(f"[HoboLogic] {self.entity.name} is now hidden (alpha only).")
 
     def appear(self):
-        self.entity.position = glm.vec3(self.dest_pos)
-        self.entity.set_rotation_euler(self.dest_rot.x, self.dest_rot.y, self.dest_rot.z)
-        self.entity.alpha = self.dest_alpha
+        self.entity.alpha = 1.0
         self.entity.is_collideable = True
-        self.entity._physics_dirty = True
-        print(f"[HoboLogic] {self.entity.name} has appeared (Save-Proof Reset)!")
+        print(f"[HoboLogic] {self.entity.name} has appeared (alpha only)!")
 
-    def select_choice(self, index):
-        print(f"[HoboLogic] Choice {index} made. Summoning Thief...")
-        self.engine.hud.set_task("Hero?", "Defend yourself (F for gun)")
-        self.summon_thief()
+    def on_interact(self):
+        # Face the player/camera when talking
+        player = self.engine.interaction_manager._get_player()
+        target_pos = player.position if player else self.engine.active_camera.position
+        
+        diff = target_pos - self.entity.position
+        if glm.length(glm.vec3(diff.x, 0, diff.z)) > 0.01:
+            import math
+            angle_rad = math.atan2(-diff.x, -diff.z)
+            self.entity.set_rotation_euler(0.0, math.degrees(angle_rad), 0.0)
+            self.entity._physics_dirty = True
+            
+        return getattr(self.entity, 'dialogue_data', None)
+
+    def on_dialogue_action(self, action_name):
+        """Called by DialogueManager for trigger nodes like 'summon_thief'"""
+        if action_name == "summon_thief":
+            print(f"[HoboLogic] Action '{action_name}' triggered. Summoning Thief...")
+            self.engine.hud.set_task("Hero?", "Defend yourself (F for gun)")
+            self.summon_thief()
 
     def summon_thief(self):
         for script in self.engine.script_manager.active_scripts:
+            # We look for the Thief script by name
             if script.entity.name == "Thief" and hasattr(script, 'appear'):
                 script.appear()
                 return

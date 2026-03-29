@@ -68,7 +68,7 @@ class ShaderCache:
 
 # ======================================================================
 SCENE_FILE = 'scenes/cutscene_demo.json'
-PLAY_INTRO = False # Set to False to skip the opening cinematic
+PLAY_INTRO = True # Set to False to skip the opening cinematic
 # ======================================================================
 
 AUTOSAVE_INTERVAL = 30.0  # seconds
@@ -1002,12 +1002,29 @@ class GraphicsEngine:
                 player.play(skip_sec=0.5, fade_in_sec=1.0)
             player.destroy()
 
+    def show_main_menu(self):
+        """Display the main menu screen with a Start button."""
+        from core.main_menu import MainMenu
+        menu_path = os.path.join('assets', 'mainmenu.png')
+        menu = MainMenu(self.ctx, self.shader_cache, menu_path)
+        # Show mouse cursor for the menu
+        pygame.mouse.set_visible(True)
+        pygame.event.set_grab(False)
+        menu.show()
+        menu.destroy()
+        # Restore cursor state (play mode = hidden + grabbed)
+        pygame.mouse.set_visible(False)
+        pygame.event.set_grab(True)
+
     def run(self):
         if PLAY_INTRO:
             # 1. Video
             self.play_intro()
 
-            # 2. Act 1 transition image (sequential)
+            # 2. Main Menu
+            self.show_main_menu()
+
+            # 3. Act 1 transition image (sequential)
             self.show_image_overlay('assets/transitions/act1.jpg', 3.0)
             
             # Mini-loop to show the image before cutscene starts
@@ -1018,7 +1035,7 @@ class GraphicsEngine:
                 self.update()
                 self.render()
 
-            # 3. JSON Cutscene
+            # 4. JSON Cutscene
             if self.cutscenes.load("intro-cutscene"):
                 print("[Engine] Sequence: Starting intro cutscene after Act 1 card.")
                 self.cutscenes.play()
