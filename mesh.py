@@ -12,6 +12,7 @@ class Mesh:
         self.program = self._load_program(program_name)
         self.transform = Transform()
         self.visual_offset = glm.vec3(0, 0, 0)
+        self.visual_rotation = glm.vec3(0, 0, 0) # Euler angles in degrees
         self.alpha = 1.0
         self.vbo = self.get_vbo()
         self.vao = self.get_vao()
@@ -89,6 +90,16 @@ class Mesh:
         model = self.transform.model_matrix()
         if hasattr(self, 'visual_offset') and glm.length(self.visual_offset) > 1e-6:
             model = model * glm.translate(glm.mat4(1.0), self.visual_offset)
+        
+        if hasattr(self, 'visual_rotation') and glm.length(self.visual_rotation) > 1e-6:
+            # Apply Euler rotation: degrees -> radians -> quat -> mat4
+            rad = glm.radians(self.visual_rotation)
+            # Create a combined rotation matrix from Euler angles
+            # Note: glm has multiple ways to do this, using euler angles is direct
+            rot_mat = (glm.rotate(glm.mat4(1.0), rad.x, glm.vec3(1, 0, 0)) *
+                       glm.rotate(glm.mat4(1.0), rad.y, glm.vec3(0, 1, 0)) *
+                       glm.rotate(glm.mat4(1.0), rad.z, glm.vec3(0, 0, 1)))
+            model = model * rot_mat
 
         view = camera.view_matrix()
         aspect = self.ctx.screen.width / self.ctx.screen.height

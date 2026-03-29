@@ -27,9 +27,9 @@
         0.0
       ],
       "scale": [
-        3.162,
-        3.162,
-        3.162
+        0.028,
+        0.028,
+        0.028
       ],
       "mass": 1.0,
       "use_gravity": true,
@@ -48,13 +48,13 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/playerModel/CataHobov1.glb",
+      "model": "assets/animations/playerSuit/cata_formal_idle.glb",
       "use_anim_state_controller": true,
       "anim_state": {
-        "idle": "Idle",
-        "run": "Running",
-        "jump": "Jump",
-        "fall": "Falling",
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
         "move_threshold": 0.1,
         "vertical_threshold": 0.15
       }
@@ -691,6 +691,120 @@
       "is_trigger": false,
       "dialogue_data": null,
       "model": "assets/models/low_poly_computer_desk.glb"
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        11.08,
+        0.5,
+        0.66
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        8.217,
+        9.157
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ]
+    },
+    {
+      "name": "cube_2",
+      "format": "cube",
+      "position": [
+        8.58,
+        0.5,
+        -4.02
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        4.323,
+        9.996,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ]
+    },
+    {
+      "name": "cube_3",
+      "format": "cube",
+      "position": [
+        10.11,
+        0.5,
+        2.27
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        6.854,
+        8.929,
+        0.839
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ]
     }
   ]
 }

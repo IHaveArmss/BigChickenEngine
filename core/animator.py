@@ -104,8 +104,6 @@ class Animator:
 
         self._blend_clip = None
         self._blend_time = 0.0
-        self._blend_speed = 1.0
-        self._blend_duration = 0.0
         self._blend_elapsed = 0.0
 
     @property
