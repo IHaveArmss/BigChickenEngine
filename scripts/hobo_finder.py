@@ -34,10 +34,6 @@ class HoboFinder:
         if self.triggered:
             return
 
-        # ONLY proceed if the 'hobo_unlocked' flag is set (after talking to the Door Guardian)
-        if not self.engine.global_flags.get('hobo_unlocked', False):
-            return
-
         # Check for overlap with player
         player = self.engine.interaction_manager._get_player()
         if not player or not hasattr(player, 'pybullet_body_id'):
