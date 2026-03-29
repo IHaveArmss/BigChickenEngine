@@ -4,18 +4,16 @@ import pybullet as p
 import glm
 from core.physics_system import PhysicsSystem
 
-# Clip names for each locomotion state, per mode
-_BASE_CLIPS = {
-    'idle': 'Idle',
-    'run':  'Running',
-    'jump': 'Jump',
-    'fall': 'Falling',
-}
-_GUN_CLIPS = {
-    'idle': 'pistol_Idle',
-    'run':  'pistol_run',
-    'jump': 'pistol_jump',
-    'fall': 'Falling',   # no gun-fall anim – reuse base
+# Locomotion mappings per outfit
+_OUTFIT_CONFIG = {
+    'hobo': {
+        'base': {'idle': 'Idle', 'run': 'Running', 'jump': 'Jump', 'fall': 'Falling'},
+        'gun':  {'idle': 'pistol_Idle', 'run': 'pistol_run', 'jump': 'pistol_jump', 'fall': 'Falling'}
+    },
+    'suit': {
+        'base': {'idle': 'cata_formal_idle', 'run': 'cata_formal_run', 'jump': 'cata_formal_jump', 'fall': 'cata_formal_falling'},
+        'gun':  {'idle': 'cata_formal_idle_pistol', 'run': 'cata_formal_run_pistol', 'jump': 'cata_formal_jump_pistol', 'fall': 'cata_formal_falling'}
+    }
 }
 
 MOVE_THRESHOLD    = 0.1   # horizontal speed to enter 'run'
@@ -33,10 +31,17 @@ class Weapon:
         self.tp_timer       = 0.0  # timer for narrative teleport
         self.fire_cooldown  = 0.0  # timer for firing delay
 
-        # Internal animation state when gun is out (prevents redundant crossfades)
+        # Detect outfit based on model path
+        model_path = getattr(self.entity, 'model_path', '').lower()
+        if any(m in model_path for m in ['osuit.glb', 'cata_formal_tpose.glb', 'cata_formal_idle.glb']):
+            self.outfit = 'suit'
+        else:
+            self.outfit = 'hobo'
+
+        # Internal animation state when gun is out
         self._gun_loco_state = None
 
-        print(f"[Weapon] Initialized on {self.entity.name}. Press 'F' to draw/holster.")
+        print(f"[Weapon] Initialized on {self.entity.name} (outfit: {self.outfit}).")
 
     # ------------------------------------------------------------------ #
     # Update                                                              #
@@ -96,29 +101,24 @@ class Weapon:
 
         if self.weapon_drawn:
             # --- Equip ---
-            # Hand animation control to this script; freeze the state controller
-            # so it cannot override our choices.
             self.entity.use_anim_state_controller = False
             self._gun_loco_state = None  # force re-evaluate on next tick
-
-            # Immediately start the gun-idle so the transition is instant
             self._crossfade_gun('idle', animator)
 
         else:
             # --- Holster ---
-            # Restore the state controller.  Reset its internal state so it
-            # forces a fresh crossfade on the very next tick (no stale state).
+            cfg = _OUTFIT_CONFIG[self.outfit]['base']
             if controller is not None:
-                controller.idle_clip = 'Idle'
-                controller.run_clip  = 'Running'
-                controller.jump_clip = 'Jump'
-                controller.fall_clip = 'Falling'
+                controller.idle_clip = cfg['idle']
+                controller.run_clip  = cfg['run']
+                controller.jump_clip = cfg['jump']
+                controller.fall_clip = cfg['fall']
                 controller.refresh()
                 controller._current_state = None  # force re-evaluation
             self.entity.use_anim_state_controller = True
 
             # Crossfade to base idle right away so there's no blank frame
-            animator.crossfade('Idle', duration=0.15, loop=True)
+            animator.crossfade(cfg['idle'], duration=0.15, loop=True)
 
     # ------------------------------------------------------------------ #
     # Per-frame gun animation driver                                      #
@@ -146,7 +146,7 @@ class Weapon:
             self._gun_loco_state = loco
 
     def _crossfade_gun(self, loco_state, animator):
-        clip_name = _GUN_CLIPS.get(loco_state)
+        clip_name = _OUTFIT_CONFIG[self.outfit]['gun'].get(loco_state)
         if clip_name is None:
             return
         animator.crossfade(clip_name, duration=0.15, loop=True)

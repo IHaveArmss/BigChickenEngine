@@ -56,7 +56,7 @@
       "format": "glb",
       "position": [
         5.92,
-        2.03,
+        0.64,
         7.22
       ],
       "rotation": [
@@ -65,14 +65,16 @@
         0.0
       ],
       "scale": [
-        3.162,
-        3.162,
-        3.162
+        0.028,
+        0.028,
+        0.028
       ],
       "mass": 1.0,
       "use_gravity": true,
       "is_collideable": true,
       "is_kinematic": false,
+      "visual_offset": [0, 1, 0],
+      "visual_rotation": [90, 0, 0],
       "collider_type": "capsule",
       "bounciness": 0.0,
       "friction": 0.5,
@@ -86,13 +88,13 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/playerModel/CataHobov1.glb",
+      "model": "assets/animations/playerSuit/cata_formal_idle.glb",
       "use_anim_state_controller": true,
       "anim_state": {
-        "idle": "Idle",
-        "run": "Running",
-        "jump": "Jump",
-        "fall": "Falling",
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
         "move_threshold": 0.1,
         "vertical_threshold": 0.15
       }
@@ -676,7 +678,7 @@
       "color": [
         0.2,
         0.8,
-        0.686
+        0.682
       ],
       "alpha": 0.05,
       "interactable": true,
@@ -802,13 +804,13 @@
       "receives_shadows": true,
       "is_trigger": true,
       "dialogue_data": null,
-      "scene_path": "scenes/bosshallway.json",
       "color": [
         0.8,
         0.2,
         1.0
       ],
-      "alpha": 0.0
+      "alpha": 0.0,
+      "scene_path": "scenes/bosshallway.json"
     }
   ]
 }

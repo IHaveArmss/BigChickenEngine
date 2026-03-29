@@ -2,6 +2,7 @@
 
 import json
 import os
+import math
 import glm
 from core.model_loader import load_obj, load_gltf
 from core.model_mesh import ModelMesh
@@ -284,6 +285,18 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
                     'assets/animations/playerGun/pistol_run.glb',
                     'assets/animations/playerGun/pistol_jump.glb'
                 ]
+            
+            # SUIT FALLBACK: If no animation source is provided, use Formal Suit defaults
+            if not anim_src and any(m in model_path.lower() for m in ['osuit.glb', 'cata_formal_tpose.glb', 'cata_formal_idle.glb']):
+                anim_src = [
+                    'assets/animations/playerSuit/cata_formal_idle.glb', 
+                    'assets/animations/playerSuit/cata_formal_run.glb',
+                    'assets/animations/playerSuit/cata_formal_jump.glb',
+                    'assets/animations/playerSuit/cata_formal_falling.glb',
+                    'assets/animations/playerSuitGun/cata_formal_idle_pistol.glb',
+                    'assets/animations/playerSuitGun/cata_formal_run_pistol.glb',
+                    'assets/animations/playerSuitGun/cata_formal_jump_pistol.glb'
+                ]
 
             if anim_src:
                 # Support single string or list of strings
@@ -347,19 +360,30 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
                     vertical_threshold=float(obj.anim_state_config['vertical_threshold']),
                 )
 
-            # PERMANENT FALLBACK: Force Animation State Controller for the player
-            if 'catahobov1.glb' in model_path.lower() and not obj.anim_state_controller:
-                obj.anim_state_controller = AnimationStateController(
-                    animator,
-                    idle_clip='Idle',
-                    run_clip='Running',
-                    jump_clip='Jump',
-                    fall_clip='Falling',
-                    move_threshold=0.1,
-                    vertical_threshold=0.15
-                )
-                # Bug 2 fix: make sure the engine loop ticks this controller
-                obj.use_anim_state_controller = True
+            # PERMANENT FALLBACK: Force Animation State Controller for the player (Hobo or Suit)
+            if not obj.anim_state_controller:
+                if 'catahobov1.glb' in model_path.lower():
+                    obj.anim_state_controller = AnimationStateController(
+                        animator,
+                        idle_clip='Idle',
+                        run_clip='Running',
+                        jump_clip='Jump',
+                        fall_clip='Falling',
+                        move_threshold=0.1,
+                        vertical_threshold=0.15
+                    )
+                    obj.use_anim_state_controller = True
+                elif any(m in model_path.lower() for m in ['osuit.glb', 'cata_formal_tpose.glb', 'cata_formal_idle.glb']):
+                    obj.anim_state_controller = AnimationStateController(
+                        animator,
+                        idle_clip='cata_formal_idle',
+                        run_clip='cata_formal_run',
+                        jump_clip='cata_formal_jump',
+                        fall_clip='cata_formal_falling',
+                        move_threshold=0.1,
+                        vertical_threshold=0.15
+                    )
+                    obj.use_anim_state_controller = True
 
     obj.mass = entry.get('mass', 1.0)
     obj.use_gravity = entry.get('use_gravity', False)
@@ -410,28 +434,36 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     for m in obj.meshes:
         m.owner_obj = obj
 
-    # Apply visual offset to meshes
+    # Apply visual offset and rotation to meshes
     visual_offset = entry.get('visual_offset', None)
-    
-    # PERMANENT FALLBACK: If no offset is provided in JSON, check for model-specific defaults
+    visual_rotation = entry.get('visual_rotation', None)
+
+    # PERMANENT FALLBACK: If no offset/rotation is provided in JSON, check for model-specific defaults
     if visual_offset is None:
-        model_path = entry.get('model', '').lower()
-        if 'catahobov1.glb' in model_path:
+        if 'osuit.glb' in model_path.lower() or 'cata_formal_idle.glb' in model_path.lower() or 'cata_formal_tpose.glb' in model_path.lower():
+            visual_offset = [0, 0, 0]
+        elif 'catahobov1.glb' in model_path.lower():
             visual_offset = [0, -0.39, 0]
         else:
             visual_offset = [0, 0, 0]
 
-    for m in meshes:
+    if visual_rotation is None:
+        if 'osuit.glb' in model_path.lower() or 'cata_formal_idle.glb' in model_path.lower() or 'cata_formal_tpose.glb' in model_path.lower():
+            # Suit character usually needs to be stood up 90 degrees
+            visual_rotation = [90, 0, 0]
+        else:
+            visual_rotation = [0, 0, 0]
+
+    for m in obj.meshes:
         if hasattr(m, 'visual_offset'):
             m.visual_offset = glm.vec3(*visual_offset)
+        if hasattr(m, 'visual_rotation'):
+            m.visual_rotation = glm.vec3(*visual_rotation)
 
     obj.interactable = entry.get('interactable', False)
     obj.use_view_interaction = entry.get('use_view_interaction', False)
     obj.interaction_distance = entry.get('interaction_distance', 5.0)
-
-    obj.interactable = entry.get('interactable', False)
-    obj.use_view_interaction = entry.get('use_view_interaction', False)
-    obj.interaction_distance = entry.get('interaction_distance', 5.0)
+    obj.interactable_text = entry.get('interactable_text', 'Press E to interact')
 
     # Pass all other generic properties to the object so scripts can access them
     standard_keys = {

@@ -12,7 +12,11 @@ class InteractableButton:
         """Called when the player presses E while looking at this object."""
         print(f"[Button] Interaction triggered on {self.entity.name}!")
         
-        # Trigger transition back to cutscene_demo, using the spawn_from_lobby marker
-        self.engine.load_scene("scenes/cutscene_demo.json", target_marker="spawn_from_lobby")
+        # Determine target scene from entity property, default to lobby_act3
+        target_scene = getattr(self.entity, 'scene_path', "scenes/lobby_act3.json")
+        target_marker = getattr(self.entity, 'target_marker', None)
+        
+        print(f"[Button] Transitioning to {target_scene}...")
+        self.engine.load_scene(target_scene, target_marker=target_marker)
         
         return None
