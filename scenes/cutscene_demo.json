@@ -17,9 +17,9 @@
       "name": "player",
       "format": "glb",
       "position": [
-        31.65,
+        30.42,
         6.03,
-        -23.96
+        -20.22
       ],
       "rotation": [
         0.0,
@@ -1004,11 +1004,45 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0
+    },
+    {
+      "name": "ayan_statue",
+      "format": "glb",
+      "position": [
+        2.38,
+        7.24,
+        1.95
+      ],
+      "rotation": [
+        180.0,
+        -50.0,
+        180.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/ayan_statue.glb"
     }
   ]
 }

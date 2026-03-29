@@ -7,6 +7,8 @@ class Trigger:
     """
     def start(self):
         self.triggered = False
+        self.enemy_names = getattr(self.entity, 'trigger_enemies', '').split(',') if hasattr(self.entity, 'trigger_enemies') else []
+        self.enemy_names = [name.strip() for name in self.enemy_names if name.strip()]
         
         # Disable physical collision resolution (no bumping)
         # We set its collision group and mask to 0 so it's ignored by the solver.
@@ -17,8 +19,6 @@ class Trigger:
                 body_id, -1, 0, 0, 
                 physicsClientId=phys.client_id
             )
-            
-        print(f"[Trigger] Ghost mode active on {self.entity.name}")
 
     def update(self, dt):
         if self.triggered:
@@ -43,4 +43,8 @@ class Trigger:
 
     def on_trigger_enter(self):
         """Logic to run when triggered."""
-        print(f"[Trigger] Player entered {self.entity.name}! (One-time trigger)")
+        for enemy_name in self.enemy_names:
+            for script in self.engine.script_manager.active_scripts:
+                if script.entity.name == enemy_name and hasattr(script, 'set_enabled'):
+                    script.set_enabled(True)
+                    break
