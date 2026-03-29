@@ -56,6 +56,11 @@ class HUD:
         self.task_name = "Task: Man im hungry"
         self.task_requirement = "Requirement: Go buy a pizza"
 
+        # --- Prompt Box ---
+        self._prompt_active = False
+        self._prompt_text = ""
+        self._prompt_subtext = ""
+
     def toggle_controls(self):
         self.show_controls = not self.show_controls
 
@@ -89,6 +94,16 @@ class HUD:
         self.task_name = f"Task: {name}"
         self.task_requirement = f"Requirement: {requirement}"
         print(f"[HUD] Task Updated: {name}")
+
+    def show_prompt(self, text, subtext=""):
+        self._prompt_text = text
+        self._prompt_subtext = subtext
+        self._prompt_active = True
+
+    def hide_prompt(self):
+        self._prompt_active = False
+        self._prompt_text = ""
+        self._prompt_subtext = ""
 
     def render(self):
         """Render the HUD overlay on top of the scene."""
@@ -148,6 +163,10 @@ class HUD:
         if self.dialogue_manager and self.dialogue_manager.active:
             self.dialogue_manager.draw(surface, self.font_large, self.font_small,
                                        self.win_size)
+            return surface
+
+        if self._prompt_active and self._prompt_text:
+            self._draw_prompt(surface)
             return surface
 
         if not self.dev_mode and not self.show_controls:
@@ -297,6 +316,35 @@ class HUD:
         surface.blit(name_surf, (tx, ty))
         # Draw Requirement (Slightly smaller/dimmer)
         surface.blit(req_surf, (tx, ty + line_h + 4))
+
+    def _draw_prompt(self, surface):
+        """Draw a simple dialogue-style prompt box near the bottom of the screen."""
+        sw, sh = self.win_size
+        pad = 20
+        margin = 40
+        line_h = 24
+        box_w = sw - margin * 2
+        text_lines = [self._prompt_text]
+        if self._prompt_subtext:
+            text_lines.append(self._prompt_subtext)
+        box_h = pad * 2 + line_h * len(text_lines) + 12
+        box_x = margin
+        box_y = sh - box_h - margin
+
+        bg = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        bg.fill((0, 0, 0, 180))
+        surface.blit(bg, (box_x, box_y))
+
+        pygame.draw.line(surface, (255, 255, 255), (box_x, box_y), (box_x + box_w, box_y), 1)
+
+        y = box_y + pad
+        main_surf = self.font_large.render(self._prompt_text, True, (255, 255, 255))
+        surface.blit(main_surf, (box_x + pad, y))
+        y += line_h + 6
+
+        if self._prompt_subtext:
+            sub_surf = self.font_small.render(self._prompt_subtext, True, (220, 220, 220))
+            surface.blit(sub_surf, (box_x + pad, y))
 
     def _draw_text(self, surface, text, x, y, font, color):
         text_surf = font.render(text, True, color[:3])

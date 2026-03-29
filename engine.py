@@ -187,6 +187,7 @@ class GraphicsEngine:
 
         if self.dev_mode:
             # Entered Editor Mode — stop scripts and restore pre-play transforms
+            self.unlock_player_input()
             self.interaction_manager.clear()
             self.dialogue.active = False
             self.script_manager.stop_all()
@@ -201,6 +202,7 @@ class GraphicsEngine:
                 self._saved_transforms.clear()
         else:
             # Entered Play Mode — flush any pending UI edits so scripts are up-to-date
+            self.unlock_player_input()
             self.dev_tools.apply_ui_properties(
                 self.scene_objects, self.selected_index, self.editor_ui
             )
@@ -249,6 +251,7 @@ class GraphicsEngine:
 
         # Global state for dialogue system and game logic
         self.global_flags = {}
+        self._player_input_locked = False
 
         self.light_pos = glm.vec3(5.0, 10.0, 5.0)
         self.light_color = glm.vec3(1.0, 1.0, 1.0)
@@ -406,9 +409,17 @@ class GraphicsEngine:
         """Allows a script (e.g. Player) to register a new perspective in Play Mode."""
         self.play_camera = camera
 
+    def lock_player_input(self):
+        self._player_input_locked = True
+
+    def unlock_player_input(self):
+        self._player_input_locked = False
+
     @property
     def input_enabled(self):
         """Returns False if cutscene is playing with can_player_move=False."""
+        if self._player_input_locked:
+            return False
         if self.cutscenes.is_playing and not self.cutscenes.can_player_move:
             return False
         return True
@@ -655,6 +666,7 @@ class GraphicsEngine:
                    spawn_pos=None, spawn_rot=None, target_marker='player_spawn'):
         """Unloads current scene and loads a new JSON file."""
         print(f"\n[Engine] Loading Scene: {scene_path}...")
+        self.unlock_player_input()
         self.script_manager.stop_all()
         self.physics_system.reset()
 

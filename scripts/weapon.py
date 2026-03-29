@@ -51,7 +51,7 @@ class Weapon:
         if self.fire_cooldown > 0:
             self.fire_cooldown -= dt
 
-        if self.engine.dev_mode:
+        if self.engine.dev_mode or not self.engine.input_enabled:
             return
 
         keys = pygame.key.get_pressed()
