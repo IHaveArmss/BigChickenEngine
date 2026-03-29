@@ -52,6 +52,9 @@ class HUD:
         self._overlay_path = None
         self._overlay_fade = 1.0  # Optional: could add fade in/out later
 
+        # --- GIF frames cache ---
+        self._gif_frames = []   # list of (pygame.Surface, duration_ms)
+
         # --- Task System ---
         self.task_name = "Task: Man im hungry"
         self.task_requirement = "Requirement: Go buy a pizza"
@@ -88,6 +91,123 @@ class HUD:
             print(f"[HUD] Showing overlay: {path} for {duration}s")
         except Exception as e:
             print(f"[HUD] ERROR loading overlay {path}: {e}")
+
+    # ------------------------------------------------------------------
+    # GIF playback (blocking, used during scene transitions)
+    # ------------------------------------------------------------------
+
+    def _load_gif_frames(self, path):
+        """Load all frames of a GIF into (Surface, duration_ms) pairs."""
+        frames = []
+        try:
+            from PIL import Image
+            gif = Image.open(path)
+            while True:
+                rgba = gif.convert('RGBA')
+                w, h = rgba.size
+                surf = pygame.image.fromstring(rgba.tobytes(), (w, h), 'RGBA')
+                duration_ms = max(gif.info.get('duration', 80), 20)
+                frames.append((surf, duration_ms))
+                gif.seek(gif.tell() + 1)
+        except ImportError:
+            # Pillow unavailable — just load as static image
+            try:
+                surf = pygame.image.load(path).convert_alpha()
+                frames.append((surf, 100))
+            except Exception as e:
+                print(f"[HUD] GIF static fallback failed: {e}")
+        except EOFError:
+            pass  # normal end of GIF
+        except Exception as e:
+            print(f"[HUD] GIF load error: {e}")
+        return frames
+
+    def show_gif_blocking(self, path, ctx, renderer):
+        """Play a GIF on screen for exactly one full loop (blocking).
+        Renders via the existing GL pipeline so it works with ModernGL.
+
+        Parameters
+        ----------
+        path     : path to .gif file
+        ctx      : moderngl.Context
+        renderer : the engine Renderer (used to clear the GL framebuffer)
+        """
+        if not os.path.exists(path):
+            print(f"[HUD] GIF not found: {path}")
+            return
+
+        # Load (cached per path)
+        if self._gif_frames and getattr(self, '_gif_path', None) == path:
+            frames = self._gif_frames
+        else:
+            print(f"[HUD] Loading GIF frames: {path}")
+            frames = self._load_gif_frames(path)
+            self._gif_frames = frames
+            self._gif_path = path
+
+        if not frames:
+            return
+
+        clock = pygame.time.Clock()
+        frame_idx = 0
+        frame_elapsed_ms = 0
+        total_duration_ms = sum(d for _, d in frames)
+        elapsed_ms = 0
+        win_w, win_h = self.win_size
+
+        # Build a surface once per frame; blit gif frame centred/fitted
+        canvas = pygame.Surface((win_w, win_h), pygame.SRCALPHA)
+
+        while elapsed_ms < total_duration_ms:
+            dt_ms = clock.tick(60)
+            elapsed_ms += dt_ms
+            frame_elapsed_ms += dt_ms
+
+            # Advance frame
+            _, duration = frames[frame_idx]
+            while frame_elapsed_ms >= duration:
+                frame_elapsed_ms -= duration
+                frame_idx = (frame_idx + 1) % len(frames)
+                _, duration = frames[frame_idx]
+
+            # Pump events (prevent OS 'not responding')
+            for event in pygame.event.get():
+                pass  # discard — caller handles quit
+
+            # Draw frame letterboxed
+            surf, _ = frames[frame_idx]
+            fw, fh = surf.get_size()
+            scale = min(win_w / fw, win_h / fh)
+            nw, nh = int(fw * scale), int(fh * scale)
+            scaled = pygame.transform.smoothscale(surf, (nw, nh))
+            canvas.fill((0, 0, 0, 255))
+            canvas.blit(scaled, ((win_w - nw) // 2, (win_h - nh) // 2))
+
+            # Upload as HUD overlay → existing render pipeline
+            data = pygame.image.tostring(canvas, 'RGBA', True)
+            if self._texture is None or (win_w, win_h) != self._texture_size:
+                if self._texture:
+                    self._texture.release()
+                self._texture = ctx.texture((win_w, win_h), 4, data)
+                self._texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+                self._texture_size = (win_w, win_h)
+            else:
+                self._texture.write(data)
+
+            # Render: clear GL, draw HUD quad on top
+            ctx.clear(0, 0, 0, 1)
+            ctx.enable(moderngl.BLEND)
+            ctx.blend_func = (moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA)
+            ctx.disable(moderngl.DEPTH_TEST)
+            self._texture.use(location=0)
+            self.program['u_texture'].value = 0
+            self.vao.render(moderngl.TRIANGLE_STRIP, vertices=4)
+            ctx.disable(moderngl.BLEND)
+            ctx.enable(moderngl.DEPTH_TEST)
+
+            pygame.display.flip()
+
+        print(f"[HUD] GIF playback complete: {path}")
 
     def set_task(self, name, requirement):
         """Update the on-screen task information."""

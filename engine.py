@@ -666,6 +666,15 @@ class GraphicsEngine:
                    spawn_pos=None, spawn_rot=None, target_marker='player_spawn'):
         """Unloads current scene and loads a new JSON file."""
         print(f"\n[Engine] Loading Scene: {scene_path}...")
+
+        # Show loading GIF so the game doesn't look frozen between scenes
+        try:
+            self.hud.show_gif_blocking(
+                'assets/transitions/loadingGif.gif', self.ctx, self.renderer
+            )
+        except Exception as _gif_err:
+            print(f"[Engine] Loading GIF skipped: {_gif_err}")
+
         self.unlock_player_input()
         self.script_manager.stop_all()
         self.physics_system.reset()
@@ -726,7 +735,9 @@ class GraphicsEngine:
         base_name = os.path.basename(scene_path).lower()
         
         if base_name == "act2.json":
-            self.hud.set_task("Escape Plan", "Run for your life!")
+            self.hud.set_task("Arrest?", "Follow the path made by the mobsters.")
+        elif base_name == "act3.json":
+            self.hud.set_task("Confrontation", "Go to Evil inc. and end this.")
         elif base_name == "cutscene_demo.json":
             self.hud.set_task("Man im hungry", "Go buy a pizza")
         elif base_name == "bosshallway.json":
@@ -736,6 +747,8 @@ class GraphicsEngine:
                 self.hud.set_task("A cruel realisation", "Talk to Tony")
             else:
                 self.hud.set_task("Man im hungry", "Go buy a pizza")
+        elif base_name == "lobby.json":
+            self.hud.set_task("Chit chat", "Talk to the clerk")
         else:
             # Fallback if no specific task is defined for this scene
             print(f"[Engine] No default task defined for {base_name}")
