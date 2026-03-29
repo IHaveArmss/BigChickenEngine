@@ -18,7 +18,7 @@
       "format": "glb",
       "position": [
         -3.33,
-        7.12,
+        5.85,
         -20.48
       ],
       "rotation": [
@@ -98,7 +98,7 @@
       "format": "cube",
       "position": [
         -3.33,
-        7.12,
+        6.42,
         -20.48
       ],
       "rotation": [
@@ -126,7 +126,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
@@ -134,21 +134,21 @@
     },
     {
       "name": "Thug1",
-      "format": "cube",
+      "format": "glb",
       "position": [
         1.06,
-        5.26,
+        4.2,
         -17.66
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        -89.972,
         0.0
       ],
       "scale": [
-        1.0,
-        2.0,
-        1.0
+        1.609,
+        1.609,
+        1.609
       ],
       "mass": 1.0,
       "use_gravity": false,
@@ -165,34 +165,58 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.894,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "Thug2",
-      "format": "cube",
+      "format": "glb",
       "position": [
-        2.3,
-        5.39,
-        -20.72
+        1.77,
+        4.31,
+        -20.37
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        -89.972,
         0.0
       ],
       "scale": [
-        1.0,
-        2.0,
-        1.0
+        2.888,
+        2.888,
+        2.888
       ],
       "mass": 1.0,
       "use_gravity": false,
@@ -209,33 +233,57 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.894,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "Thug3",
-      "format": "cube",
+      "format": "glb",
       "position": [
-        2.39,
-        5.0,
-        -23.28
+        1.55,
+        4.13,
+        -22.5
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        -70.0,
         0.0
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 1.0,
@@ -253,34 +301,58 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.894,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "Thug4",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -12.14,
-        5.56,
+        4.29,
         -26.74
       ],
       "rotation": [
-        0.0,
+        90.0,
         -0.0,
         0.0
       ],
       "scale": [
-        1.0,
-        2.0,
-        1.0
+        2.0911,
+        2.0911,
+        2.0911
       ],
       "mass": 1.0,
       "use_gravity": false,
@@ -297,34 +369,58 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.894,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "Thug5",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -16.26,
-        5.35,
+        4.27,
         -26.64
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        5.0,
         0.0
       ],
       "scale": [
-        1.0,
-        2.0,
-        1.0
+        1.5273,
+        1.5273,
+        1.5273
       ],
       "mass": 1.0,
       "use_gravity": false,
@@ -341,16 +437,40 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.894,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "low_poly_heap_of_construction_debris_bricks",
@@ -419,7 +539,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
@@ -607,7 +727,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
@@ -703,7 +823,7 @@
       "format": "cube",
       "position": [
         2.87,
-        5.58,
+        4.76,
         -20.22
       ],
       "rotation": [
@@ -731,8 +851,8 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
         0.478,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -743,7 +863,7 @@
       "format": "cube",
       "position": [
         -14.27,
-        5.57,
+        5.298,
         -30.48
       ],
       "rotation": [
@@ -771,8 +891,8 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
@@ -814,20 +934,20 @@
     },
     {
       "name": "Thug6",
-      "format": "cube",
+      "format": "glb",
       "position": [
         -6.18,
-        6.0,
+        4.21,
         31.34
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        -70.0,
         0.0
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 1.0,
@@ -845,34 +965,58 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.898,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
       "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
-      "name": "NPC_Guardian_1",
-      "format": "cube",
+      "name": "Thug8",
+      "format": "glb",
       "position": [
         -6.0,
-        6.0,
+        4.18,
         34.52
       ],
       "rotation": [
-        0.0,
-        -0.0,
+        90.0,
+        -89.972,
         0.0
       ],
       "scale": [
-        1.0,
-        2.0,
-        1.0
+        1.414,
+        1.414,
+        1.414
       ],
       "mass": 1.0,
       "use_gravity": false,
@@ -889,15 +1033,40 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.898,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
+      "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
     },
     {
       "name": "cube_5",
@@ -932,29 +1101,29 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.486,
-        0.478,
+        0.482,
+        0.475,
         1.0
       ],
       "alpha": 0.0,
       "folder": "C"
     },
     {
-      "name": "NPC_Guardian",
-      "format": "cube",
+      "name": "Thug7",
+      "format": "glb",
       "position": [
-        -30.11,
-        6.0,
-        42.57
+        -30.47,
+        4.3,
+        41.8
       ],
       "rotation": [
-        0.0,
+        -90.0,
         -0.0,
-        0.0
+        -180.0
       ],
       "scale": [
         1.0,
-        2.0,
+        1.0,
         1.0
       ],
       "mass": 1.0,
@@ -972,15 +1141,280 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.898,
-        0.4,
-        0.8
-      ],
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Thug",
+            "text": "Move along.",
+            "next": "choices"
+          },
+          "choices": {
+            "speaker": "Thug",
+            "text": "",
+            "choices": [
+              {
+                "text": "...",
+                "next": "exit"
+              }
+            ]
+          }
+        }
+      },
+      "model": "assets/models/thief_standing.glb",
+      "folder": "T",
       "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 4.0
+      "use_view_interaction": true,
+      "interaction_distance": 4.0,
+      "use_anim_state_controller": false,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      }
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        -8.81,
+        11.12,
+        17.25
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.15,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_2",
+      "format": "light",
+      "position": [
+        -20.33,
+        11.32,
+        3.94
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.15,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_3",
+      "format": "light",
+      "position": [
+        -9.84,
+        10.0,
+        -25.4
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.15,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_1",
+      "format": "light",
+      "position": [
+        -42.93,
+        7.92,
+        32.88
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.2,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_2",
+      "format": "light",
+      "position": [
+        -39.96,
+        7.96,
+        31.05
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.2,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
+    },
+    {
+      "name": "light_3",
+      "format": "light",
+      "position": [
+        -20.11,
+        9.73,
+        38.39
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "intensity": 0.1,
+      "color": [
+        1.0,
+        1.0,
+        0.898
+      ],
+      "light_casts_shadows": true
     }
   ]
 }
