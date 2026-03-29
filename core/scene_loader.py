@@ -72,6 +72,7 @@ class SceneObject:
         self._position = glm.vec3(0)
         self._scale = glm.vec3(1)
         self._rotation = glm.quat()
+        self._rotation_euler = glm.vec3(0)
 
         for m in self.meshes:
             m.alpha = self._alpha
@@ -114,12 +115,10 @@ class SceneObject:
 
     @property
     def rotation_euler(self):
-        if not self.meshes:
-            return glm.vec3(0)
-        rads = glm.eulerAngles(self.meshes[0].transform.rotation)
-        return glm.vec3(glm.degrees(rads.x), glm.degrees(rads.y), glm.degrees(rads.z))
+        return self._rotation_euler
 
     def set_rotation_euler(self, pitch, yaw, roll):
+        self._rotation_euler = glm.vec3(pitch, yaw, roll)
         if self.meshes:
             for m in self.meshes:
                 m.transform.rotation = glm.quat(glm.vec3(
@@ -440,7 +439,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
 
     # PERMANENT FALLBACK: If no offset/rotation is provided in JSON, check for model-specific defaults
     if visual_offset is None:
-        if 'osuit.glb' in model_path.lower() or 'cata_formal_idle.glb' in model_path.lower() or 'cata_formal_tpose.glb' in model_path.lower():
+        if any(m in model_path.lower() for m in ['osuit.glb', 'cata_formal_idle.glb', 'cata_formal_tpose.glb', 'ayan_']):
             visual_offset = [0, 0, 0]
         elif 'catahobov1.glb' in model_path.lower():
             visual_offset = [0, -0.39, 0]
@@ -448,8 +447,8 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
             visual_offset = [0, 0, 0]
 
     if visual_rotation is None:
-        if 'osuit.glb' in model_path.lower() or 'cata_formal_idle.glb' in model_path.lower() or 'cata_formal_tpose.glb' in model_path.lower():
-            # Suit character usually needs to be stood up 90 degrees
+        if any(m in model_path.lower() for m in ['osuit.glb', 'cata_formal_idle.glb', 'cata_formal_tpose.glb', 'ayan_']):
+            # Suit/Ayan characters usually need to be stood up 90 degrees
             visual_rotation = [90, 0, 0]
         else:
             visual_rotation = [0, 0, 0]
