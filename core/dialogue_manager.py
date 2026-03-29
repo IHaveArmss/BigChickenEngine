@@ -376,8 +376,8 @@ class DialogueManager:
 
     def _play_next_talk_sound(self):
         if self.talk_sounds:
-            path = self.talk_sounds[self._talk_sound_idx % len(self.talk_sounds)]
-            self._talk_sound_idx += 1
+            import random
+            path = random.choice(self.talk_sounds)
             self.engine.audio.play_sfx(path)
 
     def _advance_to_node(self, node_id):
@@ -391,7 +391,7 @@ class DialogueManager:
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
         self._reset_typewriter()
-        if self._speaker and "choices" not in node:
+        if self._speaker:
             self._play_next_talk_sound()
         
         # Reset choices first
@@ -426,7 +426,7 @@ class DialogueManager:
         self._speaker = node.get("speaker", "")
         self._current_text = node.get("text", "")
         self._reset_typewriter()
-        if self._speaker and "choices" not in node:
+        if self._speaker:
             self._play_next_talk_sound()
         self._choices = None
         if "choices" in node:

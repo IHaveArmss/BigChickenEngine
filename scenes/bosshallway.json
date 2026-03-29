@@ -630,7 +630,7 @@
       ],
       "rotation": [
         0.0,
-        -89.98,
+        -90.0,
         0.0
       ],
       "scale": [
@@ -658,9 +658,9 @@
       "name": "AyanBoss",
       "format": "glb",
       "position": [
-        -119.6,
-        1.64,
-        -0.06
+        -119.93,
+        -1.08,
+        -0.12
       ],
       "rotation": [
         0.0,
@@ -672,7 +672,7 @@
         0.044,
         0.044
       ],
-      "mass": 1.0,
+      "mass": 0.0,
       "use_gravity": false,
       "is_collideable": true,
       "is_kinematic": true,
@@ -688,34 +688,67 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": {
-        "start_node": "intro",
+        "start_node": "line_1",
         "nodes": {
-          "intro": {
+          "line_1": {
             "speaker": "Ayan",
-            "text": "So... you've finally arrived. I've been waiting for this moment.",
+            "text": "You finally made it back to the top. Tell me... was the suit worth it? Or did you just need the armor to hide the coward underneath?",
             "choices": [
               {
-                "text": "Stand up and face me!",
-                "next": "challenge",
-                "action": "stand_up"
-              },
-              {
-                "text": "I'm just passing through.",
-                "next": "exit"
+                "text": "...",
+                "next": "line_2"
               }
             ]
           },
-          "challenge": {
+          "line_2": {
             "speaker": "Ayan",
-            "text": "As you wish. Let's see if you are truly ready for the final act.",
-            "next": "exit"
+            "text": "My brother wasnt a saint, but he was mine. You put a bullet in him and ran. You lived like a rat in the walls while I spent every waking hour keeping this city from eating itself alive. You call my law \"tyranny\"? Look out that window. That smoke? Thats the \"freedom\" you brought back with you.",
+            "choices": [
+              {
+                "text": "...",
+                "next": "line_3"
+              }
+            ]
+          },
+          "line_3": {
+            "speaker": "Ayan",
+            "text": "I built a community out of the dirt, and you tore it down because you couldnt face a trial. You arent a liberator. Youre just a monster who broke the world because he was too afraid to hang for his crimes.",
+            "choices": [
+              {
+                "text": "...",
+                "next": "line_4"
+              }
+            ]
+          },
+          "line_4": {
+            "speaker": "Ayan",
+            "text": "(Looking the player in the eye)\n\"Go ahead. Finish it. But look around this room. Everything I worked for is gone. Youve won a kingdom of ash. Enjoy your seat, Rat.\"",
+            "choices": [
+              {
+                "text": "Finish it.",
+                "next": "exit",
+                "action": "stand_up"
+              }
+            ]
           },
           "exit": {
             "text": ""
+          },
+          "phone_ending": {
+            "text": "*phone ringing*",
+            "next": "phone_ending_2"
+          },
+          "phone_ending_2": {
+            "speaker": "Tony",
+            "text": "The pizza you ordered is here!",
+            "next": "exit"
           }
         }
       },
-      "model": "assets/animations/bossAyan/ayan_formal_standing.glb",
+      "model": "assets/animations/bossAyan/ayan_formal_sitting.glb",
+      "animation_source": [
+        "assets/animations/bossAyan/ayan_formal_standing.glb"
+      ],
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0,
@@ -727,7 +760,133 @@
         "fall": "fall",
         "move_threshold": 0.1,
         "vertical_threshold": 0.15
-      }
+      },
+      "collider_scale": [
+        1.5,
+        1.5,
+        1.0
+      ],
+      "collider_offset": [
+        0.0,
+        2.5,
+        0.0
+      ]
+    },
+    {
+      "name": "cube_1",
+      "format": "cube",
+      "position": [
+        6.98,
+        9.92,
+        0.2
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        353.203,
+        0.126,
+        21.624
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.486,
+        0.478,
+        1.0
+      ]
+    },
+    {
+      "name": "boss_after_dialogue",
+      "format": "cube",
+      "position": [
+        -119.84,
+        -0.09,
+        -2.79
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.475,
+        0.475,
+        1.0
+      ],
+      "alpha": 0.0
+    },
+    {
+      "name": "cube_7",
+      "format": "cube",
+      "position": [
+        -116.98,
+        0.5,
+        -0.01
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        3.07,
+        5.454
+      ],
+      "mass": 1.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": false,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "color": [
+        0.482,
+        0.475,
+        1.0
+      ],
+      "alpha": 0.0
     }
   ]
 }

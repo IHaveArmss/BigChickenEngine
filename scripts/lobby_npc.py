@@ -63,7 +63,7 @@ class LobbyNpc:
                 },
                 "response_a": {
                     "speaker": "Jane Juliet",
-                    "text": "You could have gotten here sooner, I was getting hungry.",
+                    "text": "You could have gotten here sooner, the boss was hungry.",
                     "next": "exit"
                 },
                 "response_b": {

@@ -649,7 +649,9 @@
       "alpha": 0.05,
       "interactable": true,
       "use_view_interaction": false,
-      "interaction_distance": 3.0
+      "interaction_distance": 3.0,
+      "scene_path": "scenes/cutscene_demo.json",
+      "target_marker": "spawn_from_lobby"
     }
   ]
 }

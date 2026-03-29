@@ -434,6 +434,10 @@ def load_gltf(glb_path):
                         duration = max(duration, float(c.times[-1]))
 
                 clip_name = anim.name or f'animation_{len(animations)}'
+                # If the name is generic/common (e.g. from Mixamo), prefix it with the file name to avoid collisions
+                if 'mixamo.com' in clip_name.lower():
+                    base_fn = os.path.splitext(os.path.basename(abs_path))[0]
+                    clip_name = f"{base_fn}|{clip_name}"
                 animations[clip_name] = AnimationClip(clip_name, duration, channels)
 
         skin_cache[skin_idx] = (skeleton, animations)

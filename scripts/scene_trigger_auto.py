@@ -43,9 +43,16 @@ class SceneTriggerAuto:
         target    = getattr(self.entity, 'scene_path', None)
         spawn_pos = getattr(self.entity, 'target_position', None)
         spawn_rot = getattr(self.entity, 'target_rotation', None)
+        
+        task_title = getattr(self.entity, 'task_title', None)
+        task_desc  = getattr(self.entity, 'task_desc', None)
 
         if not target:
             print("[SceneTriggerAuto] No scene_path set on trigger object")
             return
+
+        if task_title or task_desc:
+            print(f"[SceneTriggerAuto] Setting task: {task_title} - {task_desc}")
+            self.engine.hud.set_task(task_title or "", task_desc or "")
 
         self.engine.load_scene(target, spawn_pos=spawn_pos, spawn_rot=spawn_rot)

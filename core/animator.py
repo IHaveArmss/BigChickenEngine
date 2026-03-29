@@ -138,7 +138,7 @@ class Animator:
     def crossfade(self, name, duration=0.3, loop=True, speed=1.0):
         clip = self._get_clip(name)
         if clip is None:
-            print(f"[Animator] WARNING: clip '{name}' not found.")
+            print(f"[Animator] WARNING: clip '{name}' not found. Available: {self.clip_names}")
             return
         if self.current_clip is clip:
             return
