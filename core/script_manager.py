@@ -170,6 +170,20 @@ class ScriptManager:
                     name = type(script).__name__
                     print(f"[ScriptManager] ERROR in {name}.on_mouse_down():\n{traceback.format_exc()}")
 
+    def dispatch_key_down(self, key, mod=0):
+        """Notify all scripts about a key down event.
+        Returns True if any script consumed the event."""
+        for script in self.active_scripts:
+            if hasattr(script, 'on_key_down'):
+                try:
+                    consumed = script.on_key_down(key, mod)
+                    if consumed:
+                        return True
+                except Exception:
+                    name = type(script).__name__
+                    print(f"[ScriptManager] ERROR in {name}.on_key_down():\n{traceback.format_exc()}")
+        return False
+
     def stop_all(self):
         """Calls stop() on each script, then clears and cleans up loaded modules."""
         if self.active_scripts:

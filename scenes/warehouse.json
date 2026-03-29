@@ -41,6 +41,7 @@
       "drag_linear": 0.02,
       "tag": "player",
       "scripts": [
+        "warehouse_intro",
         "third_person",
         "weapon"
       ],
@@ -172,7 +173,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -217,7 +217,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -262,7 +261,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -307,7 +305,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -352,7 +349,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -397,7 +393,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -442,7 +437,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -487,7 +481,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -532,7 +525,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -577,7 +569,6 @@
       ],
       "alpha": 0.0,
       "folder": "T",
-      "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 4.0
     },
@@ -614,6 +605,40 @@
       "is_trigger": false,
       "dialogue_data": null,
       "model": "assets/models/legat.glb"
+    },
+    {
+      "name": "chair",
+      "format": "glb",
+      "position": [
+        2.83,
+        -0.03,
+        -20.12
+      ],
+      "rotation": [
+        0.0,
+        -0.0,
+        0.0
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ],
+      "mass": 50.0,
+      "use_gravity": false,
+      "is_collideable": true,
+      "is_kinematic": true,
+      "collider_type": "mesh",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.02,
+      "tag": "",
+      "scripts": [],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/models/old_wooden_chair_low-poly(1).glb"
     },
     {
       "name": "cube_1",
@@ -723,7 +748,7 @@
       "scripts": [
         "trigger"
       ],
-      "trigger_enemies": "Thug1, Thug2, Thug3, Thug4, Thug5, Thug6, Thug8, Thug10, Thug_upstairs1, Thug_upstairs2",
+      "trigger_enemies": "Thug1, Thug2, Thug3, Thug4, Thug5, Thug6, Thug8, Thug10",
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -733,7 +758,7 @@
         0.2,
         1.0
       ],
-      "alpha": 0.4
+      "alpha": 0.0
     },
     {
       "name": "Trigger_Entity_1",
@@ -765,7 +790,7 @@
       "scripts": [
         "trigger"
       ],
-      "trigger_enemies": "Thug1, Thug2, Thug3, Thug4, Thug5, Thug6, Thug8, Thug10, Thug_upstairs1, Thug_upstairs2",
+      "trigger_enemies": "Thug_upstairs1, Thug_upstairs2",
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
@@ -775,7 +800,7 @@
         0.2,
         1.0
       ],
-      "alpha": 0.4
+      "alpha": 0.0
     },
     {
       "name": "cube_1",

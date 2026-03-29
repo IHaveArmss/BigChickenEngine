@@ -31,8 +31,11 @@ class Trigger:
 
         # Check for overlap (distance <= 0)
         phys = self.engine.physics_system
-        trigger_id = self.entity.pybullet_body_id
-        player_id = player.pybullet_body_id
+        trigger_id = getattr(self.entity, 'pybullet_body_id', None)
+        player_id = getattr(player, 'pybullet_body_id', None)
+
+        if trigger_id is None or player_id is None:
+            return
 
         # If the closest distance between them is 0 or less, they are overlapping
         points = p.getClosestPoints(player_id, trigger_id, distance=0.0, physicsClientId=phys.client_id)

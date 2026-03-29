@@ -74,6 +74,11 @@ class ThirdPerson:
         if body_id is None:
             return
 
+        if not self.engine.input_enabled:
+            p.resetBaseVelocity(body_id, [0.0, 0.0, 0.0], [0, 0, 0],
+                                physicsClientId=self.phys.client_id)
+            return
+
         # Freeze movement during dialogue (zero horizontal velocity, keep gravity)
         if self.engine.dialogue.active:
             is_dynamic = (not getattr(self.entity, 'is_kinematic', True)
@@ -139,6 +144,8 @@ class ThirdPerson:
     def update(self, dt):
         # -------- mouse input → orbit angles --------
         rel_x, rel_y = pygame.mouse.get_rel()
+        if not self.engine.input_enabled:
+            return
         self.cam_yaw   -= rel_x * self.sensitivity
         self.cam_pitch += rel_y * self.sensitivity
         self.cam_pitch  = max(-60.0, min(75.0, self.cam_pitch))

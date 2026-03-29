@@ -56,6 +56,8 @@ class InputHandler:
                         eng.scene_objects, eng.selected_index
                     )
                     continue
+                if eng.script_manager.dispatch_key_down(event.key, getattr(event, 'mod', 0)):
+                    continue
                 self._handle_key_down(event)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
