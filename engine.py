@@ -67,7 +67,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/bosshallway.json'
+SCENE_FILE = 'scenes/cutscene_demo.json'
 PLAY_INTRO = False # Set to False to skip the opening cinematic
 # ======================================================================
 
@@ -488,6 +488,13 @@ class GraphicsEngine:
         """Return the first SceneObject with the given tag, or None."""
         for o in self.scene_objects:
             if getattr(o, 'tag', '') == tag:
+                return o
+        return None
+
+    def get_object_by_name(self, name):
+        """Return the first SceneObject with the given name, or None."""
+        for o in self.scene_objects:
+            if getattr(o, 'name', '') == name:
                 return o
         return None
 

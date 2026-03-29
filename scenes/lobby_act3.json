@@ -817,7 +817,9 @@
         1.0
       ],
       "alpha": 0.0,
-      "scene_path": "scenes/bosshallway.json"
+      "scene_path": "scenes/bosshallway.json",
+      "task_title": "Meet your maker",
+      "task_desc": "take down the tyrant"
     }
   ]
 }

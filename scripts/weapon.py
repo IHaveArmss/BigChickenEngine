@@ -186,8 +186,8 @@ class Weapon:
         player_pos = self.entity.position + glm.vec3(0, 1.5, 0)
         forward = cam.front
 
-        # Parameters for the "Long Cone"
-        MAX_RANGE = 50.0
+        # Parameters for the \"Long Cone\"
+        MAX_RANGE = 250.0
         CONE_ANGLE_RAD = glm.radians(30.0) # 30 degree spread
 
         hit_any = False
@@ -220,9 +220,18 @@ class Weapon:
                             script.die()
                             break
                     break  # Only hit one enemy per shot
+                
                 elif obj.alpha > 0.5:
                     # Story NPC — existing behaviour
                     print(f"[Weapon] CONE HIT NPC: {obj.name}")
+                    
+                    # Special Case: AyanBoss triggers the 'Pizza' ending
+                    if obj.name == "AyanBoss":
+                        for script in self.engine.script_manager.active_scripts:
+                            if script.entity is obj and hasattr(script, 'on_shot'):
+                                script.on_shot()
+                        return # Stop scanning after boss hit
+
                     obj.alpha = 0.5
                     self.engine.audio.play_sfx('assets/sounds/bloodGushing.mp3')
                     if not self.engine.global_flags.get('thief_shot'):

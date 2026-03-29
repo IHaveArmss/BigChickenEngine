@@ -29,6 +29,11 @@ class Tony:
     def on_interact(self):
         # NARRATIVE BRANCH: After the Thief is shot
         if self.engine.global_flags.get('thief_shot'):
+            self.engine.dialogue.talk_sounds = [
+                "assets/sounds/talkingpizza1.mp3",
+                "assets/sounds/talkingpizza2.mp3",
+                "assets/sounds/talkingpizza3.mp3",
+            ]
             return {
                 "start_node": "postBossPizza",
                 "nodes": {
