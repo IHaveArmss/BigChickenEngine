@@ -51,6 +51,7 @@ class SceneObject:
         self.use_gravity = False
         self.is_kinematic = True
         self.collider_type = 'box'
+        self.collider_scale = None  # If set, used for physics instead of visual scale
         self.bounciness = 0.0
         self.friction = 0.5
         self.drag = 0.02
@@ -392,6 +393,10 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     obj.collider_type = entry.get('collider_type', default_collider)
     obj.bounciness = entry.get('bounciness', 0.0)
 
+    # Optional physics-only scale override (decouples visual scale from collider size)
+    raw_cs = entry.get('collider_scale', None)
+    obj.collider_scale = raw_cs  # stored as list or None; physics system handles it
+
     # Friction: prefer 'friction', fall back to 'drag' for legacy scenes
     if 'friction' in entry:
         obj.friction = entry['friction']
@@ -467,7 +472,7 @@ def spawn_from_entry(entry, ctx, texture_loader, shader_cache=None, resource_man
     # Pass all other generic properties to the object so scripts can access them
     standard_keys = {
         'name', 'format', 'position', 'rotation', 'scale', 'mass', 'use_gravity',
-        'is_collideable', 'is_kinematic', 'collider_type', 'bounciness', 'friction',
+        'is_collideable', 'is_kinematic', 'collider_type', 'collider_scale', 'bounciness', 'friction',
         'drag_linear', 'tag', 'scripts', 'casts_shadows', 'receives_shadows', 'is_trigger',
         'dialogue_data', 'color', 'model', 'animation_source', 'use_anim_state_controller',
         'anim_state', 'interactable', 'use_view_interaction', 'interaction_distance', 'alpha'

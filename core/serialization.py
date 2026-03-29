@@ -32,6 +32,7 @@ def serialize_scene_object(obj):
         "is_collideable": bool(getattr(obj, "is_collideable", True)),
         "is_kinematic": bool(obj.is_kinematic),
         "collider_type": str(obj.collider_type),
+        # collider_scale written below (only when explicitly set)
         "bounciness": round(float(obj.bounciness), 3),
         "friction": round(float(obj.friction), 3),
         "drag_linear": round(float(obj.drag), 3),
@@ -108,5 +109,16 @@ def serialize_scene_object(obj):
     tr = getattr(obj, 'target_rotation', None)
     if tr is not None:
         entry["target_rotation"] = _serialize_vec3(tr)
+
+    # Physics-only scale override — only written when explicitly set
+    cs = getattr(obj, 'collider_scale', None)
+    if cs is not None:
+        if isinstance(cs, (list, tuple)):
+            entry["collider_scale"] = [round(float(v), 4) for v in cs]
+        else:
+            # glm.vec3 or similar
+            entry["collider_scale"] = [round(float(cs.x), 4),
+                                       round(float(cs.y), 4),
+                                       round(float(cs.z), 4)]
 
     return entry

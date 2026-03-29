@@ -67,7 +67,7 @@ class ShaderCache:
 
 
 # ======================================================================
-SCENE_FILE = 'scenes/bosshallway.json'
+SCENE_FILE = 'scenes/lobby_act3.json'
 PLAY_INTRO = False # Set to False to skip the opening cinematic
 # ======================================================================
 

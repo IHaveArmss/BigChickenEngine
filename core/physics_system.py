@@ -51,6 +51,17 @@ class PhysicsSystem:
                                  physicsClientId=self.client_id)
 
     def _extract_scale(self, obj):
+        """Return the scale used for collision shape sizing.
+        If the object has a 'collider_scale' override, that is used instead
+        of the visual transform scale, allowing small-scale models to have
+        a properly-sized physics collider."""
+        cs = getattr(obj, 'collider_scale', None)
+        if cs is not None:
+            # collider_scale is stored as a list [sx, sy, sz]
+            if isinstance(cs, (list, tuple)) and len(cs) >= 3:
+                return float(cs[0]), float(cs[1]), float(cs[2])
+            if hasattr(cs, 'x'):
+                return float(cs.x), float(cs.y), float(cs.z)
         s = obj.scale
         return (s.x if hasattr(s, 'x') else s[0],
                 s.y if hasattr(s, 'y') else s[1],
