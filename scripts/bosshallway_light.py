@@ -2,10 +2,10 @@ import pybullet as p
 import random
 
 # Toggles and Settings
-USE_FLICKER     = True  # SET TO False TO REMOVE THE DRAMATIC FLICKER
+USE_FLICKER     = False  # Keep the sequence clean and readable
 SEQUENCE_LIGHTS = ['light_1', 'light_2', 'light_3', 'light_4', 'light_5', 'light_6', 'light_7', 'light_8', 'light_9']
-SEQUENCE_DELAY  = 3.0   # seconds after trigger before sequence starts
-SEQUENCE_STEP   = 0.4   # seconds between each light in the sequence
+SEQUENCE_DELAY  = 0.20  # seconds after trigger before sequence starts
+SEQUENCE_STEP   = 0.5   # seconds between each light in the sequence
 FLICKER_DUR     = 0.6   # how long each light flickers before staying solid
 FINAL_INTENSITY = 0.06  # final intensity after flickering
 
@@ -33,11 +33,11 @@ class BosshallwayLight:
             return
 
         for light in found_lights:
+            light.alpha = 1.0
             if USE_FLICKER:
                 self.flicker_map[light] = FLICKER_DUR
             else:
                 light.light_intensity = FINAL_INTENSITY
-                light.alpha = 1.0
 
     def update(self, dt):
         # 1. Handle Active Flickering
@@ -75,7 +75,14 @@ class BosshallwayLight:
             # Player entered — start the sequence
             self.timer = 0.0
             self.seq_index = 0
-            self.state = 'SEQUENCE'
+            self.state = 'DELAY' if SEQUENCE_DELAY > 0.0 else 'SEQUENCE'
+
+        elif self.state == 'DELAY':
+            self.timer += dt
+            if self.timer >= SEQUENCE_DELAY:
+                self.timer = 0.0
+                self.seq_index = 0
+                self.state = 'SEQUENCE'
 
         elif self.state == 'SEQUENCE':
             self.timer += dt
