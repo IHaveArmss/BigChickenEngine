@@ -702,6 +702,10 @@ class GraphicsEngine:
         self._history_last_signature = None
         self._record_history_snapshot(force=True)
 
+        # Clear transient overlays so the new scene's HUD task is visible.
+        self.dialogue.active = False
+        self.hud.hide_prompt()
+
         if not self.dev_mode:
             self._saved_transforms = {}
             for obj in self.scene_objects:
@@ -722,7 +726,7 @@ class GraphicsEngine:
         base_name = os.path.basename(scene_path).lower()
         
         if base_name == "act2.json":
-            self.hud.set_task("Consequences", "Follow the agents into the interogation room")
+            self.hud.set_task("Escape Plan", "Run for your life!")
         elif base_name == "cutscene_demo.json":
             self.hud.set_task("Man im hungry", "Go buy a pizza")
         elif base_name == "bosshallway.json":

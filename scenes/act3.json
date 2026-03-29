@@ -14,52 +14,6 @@
   },
   "objects": [
     {
-      "name": "player",
-      "format": "glb",
-      "position": [
-        -3.33,
-        5.85,
-        -20.48
-      ],
-      "rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "scale": [
-        3.162,
-        3.162,
-        3.162
-      ],
-      "mass": 1.0,
-      "use_gravity": true,
-      "is_collideable": true,
-      "is_kinematic": false,
-      "collider_type": "capsule",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.0,
-      "tag": "player",
-      "scripts": [
-        "third_person",
-        "weapon"
-      ],
-      "casts_shadows": true,
-      "receives_shadows": true,
-      "is_trigger": false,
-      "dialogue_data": null,
-      "model": "assets/playerModel/CataHobov1.glb",
-      "use_anim_state_controller": true,
-      "anim_state": {
-        "idle": "Idle",
-        "run": "Running",
-        "jump": "Jump",
-        "fall": "Falling",
-        "move_threshold": 0.1,
-        "vertical_threshold": 0.15
-      }
-    },
-    {
       "name": "world_ruin_blank",
       "format": "glb",
       "position": [
@@ -69,7 +23,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -94,16 +48,74 @@
       "model": "assets/models/world_ruin_blank.glb"
     },
     {
-      "name": "spawn_player_act2",
-      "format": "cube",
+      "name": "player",
+      "format": "glb",
       "position": [
-        -3.33,
-        6.42,
-        -20.48
+        -35.42,
+        4.57,
+        33.68
       ],
       "rotation": [
         0.0,
-        -0.0,
+        91.0,
+        0.0
+      ],
+      "scale": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "mass": 10.0,
+      "use_gravity": true,
+      "is_collideable": true,
+      "is_kinematic": false,
+      "collider_type": "box",
+      "bounciness": 0.0,
+      "friction": 0.5,
+      "drag_linear": 0.0,
+      "tag": "player",
+      "scripts": [
+        "third_person",
+        "weapon"
+      ],
+      "casts_shadows": true,
+      "receives_shadows": true,
+      "is_trigger": false,
+      "dialogue_data": null,
+      "model": "assets/animations/playerSuit/cata_formal_idle.glb",
+      "move_speed": 5.0,
+      "use_anim_state_controller": true,
+      "anim_state": {
+        "idle": "idle",
+        "run": "run",
+        "jump": "jump",
+        "fall": "fall",
+        "move_threshold": 0.1,
+        "vertical_threshold": 0.15
+      },
+      "collider_scale": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "collider_box": true,
+      "collider_offset": [
+        0.0,
+        0.9,
+        0.0
+      ]
+    },
+    {
+      "name": "spawn_player_act3",
+      "format": "cube",
+      "position": [
+        -37.16,
+        5.33,
+        33.6
+      ],
+      "rotation": [
+        0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -126,7 +138,7 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.478,
+        0.475,
         0.475,
         1.0
       ],
@@ -482,7 +494,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -516,7 +528,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -550,13 +562,13 @@
       "name": "low_poly_heap_of_construction_debris_bricks",
       "format": "glb",
       "position": [
-        -10.45,
-        4.61,
-        42.9
+        17.71,
+        3.57,
+        51.53
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -581,46 +593,6 @@
       "model": "assets/models/low_poly_heap_of_construction_debris_bricks.glb"
     },
     {
-      "name": "cube_2",
-      "format": "cube",
-      "position": [
-        -12.7,
-        5.12,
-        39.06
-      ],
-      "rotation": [
-        0.0,
-        -0.0,
-        0.0
-      ],
-      "scale": [
-        17.19,
-        14.999,
-        0.677
-      ],
-      "mass": 1.0,
-      "use_gravity": false,
-      "is_collideable": true,
-      "is_kinematic": true,
-      "collider_type": "box",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.02,
-      "tag": "",
-      "scripts": [],
-      "casts_shadows": false,
-      "receives_shadows": true,
-      "is_trigger": false,
-      "dialogue_data": null,
-      "color": [
-        0.478,
-        0.475,
-        1.0
-      ],
-      "alpha": 0.0,
-      "folder": "C"
-    },
-    {
       "name": "low-poly_brick_wall",
       "format": "glb",
       "position": [
@@ -630,7 +602,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -664,7 +636,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -699,12 +671,12 @@
       "format": "cube",
       "position": [
         -32.26,
-        4.84,
+        4.942,
         44.78
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -767,57 +739,12 @@
       "is_trigger": false,
       "dialogue_data": null,
       "color": [
-        0.482,
+        0.478,
         0.475,
         1.0
       ],
       "alpha": 0.0,
       "folder": "C"
-    },
-    {
-      "name": "interog_door",
-      "format": "cube",
-      "position": [
-        -41.4,
-        6.01,
-        31.72
-      ],
-      "rotation": [
-        0.0,
-        35.0,
-        0.0
-      ],
-      "scale": [
-        3.8,
-        3.779,
-        0.269
-      ],
-      "mass": 0.0,
-      "use_gravity": false,
-      "is_collideable": true,
-      "is_kinematic": true,
-      "collider_type": "box",
-      "bounciness": 0.0,
-      "friction": 0.5,
-      "drag_linear": 0.02,
-      "tag": "interactable",
-      "scripts": [
-        "interog_door_logic"
-      ],
-      "casts_shadows": true,
-      "receives_shadows": true,
-      "is_trigger": true,
-      "dialogue_data": null,
-      "color": [
-        0.2,
-        0.8,
-        0.698
-      ],
-      "alpha": 0.05,
-      "interactable": true,
-      "use_view_interaction": false,
-      "interaction_distance": 3.0
-      ,"scene_path": "scenes/warehouse.json"
     },
     {
       "name": "cube_1",
@@ -869,7 +796,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1079,7 +1006,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1187,7 +1114,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1227,7 +1154,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1267,7 +1194,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1307,7 +1234,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1347,7 +1274,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1387,7 +1314,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1461,7 +1388,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1484,11 +1411,49 @@
       "casts_shadows": true,
       "receives_shadows": true,
       "is_trigger": true,
-      "dialogue_data": null,
+      "dialogue_data": {
+        "start_node": "line_0",
+        "nodes": {
+          "line_0": {
+            "speaker": "Giant Door",
+            "text": "A creepy door stands before you.",
+            "next": "line_1"
+          },
+          "line_1": {
+            "speaker": "Giant Door",
+            "text": "Something HORRIBLE is going on inside.",
+            "next": "choices"
+          },
+          "response_a": {
+            "speaker": "Giant Door",
+            "text": "yes",
+            "next": "exit"
+          },
+          "response_b": {
+            "speaker": "Giant Door",
+            "text": "no",
+            "next": "exit"
+          },
+          "choices": {
+            "speaker": "Giant Door",
+            "text": "What would you like to do?",
+            "choices": [
+              {
+                "text": "Proceed?",
+                "next": "response_a"
+              },
+              {
+                "text": "idk",
+                "next": "response_b"
+              }
+            ]
+          }
+        }
+      },
       "color": [
         0.2,
         0.8,
-        0.698
+        0.694
       ],
       "alpha": 0.5,
       "interactable": true,

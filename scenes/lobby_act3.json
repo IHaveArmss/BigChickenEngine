@@ -51,7 +51,8 @@
         0.349
       ]
     },
-    { "name": "player",
+    {
+      "name": "player",
       "format": "glb",
       "position": [
         5.92,
@@ -64,9 +65,9 @@
         0.0
       ],
       "scale": [
-        0.028,
-        0.028,
-        0.028
+        0.024,
+        0.024,
+        0.024
       ],
       "mass": 10.0,
       "use_gravity": true,
@@ -96,13 +97,14 @@
         "vertical_threshold": 0.15
       },
       "collider_scale": [
-        1.4,
-        2.8,
-        1.0
+        1.3,
+        2.4,
+        0.8
       ],
+      "collider_box": true,
       "collider_offset": [
         0.0,
-        1.5,
+        1.13,
         0.0
       ]
     },
@@ -501,7 +503,7 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [
-        "lobby_npc"
+        "lobby_npc3"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -510,7 +512,14 @@
       "model": "assets/models/lobbyman.glb",
       "interactable": true,
       "use_view_interaction": true,
-      "interaction_distance": 6.0
+      "interaction_distance": 6.0,
+      "dialogue_cam_pos": [
+        4.0,
+        2.5,
+        -3.0
+      ],
+      "dialogue_cam_yaw": -60.0,
+      "dialogue_cam_pitch": 0.0
     },
     {
       "name": "lobbyman",
@@ -685,7 +694,7 @@
       "color": [
         0.2,
         0.8,
-        0.682
+        0.678
       ],
       "alpha": 0.05,
       "interactable": true,

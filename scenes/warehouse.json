@@ -946,7 +946,8 @@
       "drag_linear": 0.02,
       "tag": "",
       "scripts": [
-        "suit_spinner"
+        "suit_spinner",
+        "scene_trigger"
       ],
       "casts_shadows": true,
       "receives_shadows": true,
@@ -954,6 +955,7 @@
       "dialogue_data": null,
       "model": "assets/models/Meshy_AI_Navy_Suit_with_Red_Ti_0329013621_texture.glb",
       "interactable": true,
+      "scene_path": "scenes/act3.json",
       "use_view_interaction": false,
       "interaction_distance": 4.0
     }

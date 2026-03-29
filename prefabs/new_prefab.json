@@ -1,0 +1,57 @@
+{
+  "name": "player",
+  "format": "glb",
+  "position": [
+    4.97,
+    0.78,
+    6.71
+  ],
+  "rotation": [
+    0.0,
+    -70.0,
+    0.0
+  ],
+  "scale": [
+    0.024,
+    0.024,
+    0.024
+  ],
+  "mass": 10.0,
+  "use_gravity": true,
+  "is_collideable": true,
+  "is_kinematic": false,
+  "collider_type": "box",
+  "bounciness": 0.0,
+  "friction": 0.5,
+  "drag_linear": 0.0,
+  "tag": "player",
+  "scripts": [
+    "third_person",
+    "weapon"
+  ],
+  "casts_shadows": true,
+  "receives_shadows": true,
+  "is_trigger": false,
+  "dialogue_data": null,
+  "model": "assets/animations/playerSuit/cata_formal_idle.glb",
+  "use_anim_state_controller": true,
+  "anim_state": {
+    "idle": "idle",
+    "run": "run",
+    "jump": "jump",
+    "fall": "fall",
+    "move_threshold": 0.1,
+    "vertical_threshold": 0.15
+  },
+  "collider_scale": [
+    1.3,
+    2.4,
+    0.8
+  ],
+  "collider_box": true,
+  "collider_offset": [
+    0.0,
+    1.5,
+    0.0
+  ]
+}
