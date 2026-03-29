@@ -7,7 +7,7 @@ class PlayerController:
         print(f"[PlayerController] Attached to {self.entity.name}")
         self.body_id = getattr(self.entity, 'pybullet_body_id', None)
         self.phys = self.engine.physics_system
-        self.speed = 8.0
+        self.speed = float(getattr(self.entity, 'move_speed', 8.0))
         self.jump_force = 6.0
         # Time-based grounding (set in on_collision, decays in fixed_update)
         self.ground_time = 0.0

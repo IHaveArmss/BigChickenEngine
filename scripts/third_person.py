@@ -32,8 +32,8 @@ class ThirdPerson:
         self.ground_time  = 0.0          # > 0 while on ground
 
         # Camera tuning
-        self.cam_distance   = 6.0        # orbit radius
-        self.current_distance = 6.0      # actual distance (may be reduced by collision)
+        self.cam_distance   = 5.0        # orbit radius
+        self.current_distance = 5.0      # actual distance (may be reduced by collision)
         self.cam_height     = 2.0        # look-at height above player pivot
         self.cam_smoothness = 8.0        # position lerp speed (higher = snappier)
         self.sensitivity    = 0.2        # mouse degrees-per-pixel

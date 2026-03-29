@@ -817,6 +817,7 @@
       "interactable": true,
       "use_view_interaction": false,
       "interaction_distance": 3.0
+      ,"scene_path": "scenes/warehouse.json"
     },
     {
       "name": "cube_1",
