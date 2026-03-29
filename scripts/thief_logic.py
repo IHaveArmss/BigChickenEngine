@@ -6,25 +6,26 @@ class ThiefLogic:
     the 'reset' works even if the scene is saved in the editor.
     """
     def start(self):
-        # Hardcoded 'Appear' State
-        self.dest_pos = glm.vec3(-11.63, 4.36, -4.72)
-        self.dest_rot = glm.vec3(90.0, -89.972, 0.0)
-        self.dest_alpha = 1.0
+        # Mixamo-style pose animation name
+        self.pose_anim = "dennis_formal_standing|Armature|mixamo.com|Layer0"
         
-        # Force initial 'Hidden' State every time game boots
+        # Start hidden
         self.hide()
 
     def hide(self):
-        self.entity.position.y = -500.0
-        self.entity.alpha = 0.0 # Force initial opacity 0 as requested
+        self.entity.alpha = 0.0 
         self.entity.is_collideable = False
-        self.entity._physics_dirty = True
-        print(f"[ThiefLogic] {self.entity.name} is now hidden.")
+        if self.entity.animator:
+            self.entity.animator.stop()
+        print(f"[ThiefLogic] {self.entity.name} is now hidden (alpha only).")
 
     def appear(self):
-        self.entity.position = glm.vec3(self.dest_pos)
-        self.entity.set_rotation_euler(self.dest_rot.x, self.dest_rot.y, self.dest_rot.z)
-        self.entity.alpha = self.dest_alpha
+        self.entity.alpha = 1.0
         self.entity.is_collideable = True
-        self.entity._physics_dirty = True
-        print(f"[ThiefLogic] {self.entity.name} has appeared (Save-Proof Reset)!")
+        
+        # Pose the character correctly (fixes T-posing)
+        if self.entity.animator:
+            print(f"[ThiefLogic] Playing pose: {self.pose_anim}")
+            self.entity.animator.play(self.pose_anim, loop=True)
+            
+        print(f"[ThiefLogic] {self.entity.name} has appeared (alpha only)!")

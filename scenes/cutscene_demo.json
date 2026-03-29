@@ -69,7 +69,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -93,7 +93,7 @@
       "dialogue_data": null,
       "color": [
         0.4,
-        0.486,
+        0.482,
         0.6
       ]
     },
@@ -107,7 +107,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -141,7 +141,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -182,7 +182,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -225,7 +225,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -305,7 +305,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -343,7 +343,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -417,7 +417,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -467,7 +467,7 @@
       "format": "glb",
       "position": [
         -21.87,
-        -500.0,
+        4.43,
         -2.48
       ],
       "rotation": [
@@ -484,7 +484,7 @@
       "use_gravity": true,
       "is_collideable": false,
       "is_kinematic": true,
-      "collider_type": "box",
+      "collider_type": "mesh",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -512,12 +512,14 @@
           "response_a": {
             "speaker": "Hobo",
             "text": "A heavy revolver stains your hands.",
-            "next": "exit"
+            "next": "exit",
+            "action": "summon_thief"
           },
           "response_b": {
             "speaker": "Hobo",
             "text": "Trying to escape only make it heavier.",
-            "next": "exit"
+            "next": "exit",
+            "action": "summon_thief"
           },
           "choices": {
             "speaker": "Hobo",
@@ -540,11 +542,6 @@
       "interactable": true,
       "use_view_interaction": true,
       "interaction_distance": 4.0,
-      "dialogue_cam_pos": [
-        -18.0,
-        8.22,
-        -3.2
-      ],
       "use_anim_state_controller": false,
       "anim_state": {
         "idle": "idle",
@@ -559,25 +556,25 @@
       "name": "Thief",
       "format": "glb",
       "position": [
-        -11.63,
-        -500.0,
-        -4.72
+        -11.85,
+        4.31,
+        -4.97
       ],
       "rotation": [
-        90.0,
-        -89.966,
+        9.0,
+        -90.0,
         0.0
       ],
       "scale": [
         5.239,
-        3.328,
-        1.932
+        3.274,
+        3.585
       ],
       "mass": 1.0,
       "use_gravity": true,
       "is_collideable": false,
       "is_kinematic": true,
-      "collider_type": "box",
+      "collider_type": "mesh",
       "bounciness": 0.0,
       "friction": 0.5,
       "drag_linear": 0.02,
@@ -590,7 +587,7 @@
       "receives_shadows": true,
       "is_trigger": false,
       "dialogue_data": null,
-      "model": "assets/models/thief_standing.glb",
+      "model": "assets/models/dennis_formal_standing.glb",
       "alpha": 0.0,
       "interactable": true,
       "use_view_interaction": false,
@@ -750,7 +747,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -789,7 +786,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -823,12 +820,12 @@
       "format": "cube",
       "position": [
         -9.04,
-        5.9,
+        7.66,
         3.71
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -981,7 +978,7 @@
       ],
       "rotation": [
         0.0,
-        -0.0,
+        0.0,
         0.0
       ],
       "scale": [
@@ -1019,8 +1016,8 @@
         1.95
       ],
       "rotation": [
-        180.0,
-        -50.0,
+        90.0,
+        -45.0,
         180.0
       ],
       "scale": [

@@ -394,6 +394,11 @@ class DialogueManager:
         if self._speaker:
             self._play_next_talk_sound()
         
+        # Trigger node action if present
+        action = node.get("action")
+        if action and self._target:
+            self.engine.script_manager.dispatch_dialogue_action(self._target, action)
+
         # Reset choices first
         self._choices = None
         
@@ -428,6 +433,12 @@ class DialogueManager:
         self._reset_typewriter()
         if self._speaker:
             self._play_next_talk_sound()
+        
+        # Trigger node action if present (backwards compat)
+        action = node.get("action")
+        if action and self._target:
+            self.engine.script_manager.dispatch_dialogue_action(self._target, action)
+
         self._choices = None
         if "choices" in node:
             self._choices = node["choices"]

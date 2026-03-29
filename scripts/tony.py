@@ -39,7 +39,7 @@ class Tony:
                 "nodes": {
                     "postBossPizza": {
                         "speaker": "Tony Esprano",
-                        "text": "Sorry buddy pizza's 6$ now, ever since that missing [PLACEHOLDER], the big guy put the whole city under martial law, until they find the killer.",
+                        "text": "Sorry buddy, pizza’s $6 now. Ever since that killer’s been on the loose, the Big Guy put the whole city under lock and key. Martial law is killing business faster than the murderer ever could.",
                         "next": "postBossPizzaChoices"
                     },
                     "postBossPizzaChoices": {
